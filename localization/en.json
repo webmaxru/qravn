@@ -266,5 +266,41 @@
   "ui.real_destination": {
     "title": "Real destination",
     "detail": ""
+  },
+  "redirect.cross_domain": {
+    "title": "Ends on a different domain",
+    "detail": "The link starts on {fromDomain} but ends on {toDomain}. A different owner controls the page you would actually reach."
+  },
+  "redirect.multiple_hops": {
+    "title": "Passes through several addresses",
+    "detail": "The link redirects {hopCount} times before arriving. Extra steps make the destination harder to predict."
+  },
+  "redirect.excessive_hops": {
+    "title": "Unusually long redirect chain",
+    "detail": "The link redirects {hopCount} times. Chains this long are uncommon for ordinary links and are often used to obscure where you end up."
+  },
+  "redirect.downgrade_to_http": {
+    "title": "Falls back to an unencrypted connection",
+    "detail": "The chain moves from an encrypted connection to an unencrypted one at {host}. Anything sent there can be read or altered on the way."
+  },
+  "redirect.chained_shorteners": {
+    "title": "Several shorteners in a row",
+    "detail": "The link passes through {count} shortening services. Stacking shorteners hides the destination and is rare in legitimate links."
+  },
+  "redirect.loop": {
+    "title": "Redirects in a circle",
+    "detail": "The chain returns to an address it had already visited at {host}, so it never settles on a destination."
+  },
+  "redirect.meta_refresh": {
+    "title": "Redirects using page content",
+    "detail": "The page at {host} redirects using its own content instead of a normal server redirect. This is sometimes used to avoid automated checks."
+  },
+  "limitation.redirect_resolution_failed": {
+    "title": "Could not follow the link",
+    "detail": "The final address could not be determined: {reason}. This assessment covers only the scanned link."
+  },
+  "limitation.redirect_partial": {
+    "title": "Only partly followed",
+    "detail": "Following stopped after {hopCount} steps, so the final address is unknown. This assessment covers only what was reached."
   }
 }

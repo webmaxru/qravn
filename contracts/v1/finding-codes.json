@@ -43,11 +43,20 @@
     "payload.calendar_event": { "severity": "info", "category": "payload", "params": ["summary"] },
     "payload.crypto_address": { "severity": "high", "category": "payload", "params": ["currency"] },
     "payload.otp_secret": { "severity": "critical", "category": "payload", "params": ["issuer"] },
-    "payload.app_deep_link": { "severity": "medium", "category": "payload", "params": ["scheme"] }
+    "payload.app_deep_link": { "severity": "medium", "category": "payload", "params": ["scheme"] },
+    "redirect.cross_domain": { "severity": "medium", "category": "redirection", "params": ["fromDomain", "toDomain"] },
+    "redirect.multiple_hops": { "severity": "low", "category": "redirection", "params": ["hopCount"] },
+    "redirect.excessive_hops": { "severity": "medium", "category": "redirection", "params": ["hopCount"] },
+    "redirect.downgrade_to_http": { "severity": "high", "category": "transport", "params": ["host"] },
+    "redirect.chained_shorteners": { "severity": "medium", "category": "redirection", "params": ["count"] },
+    "redirect.loop": { "severity": "low", "category": "redirection", "params": ["host"] },
+    "redirect.meta_refresh": { "severity": "low", "category": "redirection", "params": ["host"] }
   },
   "limitations": {
     "limitation.offline_no_reputation": { "params": [] },
     "limitation.redirect_not_expanded": { "params": ["service"] },
+    "limitation.redirect_resolution_failed": { "params": ["reason"] },
+    "limitation.redirect_partial": { "params": ["hopCount"] },
     "limitation.rules_stale": { "params": ["ageDays"] },
     "limitation.rules_unavailable": { "params": [] },
     "limitation.classifier_unavailable": { "params": [] },

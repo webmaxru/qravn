@@ -1541,9 +1541,37 @@ The deployed site was checked against the live URL in both Chromium and WebKit, 
 
 The fifth row is the one that matters most. The product's central claim is that checking a hostile code contacts nothing, and it is enforced in three independent places: `connect-src 'self'` in the Content Security Policy, a Playwright test that fails on any request to a scanned host, and this production check. Re-run it after any deployment with `npm run test:prod` in `apps/web`.
 
-## Notes
+### Shortened-URL expansion architecture
 
-- This plan is based on the companion documents in `qrrrgh/planning/`:
+Expanding a shortener requires an HTTP request, which collides directly with the product's central promise that checking a code does not tell the destination anyone looked. The resolution is a strict split:
+
+| Concern | Where it lives | Why |
+|---|---|---|
+| Detecting that a URL is a shortener | Rust core | Deterministic, offline, identical everywhere |
+| Performing the HTTP requests | Isolated server resolver | The user's device must never contact the destination |
+| Analysing the returned chain | Rust core | All judgement must be unified across platforms |
+| Deciding the verdict and permitted actions | Rust core | Clients render; they never re-derive a verdict |
+| Rendering | Each surface | The only legitimately platform-specific part |
+
+The core gains one additive optional input, `AssessInput.redirectResolution`, and one additive optional output, `Assessment.redirect`. Nothing else about the offline path changes: with no resolution supplied the engine behaves exactly as before, reporting `url.shortener`, `limitation.redirect_not_expanded`, and offering `expand_redirect_online`.
+
+This is what makes the engine genuinely unified rather than unified in name. A client cannot decide that a redirect "looks fine", cannot inspect the chain itself, and cannot soften a verdict. The only thing a client contributes is transport, and transport carries no judgement. If any analysis leaked into the clients, iOS, Android and web would drift apart and the shared-core guarantee would quietly become false.
+
+#### Reporting on two different URLs at once
+
+Once a chain is expanded there are two URLs in play, and conflating them would make the interface lie. "This link uses an IP address" means something very different about the scanned code than about the page it eventually reaches. `Finding.subject` therefore distinguishes `scanned` from `final`, and the full URL rule pipeline runs a second time against the destination.
+
+That second pass is the substance of the feature. A shortener is not dangerous in itself; it is dangerous because it conceals. Re-running every existing rule against the revealed destination is what turns concealment back into evidence.
+
+#### Honesty when resolution fails
+
+`RedirectOutcome` distinguishes `resolved`, `max_hops`, `timeout`, `network_error`, `blocked` and `loop`. Only the first supports a confident statement about the destination. Every other outcome adds a limitation and is barred from producing a reassuring verdict, because a security tool that overstates its knowledge is more dangerous than one that admits ignorance. `blocked` — the resolver refusing a URL that pointed at private address space — is itself a signal and is never reported as though the link were ordinary.
+
+#### The resolver is the exposed attack surface
+
+The resolver fetches arbitrary attacker-chosen URLs from server infrastructure, which is a server-side request forgery primitive by construction. It runs as a managed Azure Function on the Static Web Apps free tier, and its controls are: a scheme allowlist, blocking of private, loopback, link-local and reserved address space evaluated on the resolved IP rather than the hostname, re-validation before **every** hop rather than only the first, hop and time caps, a capped response body, no cookies or referrer, and no JavaScript execution. Blocking link-local space matters specifically because `169.254.169.254` is the Azure instance metadata endpoint, and an unprotected fetcher would hand out managed-identity tokens.
+
+
   - `qr-safety-technical-research.md`
   - `qr-safety-unified-core-and-web-surface.md`
   - `qr-safety-ios-development-start-guide.md`

@@ -266,5 +266,41 @@
   "ui.real_destination": {
     "title": "Faktisk destinasjon",
     "detail": ""
+  },
+  "redirect.cross_domain": {
+    "title": "Ender på et annet domene",
+    "detail": "Lenken starter på {fromDomain}, men ender på {toDomain}. Det er en annen eier som kontrollerer siden du faktisk kommer til."
+  },
+  "redirect.multiple_hops": {
+    "title": "Går via flere adresser",
+    "detail": "Lenken videresendes {hopCount} ganger før den kommer fram. Flere ledd gjør målet vanskeligere å forutse."
+  },
+  "redirect.excessive_hops": {
+    "title": "Uvanlig lang videresendingskjede",
+    "detail": "Lenken videresendes {hopCount} ganger. Så lange kjeder er uvanlige for vanlige lenker og brukes ofte for å skjule hvor du havner."
+  },
+  "redirect.downgrade_to_http": {
+    "title": "Går over til ukryptert forbindelse",
+    "detail": "Kjeden går fra kryptert til ukryptert forbindelse ved {host}. Det som sendes dit, kan leses eller endres underveis."
+  },
+  "redirect.chained_shorteners": {
+    "title": "Flere forkortingstjenester etter hverandre",
+    "detail": "Lenken går gjennom {count} forkortingstjenester. Å stable forkortere skjuler målet og er sjeldent i legitime lenker."
+  },
+  "redirect.loop": {
+    "title": "Videresender i ring",
+    "detail": "Kjeden kommer tilbake til en adresse den allerede har vært innom ved {host}, så den lander aldri på et mål."
+  },
+  "redirect.meta_refresh": {
+    "title": "Videresender via sideinnhold",
+    "detail": "Siden på {host} videresender ved hjelp av eget innhold i stedet for en vanlig tjenervideresending. Dette brukes iblant for å unngå automatiske kontroller."
+  },
+  "limitation.redirect_resolution_failed": {
+    "title": "Kunne ikke følge lenken",
+    "detail": "Den endelige adressen kunne ikke fastslås: {reason}. Denne vurderingen dekker bare den skannede lenken."
+  },
+  "limitation.redirect_partial": {
+    "title": "Bare delvis fulgt",
+    "detail": "Oppfølgingen stoppet etter {hopCount} steg, så den endelige adressen er ukjent. Denne vurderingen dekker bare det som ble nådd."
   }
 }

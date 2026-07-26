@@ -266,5 +266,41 @@
   "ui.real_destination": {
     "title": "Faktisk destinasjon",
     "detail": ""
+  },
+  "redirect.cross_domain": {
+    "title": "Endar på eit anna domene",
+    "detail": "Lenkja startar på {fromDomain}, men endar på {toDomain}. Det er ein annan eigar som kontrollerer sida du faktisk kjem til."
+  },
+  "redirect.multiple_hops": {
+    "title": "Går via fleire adresser",
+    "detail": "Lenkja blir vidaresend {hopCount} gonger før ho kjem fram. Fleire ledd gjer målet vanskelegare å føreseia."
+  },
+  "redirect.excessive_hops": {
+    "title": "Uvanleg lang vidaresendingskjede",
+    "detail": "Lenkja blir vidaresend {hopCount} gonger. Så lange kjeder er uvanlege for vanlege lenkjer og blir ofte brukte for å skjule kvar du hamnar."
+  },
+  "redirect.downgrade_to_http": {
+    "title": "Går over til ukryptert samband",
+    "detail": "Kjeda går frå kryptert til ukryptert samband ved {host}. Det som blir sendt dit, kan lesast eller endrast undervegs."
+  },
+  "redirect.chained_shorteners": {
+    "title": "Fleire forkortingstenester etter kvarandre",
+    "detail": "Lenkja går gjennom {count} forkortingstenester. Å stable forkortarar skjuler målet og er sjeldan i legitime lenkjer."
+  },
+  "redirect.loop": {
+    "title": "Vidaresender i ring",
+    "detail": "Kjeda kjem tilbake til ei adresse ho alt hadde vore innom ved {host}, så ho landar aldri på eit mål."
+  },
+  "redirect.meta_refresh": {
+    "title": "Vidaresender via sideinnhald",
+    "detail": "Sida på {host} vidaresender ved hjelp av eige innhald i staden for ei vanleg tenarvidaresending. Dette blir iblant brukt for å unngå automatiske kontrollar."
+  },
+  "limitation.redirect_resolution_failed": {
+    "title": "Kunne ikkje følgje lenkja",
+    "detail": "Den endelege adressa kunne ikkje fastsetjast: {reason}. Denne vurderinga dekkjer berre den skanna lenkja."
+  },
+  "limitation.redirect_partial": {
+    "title": "Berre delvis følgd",
+    "detail": "Oppfølginga stoppa etter {hopCount} steg, så den endelege adressa er ukjend. Denne vurderinga dekkjer berre det som blei nådd."
   }
 }

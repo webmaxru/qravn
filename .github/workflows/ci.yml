@@ -215,3 +215,15 @@ jobs:
 
       - name: Check contract registry and localization catalogs
         run: node tools/check-contract-localization.js
+
+      # Stronger than the registry check: asserts every {placeholder} used in a
+      # localized string is actually declared for that code in the registry.
+      # A message referencing an undeclared param renders literally to the user.
+      - name: Validate localization placeholders and golden vectors
+        run: node tools/validate-l10n.mjs
+
+      # The web app's copy of the contract is generated, not hand-written. It had
+      # already drifted once and was silently missing types, which the compiler
+      # accepts happily because the old shape is still internally consistent.
+      - name: Check generated contract copy is current
+        run: node tools/sync-contract.mjs --check

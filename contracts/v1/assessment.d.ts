@@ -53,6 +53,16 @@ export type RecommendedAction =
   | "scan_again"
   | "report";
 
+/**
+ * Which URL a finding describes. Added in v1.1.
+ *
+ * Once a redirect chain is expanded there are two different URLs in play, and
+ * conflating them would make the UI lie: "this link uses an IP address" is a
+ * very different statement about the scanned code than about the page it
+ * eventually reaches. Absent means "scanned".
+ */
+export type FindingSubject = "scanned" | "final";
+
 export interface Finding {
   code: string;
   severity: Severity;
@@ -61,6 +71,8 @@ export interface Finding {
   /** Localized, fully interpolated text. Empty when no catalog was supplied. */
   title: string;
   detail: string;
+  /** Which URL this finding is about. Absent is equivalent to "scanned". */
+  subject?: FindingSubject;
 }
 
 export interface Limitation {
@@ -98,6 +110,66 @@ export interface UrlBreakdown {
   scripts: string[];
 }
 
+/** How a hop handed control to the next URL. */
+export type RedirectMechanism =
+  | "http_status"
+  | "html_meta_refresh"
+  | "unknown";
+
+/** One hop of a redirect chain, as observed by the isolated resolver. */
+export interface RedirectHop {
+  /** Absolute URL requested at this hop. Hop 0 is the scanned URL itself. */
+  url: string;
+  /** HTTP status observed, when a response was received. */
+  status?: number;
+  /** How this hop pointed at the next one. Absent on the final hop. */
+  via?: RedirectMechanism;
+}
+
+/** Why a resolution stopped. Anything other than `resolved` is partial. */
+export type RedirectOutcome =
+  | "resolved"
+  | "max_hops"
+  | "timeout"
+  | "network_error"
+  | "blocked"
+  | "loop";
+
+/**
+ * Result of expanding a shortened or redirecting URL.
+ *
+ * This is produced by isolated server infrastructure and passed IN to the
+ * core. Neither the core nor the user's device ever performs this fetch: the
+ * whole point of the product is that checking a hostile code does not tell the
+ * destination that anyone looked at it.
+ */
+export interface RedirectResolution {
+  /** Ordered hops beginning with the scanned URL. Always at least one entry. */
+  chain: RedirectHop[];
+  /** Final absolute URL reached. Absent unless `outcome` is "resolved". */
+  finalUrl?: string;
+  outcome: RedirectOutcome;
+  /** Milliseconds the resolver spent. Informational only. */
+  elapsedMs?: number;
+  /** Resolver name and version, for provenance in support cases. */
+  resolver?: string;
+}
+
+/** Core's analysis of a supplied redirect chain. Present only when one was given. */
+export interface RedirectAnalysis {
+  /** Number of hops after the scanned URL. Zero means it did not redirect. */
+  hopCount: number;
+  outcome: RedirectOutcome;
+  /** Decomposition of the final URL, when one was reached. */
+  finalUrl?: UrlBreakdown;
+  /** Registrable domains traversed in order, consecutive duplicates removed. */
+  domainsTraversed: string[];
+  /** True when the destination is a different registrable domain than the scan. */
+  crossedRegistrableDomain: boolean;
+  /** True when an https hop was followed by an http hop. */
+  downgradedToHttp: boolean;
+}
+
 export interface Assessment {
   schemaVersion: number;
   payloadKind: PayloadKind;
@@ -106,6 +178,12 @@ export interface Assessment {
   /** Presentation form, safe to render. Bidi/control characters neutralized. */
   displayPayload: string;
   url?: UrlBreakdown;
+  /**
+   * Analysis of the expanded redirect chain. Present only when the host
+   * supplied a `redirectResolution`. Findings about the destination carry
+   * `subject: "final"`.
+   */
+  redirect?: RedirectAnalysis;
   findings: Finding[];
   limitations: Limitation[];
   verdict: Verdict;
@@ -138,6 +216,15 @@ export interface AssessInput {
   nowMs: number;
   /** Overrides the engine locale for this call. */
   locale?: string;
+  /**
+   * Redirect chain resolved by isolated server infrastructure, supplied only
+   * after the user explicitly asked for online expansion. Omit it and the core
+   * behaves exactly as it does offline, reporting
+   * `limitation.redirect_not_expanded`.
+   *
+   * The core treats every URL in here as hostile attacker-controlled input.
+   */
+  redirectResolution?: RedirectResolution;
 }
 
 /**
