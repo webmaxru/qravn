@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { WasmSafetyEngine } from './wasmSafetyEngine';
+import type { RedirectResolution } from '../contracts/assessment';
 
 interface GoldenVector {
   id: string;
@@ -11,6 +12,7 @@ interface GoldenVector {
   expectedFindings?: string[];
   mustNotContain?: string[];
   notes?: string;
+  redirectResolution?: RedirectResolution;
 }
 
 const goldenFiles = [
@@ -20,6 +22,7 @@ const goldenFiles = [
   'payloads.json',
   'norwegian-benign.json',
   'robustness.json',
+  'redirect-chains.json',
 ];
 
 function repoFile(pathFromRoot: string): string {
@@ -61,7 +64,7 @@ describe('WASM shared golden conformance', () => {
     const vectors = loadVectors();
 
     for (const vector of vectors) {
-      const result = engine.assess({ payload: vector.payload, nowMs });
+      const result = engine.assess({ payload: vector.payload, nowMs, redirectResolution: vector.redirectResolution });
       const actualCodes = new Set([
         ...result.findings.map((finding) => finding.code),
         ...result.limitations.map((limitation) => limitation.code),
@@ -84,7 +87,7 @@ describe('WASM shared golden conformance', () => {
       }
     }
 
-    expect(vectors.length).toBeGreaterThanOrEqual(103);
+    expect(vectors.length).toBeGreaterThanOrEqual(118);
     expect(failures, `${failures.length} shared golden vector(s) failed:\n\n${failures.join('\n---\n')}`).toEqual([]);
   });
 });

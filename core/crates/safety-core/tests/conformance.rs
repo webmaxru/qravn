@@ -1,4 +1,4 @@
-use safety_core::{AssessInput, EngineConfig, SafetyEngine};
+use safety_core::{AssessInput, EngineConfig, RedirectResolution, SafetyEngine};
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::BTreeSet;
@@ -13,6 +13,7 @@ const GOLDEN_FILES: &[&str] = &[
     "payloads.json",
     "norwegian-benign.json",
     "robustness.json",
+    "redirect-chains.json",
 ];
 
 #[derive(Debug, Deserialize)]
@@ -26,14 +27,16 @@ struct GoldenVector {
     #[serde(default)]
     must_not_contain: Vec<String>,
     notes: Option<String>,
+    #[serde(default)]
+    redirect_resolution: Option<RedirectResolution>,
 }
 
 #[test]
 fn shared_golden_corpus_conforms() {
     let vectors = load_vectors();
     assert!(
-        vectors.len() >= 103,
-        "expected at least 103 shared golden vectors, got {}",
+        vectors.len() >= 118,
+        "expected at least 118 shared golden vectors, got {}",
         vectors.len()
     );
 
@@ -46,6 +49,7 @@ fn shared_golden_corpus_conforms() {
             payload: vector.payload.clone(),
             now_ms: FIXED_NOW_MS,
             locale: None,
+            redirect_resolution: vector.redirect_resolution.clone(),
         });
         let actual_verdict = serde_json::to_value(&result.verdict)
             .ok()

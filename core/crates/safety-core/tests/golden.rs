@@ -9,6 +9,7 @@ fn assess(payload: &str) -> safety_core::Assessment {
         payload: payload.to_owned(),
         now_ms: NOW_MS,
         locale: None,
+        redirect_resolution: None,
     })
 }
 
@@ -334,6 +335,7 @@ fn adversarial_strings_never_panic() {
                 payload,
                 now_ms: NOW_MS,
                 locale: None,
+                redirect_resolution: None,
             })
         });
         assert!(result.is_ok());
@@ -351,6 +353,7 @@ fn adversarial_strings_never_panic() {
                 payload,
                 now_ms: NOW_MS,
                 locale: None,
+                redirect_resolution: None,
             })
         });
         assert!(result.is_ok());

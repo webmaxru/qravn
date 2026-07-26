@@ -1,0 +1,26 @@
+{
+  "name": "qrrrgh-resolver",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SSRF-hardened redirect resolver for qrrrgh. Expands a scanned URL's redirect chain in isolation and returns only the chain, never page content.",
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint --deny-warnings src test scripts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "node dist/index.js",
+    "dev": "node --watch --experimental-strip-types src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "oxlint": "^1.0.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

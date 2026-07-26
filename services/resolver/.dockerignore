@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+test
+scripts
+vitest.config.ts
+.git
+.gitignore
+.dockerignore
+Dockerfile
+README.md
+*.log
+npm-debug.log*
+.DS_Store

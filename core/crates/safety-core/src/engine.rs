@@ -1,6 +1,7 @@
 use crate::detect;
 use crate::explain;
 use crate::payload;
+use crate::redirect;
 use crate::rules::RulePackage;
 use crate::types::{AssessInput, Assessment, EngineConfig, Limitation, PayloadKind};
 use crate::unicode_guard;
@@ -53,6 +54,35 @@ impl SafetyEngine {
             }
         }
 
+        // Redirect-chain analysis. Runs only when the host supplied a resolution
+        // (produced by isolated infrastructure) for a URL payload. Absent, the
+        // engine behaves exactly as it does offline.
+        let mut redirect = None;
+        if let Some(resolution) = input.redirect_resolution.as_ref() {
+            if payload_analysis.url_candidate {
+                let scanned_domain = url
+                    .as_ref()
+                    .and_then(|breakdown| breakdown.registrable_domain.clone());
+                let scanned_is_shortener = payload_analysis
+                    .findings
+                    .iter()
+                    .any(|finding| finding.code == "url.shortener");
+                let output = redirect::analyze(
+                    resolution,
+                    scanned_domain.as_deref(),
+                    scanned_is_shortener,
+                    &payload_analysis.findings,
+                    &self.rules,
+                );
+                // The chain WAS expanded online, so the offline "not expanded"
+                // limitation emitted for a scanned shortener no longer applies.
+                limitations.retain(|l| l.code != "limitation.redirect_not_expanded");
+                payload_analysis.findings.extend(output.findings);
+                limitations.extend(output.limitations);
+                redirect = Some(output.analysis);
+            }
+        }
+
         let payload_kind = payload_analysis.kind.unwrap_or(PayloadKind::Text);
         let payload_unknown = matches!(
             payload_kind,
@@ -69,6 +99,7 @@ impl SafetyEngine {
             raw_payload: input.payload,
             display_payload: unicode.display,
             url,
+            redirect,
             findings: payload_analysis.findings,
             limitations: dedup_limitations(limitations),
             verdict: verdict_result.verdict,

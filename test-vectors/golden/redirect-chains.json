@@ -1,0 +1,292 @@
+[
+  {
+    "id": "redirect-five-hops-within-budget",
+    "payload": "https://s0.example/",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://s0.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s1.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s2.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s3.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s4.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s5.example/", "status": 200 }
+      ],
+      "finalUrl": "https://s5.example/",
+      "outcome": "resolved",
+      "elapsedMs": 48,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": ["redirect.multiple_hops"],
+    "mustNotContain": ["redirect.excessive_hops", "limitation.redirect_partial"],
+    "notes": "Budget boundary, lower side: exactly five hops is within MAX_REDIRECT_HOPS. It is 'multiple' but not 'excessive', and the hop count alone must never force suspicious."
+  },
+  {
+    "id": "redirect-six-hops-excessive-suspicious",
+    "payload": "https://s0.example/",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://s0.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s1.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s2.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s3.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s4.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s5.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s6.example/", "status": 200 }
+      ],
+      "finalUrl": "https://s6.example/",
+      "outcome": "resolved",
+      "elapsedMs": 61,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": ["redirect.excessive_hops"],
+    "mustNotContain": ["redirect.multiple_hops"],
+    "notes": "Budget boundary, upper side: six hops exceeds MAX_REDIRECT_HOPS. redirect.excessive_hops fires (superseding multiple_hops) and forces suspicious. Encodes the user's 'stop after five redirects' requirement."
+  },
+  {
+    "id": "redirect-max-hops-outcome-untrusted",
+    "payload": "https://s0.example/",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://s0.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s1.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s2.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s3.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s4.example/", "status": 301, "via": "http_status" },
+        { "url": "https://s5.example/", "status": 301, "via": "http_status" }
+      ],
+      "outcome": "max_hops",
+      "elapsedMs": 73,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": ["redirect.excessive_hops", "limitation.redirect_partial"],
+    "mustNotContain": ["redirect.multiple_hops"],
+    "notes": "The resolver itself stopped at the hop budget (outcome max_hops). The core reports redirect.excessive_hops plus a partial limitation, never claims a final URL, and returns suspicious. This is the user's 'resolve as untrusted, citing too many redirects' requirement."
+  },
+  {
+    "id": "redirect-shortener-benign-quiet",
+    "payload": "https://bit.ly/abc",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://bit.ly/abc", "status": 301, "via": "http_status" },
+        { "url": "https://ekte-nettbutikk.example/produkt", "status": 200 }
+      ],
+      "finalUrl": "https://ekte-nettbutikk.example/produkt",
+      "outcome": "resolved",
+      "elapsedMs": 22,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": ["url.shortener"],
+    "mustNotContain": [
+      "redirect.cross_domain",
+      "redirect.multiple_hops",
+      "redirect.excessive_hops",
+      "limitation.redirect_not_expanded",
+      "limitation.redirect_partial"
+    ],
+    "notes": "The common case: a shortener that expands to a benign destination must stay quiet. cross_domain is suppressed for shortener origins, and the offline 'not expanded' limitation is cleared because the chain WAS expanded. A false positive here would train users to ignore the product."
+  },
+  {
+    "id": "redirect-shortener-to-credential-authority",
+    "payload": "https://bit.ly/x1",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://bit.ly/x1", "status": 301, "via": "http_status" },
+        { "url": "https://dnb.no@evil.example/login", "status": 200 }
+      ],
+      "finalUrl": "https://dnb.no@evil.example/login",
+      "outcome": "resolved",
+      "elapsedMs": 34,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": ["url.shortener", "url.credentials_in_authority"],
+    "mustNotContain": ["redirect.cross_domain"],
+    "notes": "The payoff of online expansion: a bland bit.ly link that lands on https://dnb.no@evil.example/login. The final-URL detectors re-run and surface url.credentials_in_authority with subject=final — the real authority is evil.example, not dnb.no."
+  },
+  {
+    "id": "redirect-shortener-to-brand-subdomain",
+    "payload": "https://tinyurl.com/y2",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://tinyurl.com/y2", "status": 301, "via": "http_status" },
+        { "url": "https://dnb.no.sikker-innlogging.example/", "status": 200 }
+      ],
+      "finalUrl": "https://dnb.no.sikker-innlogging.example/",
+      "outcome": "resolved",
+      "elapsedMs": 39,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": ["url.shortener", "url.brand_in_subdomain"],
+    "mustNotContain": ["redirect.cross_domain"],
+    "notes": "A second payoff case: a tinyurl link resolving to a DNB-branded subdomain of an attacker-controlled domain. url.brand_in_subdomain fires on the final URL with subject=final; the destination looks like dnb.no to a human but resolves to sikker-innlogging.example."
+  },
+  {
+    "id": "redirect-shortener-to-http-ip-login",
+    "payload": "https://is.gd/z3",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://is.gd/z3", "status": 302, "via": "http_status" },
+        { "url": "http://198.51.100.24/login", "status": 200 }
+      ],
+      "finalUrl": "http://198.51.100.24/login",
+      "outcome": "resolved",
+      "elapsedMs": 55,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.shortener",
+      "redirect.downgrade_to_http",
+      "url.ip_literal_host",
+      "url.insecure_scheme"
+    ],
+    "mustNotContain": ["redirect.cross_domain"],
+    "notes": "A third payoff case: an is.gd link that downgrades from https to an http IP-literal login page. 198.51.100.24 is TEST-NET-2, unroutable, so nothing here can ever reach a real host. redirect.downgrade_to_http (high) plus final-URL ip_literal_host and insecure_scheme prove where the bland link lands."
+  },
+  {
+    "id": "redirect-downgrade-https-to-http",
+    "payload": "https://sikker-portal.example/",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://sikker-portal.example/", "status": 302, "via": "http_status" },
+        { "url": "http://innlogging.example/", "status": 200 }
+      ],
+      "finalUrl": "http://innlogging.example/",
+      "outcome": "resolved",
+      "elapsedMs": 27,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": ["redirect.downgrade_to_http", "url.insecure_scheme"],
+    "mustNotContain": ["redirect.excessive_hops", "limitation.redirect_partial"],
+    "notes": "A non-shortener origin whose single hop drops from https to http. redirect.downgrade_to_http is high severity and suspicious on its own; the final http URL also contributes url.insecure_scheme with subject=final."
+  },
+  {
+    "id": "redirect-chained-shorteners",
+    "payload": "https://bit.ly/a4",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://bit.ly/a4", "status": 301, "via": "http_status" },
+        { "url": "https://tinyurl.com/b4", "status": 301, "via": "http_status" },
+        { "url": "https://landing.example/", "status": 200 }
+      ],
+      "finalUrl": "https://landing.example/",
+      "outcome": "resolved",
+      "elapsedMs": 44,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "suspicious",
+    "expectedFindings": ["url.shortener", "redirect.chained_shorteners"],
+    "mustNotContain": ["redirect.excessive_hops"],
+    "notes": "Two distinct shortener hosts in one chain (bit.ly then tinyurl.com) deliberately hide the destination. redirect.chained_shorteners fires; together with the scanned url.shortener that is two medium findings, so the verdict is suspicious."
+  },
+  {
+    "id": "redirect-loop-outcome-untrusted",
+    "payload": "https://bit.ly/c5",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://bit.ly/c5", "status": 301, "via": "http_status" },
+        { "url": "https://spin.example/", "status": 301, "via": "http_status" },
+        { "url": "https://whirl.example/", "status": 301, "via": "http_status" },
+        { "url": "https://spin.example/", "status": 301, "via": "http_status" }
+      ],
+      "outcome": "loop",
+      "elapsedMs": 66,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": ["url.shortener", "redirect.loop", "limitation.redirect_partial"],
+    "mustNotContain": ["redirect.chained_shorteners"],
+    "notes": "The resolver reported a loop (spin -> whirl -> spin). redirect.loop plus a partial limitation, and no final URL is claimed. Only the scanned shortener is a known shortener, so chained_shorteners must not fire, and the verdict stays insufficient_evidence rather than reassuring."
+  },
+  {
+    "id": "redirect-timeout-failure-not-safe",
+    "payload": "https://bit.ly/d6",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://bit.ly/d6" }
+      ],
+      "outcome": "timeout",
+      "elapsedMs": 5000,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": ["url.shortener", "limitation.redirect_resolution_failed"],
+    "mustNotContain": ["limitation.redirect_partial", "redirect.excessive_hops"],
+    "notes": "The resolver timed out. The failure yields limitation.redirect_resolution_failed (reason=timeout) and the verdict stays insufficient_evidence. Product invariant: a failed check must never read as safe (never no_known_threat_found)."
+  },
+  {
+    "id": "redirect-network-error-failure-not-safe",
+    "payload": "https://tinyurl.com/e7",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://tinyurl.com/e7" }
+      ],
+      "outcome": "network_error",
+      "elapsedMs": 812,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": ["url.shortener", "limitation.redirect_resolution_failed"],
+    "mustNotContain": ["limitation.redirect_partial", "redirect.excessive_hops"],
+    "notes": "A network error during resolution yields limitation.redirect_resolution_failed (reason=network_error); the verdict remains insufficient_evidence, never reassuring."
+  },
+  {
+    "id": "redirect-blocked-final-not-analysed",
+    "payload": "https://bit.ly/f8",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://bit.ly/f8", "status": 301, "via": "http_status" },
+        { "url": "https://dnb.no@evil.example/login", "status": 200 }
+      ],
+      "outcome": "blocked",
+      "elapsedMs": 18,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": ["url.shortener", "limitation.redirect_resolution_failed"],
+    "mustNotContain": ["url.credentials_in_authority", "redirect.downgrade_to_http"],
+    "notes": "The resolver was blocked (e.g. by the SSRF guard) before confirming arrival, even though a hostile URL appeared as the last hop. Because the outcome is not 'resolved', the final-URL detectors must NOT run, so url.credentials_in_authority is absent. The result is neither safe nor confirmed hostile: insufficient_evidence with a failure limitation."
+  },
+  {
+    "id": "redirect-meta-refresh-mechanism",
+    "payload": "https://start.example/",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://start.example/", "status": 200, "via": "html_meta_refresh" },
+        { "url": "https://start.example/velkommen", "status": 200 }
+      ],
+      "finalUrl": "https://start.example/velkommen",
+      "outcome": "resolved",
+      "elapsedMs": 31,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": ["redirect.meta_refresh"],
+    "mustNotContain": ["redirect.cross_domain", "redirect.multiple_hops"],
+    "notes": "The hand-off used an HTML meta refresh rather than an HTTP status. redirect.meta_refresh records the mechanism on the originating host. The destination is the same registrable domain and benign, so there is no cross_domain and no threat."
+  },
+  {
+    "id": "redirect-cross-domain-non-shortener",
+    "payload": "https://nyheter.example/artikkel",
+    "redirectResolution": {
+      "chain": [
+        { "url": "https://nyheter.example/artikkel", "status": 302, "via": "http_status" },
+        { "url": "https://sporing.example/", "status": 200 }
+      ],
+      "finalUrl": "https://sporing.example/",
+      "outcome": "resolved",
+      "elapsedMs": 29,
+      "resolver": "qrrrgh-resolver/1"
+    },
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": ["redirect.cross_domain"],
+    "mustNotContain": ["url.shortener", "redirect.multiple_hops", "redirect.downgrade_to_http"],
+    "notes": "A non-shortener origin whose single hop crosses to a different registrable domain, so redirect.cross_domain fires (it is suppressed only for shortener origins). A single medium finding is recorded but is not, on its own, enough to raise the verdict."
+  }
+]

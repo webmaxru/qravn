@@ -47,6 +47,7 @@ fn malformed_input_assessment(input_json: &str) -> Assessment {
         raw_payload: input_json.to_owned(),
         display_payload: safety_core::unicode_guard::analyze_payload(input_json).display,
         url: None,
+        redirect: None,
         findings: Vec::new(),
         limitations: vec![Limitation::new(
             "limitation.payload_not_understood",

@@ -1,0 +1,54 @@
+name: CI resolver
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "services/resolver/**"
+      - ".github/workflows/ci-resolver.yml"
+  pull_request:
+    paths:
+      - "services/resolver/**"
+      - ".github/workflows/ci-resolver.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  resolver:
+    name: Redirect resolver
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: services/resolver
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: services/resolver/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      # Ensure the production build emits cleanly (this is what the Docker image ships).
+      - name: Build
+        run: npm run build

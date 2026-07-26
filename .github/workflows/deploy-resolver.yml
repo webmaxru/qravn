@@ -1,0 +1,142 @@
+name: Deploy Resolver
+
+# Builds the redirect resolver image, pushes it to GitHub Container Registry
+# (ghcr.io - free for this private repo, unlike Azure Container Registry which
+# bills a fixed ~USD 5/month at idle), and deploys it to Azure Container Apps.
+#
+# The Container App runs on the Consumption plan with minReplicas: 0, so it costs
+# nothing while idle. See infra/resolver.bicep and infra/README.md for the full
+# zero-idle-cost rationale.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/resolver/**'
+      - 'infra/**'
+      - '.github/workflows/deploy-resolver.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy resolver to Azure Container Apps
+    # Gated like deploy-web.yml (AZURE_SWA_ENABLED): inert until the user opts in
+    # by setting the AZURE_ACA_ENABLED repository variable to 'true'. A manual
+    # workflow_dispatch run is always allowed for testing.
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.ref == 'refs/heads/main' && vars.AZURE_ACA_ENABLED == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write   # push the image to ghcr.io
+      id-token: write   # OIDC federated login to Azure (no long-lived secret)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Detect resolver service
+        id: inputs
+        shell: bash
+        run: |
+          ready=true
+          if [ ! -f services/resolver/Dockerfile ]; then
+            echo "::notice::services/resolver/Dockerfile is not present yet; skipping deployment."
+            ready=false
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+      - name: Check required configuration
+        if: steps.inputs.outputs.ready == 'true'
+        shell: bash
+        env:
+          # OIDC login inputs (client/tenant/subscription are identifiers, not
+          # secrets, but are stored as secrets by convention).
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          # Long-lived GHCR pull token (PAT with read:packages) that the Container
+          # App stores as a secret and uses to pull the private image on cold
+          # start. The ephemeral GITHUB_TOKEN cannot be used for this because it
+          # expires when the job ends.
+          GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+        run: |
+          missing=false
+          for v in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID GHCR_PULL_TOKEN; do
+            if [ -z "${!v}" ]; then
+              echo "::error::$v is not set. Run infra/provision-resolver.ps1 and configure the OIDC and GHCR secrets before enabling deployment. See infra/README.md."
+              missing=true
+            fi
+          done
+          if [ "$missing" = "true" ]; then exit 1; fi
+
+      - name: Set up Docker Buildx
+        if: steps.inputs.outputs.ready == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: steps.inputs.outputs.ready == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          # GITHUB_TOKEN can PUSH to this repo's own packages; that is all it is
+          # used for here. The Container App pulls with the long-lived PAT above.
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image reference
+        id: image
+        if: steps.inputs.outputs.ready == 'true'
+        shell: bash
+        run: |
+          # ghcr.io requires a lowercase image path. Tag with the commit SHA so
+          # every deploy is an immutable, reproducible reference (no 'latest').
+          repo="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
+          echo "ref=ghcr.io/${repo}/resolver:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push image
+        if: steps.inputs.outputs.ready == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: services/resolver
+          push: true
+          tags: ${{ steps.image.outputs.ref }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Azure login (OIDC)
+        if: steps.inputs.outputs.ready == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Container Apps
+        if: steps.inputs.outputs.ready == 'true'
+        shell: bash
+        env:
+          # Passed via env so the token text is never rendered into the command
+          # line. GitHub also masks registered secrets in logs. registryPassword
+          # is a @secure() Bicep param, so it never appears in deployment history.
+          GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qrrrgh' }}
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+          REGISTRY_USER: ${{ github.actor }}
+        run: |
+          az deployment group create \
+            --resource-group "$RESOURCE_GROUP" \
+            --template-file infra/resolver.bicep \
+            --parameters \
+              containerImage="$IMAGE_REF" \
+              registryServer="ghcr.io" \
+              registryUsername="$REGISTRY_USER" \
+              registryPassword="$GHCR_PULL_TOKEN" \
+            --query "properties.outputs.resolverUrl.value" \
+            --output tsv

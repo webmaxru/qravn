@@ -67,6 +67,7 @@ fn is_suspicious_code(code: &str) -> bool {
             | "url.unknown_scheme"
             | "url.suspicious_tld"
             | "url.no_registrable_domain"
+            | "redirect.excessive_hops"
             | "payload.wifi_open_network"
             | "payload.wifi_hidden_network"
             | "payload.sms_message"
