@@ -1,0 +1,357 @@
+.app-shell {
+  width: min(100%, 58rem);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.hero-header {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.hero-header h1 {
+  max-width: 12ch;
+  margin: 0.25rem 0 0.75rem;
+  font-size: clamp(2rem, 12vw, 4.25rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.hero-header p {
+  max-width: 46rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.language-switcher {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.language-switcher label {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+}
+
+.language-switcher small {
+  color: var(--text-muted);
+}
+
+.check-form,
+.panel,
+.verdict {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.scanner {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.scanner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.file-picker {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--button-text);
+  background: var(--button);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.file-picker input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.camera-preview {
+  width: 100%;
+  max-height: 60vh;
+  border-radius: 0.875rem;
+  background: var(--code-bg);
+}
+
+.camera-preview:not([srcObject]) {
+  min-height: 0;
+}
+
+.check-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.check-form label {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+textarea {
+  min-height: 9rem;
+  resize: vertical;
+  padding: 0.875rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.875rem;
+  color: var(--text);
+  background: var(--input);
+  font: inherit;
+}
+
+.form-help {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+button,
+.open-link {
+  min-height: 2.75rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--button-text);
+  background: var(--button);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary-action {
+  background: var(--button-primary);
+  color: var(--button-primary-text);
+}
+
+.secondary-danger,
+.open-link {
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+button:hover,
+.open-link:hover {
+  filter: brightness(0.96);
+}
+
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.dev-banner {
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--warning);
+  border-radius: var(--radius);
+  background: var(--warning-soft);
+  color: var(--warning-text);
+  font-weight: 700;
+}
+
+.engine-error {
+  border-color: var(--critical);
+  background: var(--critical-bg);
+  font-weight: 700;
+}
+
+.result-stack {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.verdict {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.875rem;
+  border-width: 2px;
+}
+
+.verdict__icon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  font-size: 1.4rem;
+}
+
+.verdict h2,
+.panel h2 {
+  margin: 0 0 0.5rem;
+}
+
+.verdict--known_malicious {
+  background: var(--critical-bg);
+  border-color: var(--critical);
+}
+
+.verdict--suspicious {
+  background: var(--warning-soft);
+  border-color: var(--warning);
+}
+
+.verdict--insufficient_evidence {
+  background: var(--info-bg);
+  border-color: var(--info);
+}
+
+.verdict--no_known_threat_found {
+  background: var(--ok-bg);
+  border-color: var(--ok);
+}
+
+.payload-display,
+pre,
+code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+}
+
+pre {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: var(--code-bg);
+}
+
+.credential-warning {
+  margin: 0.75rem 0;
+  padding: 0.875rem;
+  border-left: 0.35rem solid var(--critical);
+  border-radius: 0.5rem;
+  background: var(--critical-bg);
+}
+
+.breakdown-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.breakdown-grid div {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.breakdown-grid dt {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.breakdown-grid dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.destination-host,
+.destination-domain {
+  border-color: var(--focus) !important;
+  background: var(--host-bg);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.finding-list,
+.limitations ul {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.finding {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.finding h3,
+.finding p {
+  margin: 0 0 0.35rem;
+}
+
+.severity-badge {
+  align-self: start;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  color: var(--badge-text);
+  background: var(--badge);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.limitations {
+  background: var(--calm-bg);
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.blocked-note {
+  font-weight: 800;
+}
+
+@media (min-width: 48rem) {
+  .app-shell {
+    padding: 2rem;
+  }
+
+  .hero-header {
+    grid-template-columns: 1fr 18rem;
+    align-items: start;
+  }
+
+  .breakdown-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  .open-link {
+    transition: filter 120ms ease, transform 120ms ease;
+  }
+}

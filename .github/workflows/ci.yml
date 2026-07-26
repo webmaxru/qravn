@@ -139,6 +139,72 @@ jobs:
         working-directory: apps/web
         run: npm run build
 
+  browser:
+    name: Browser tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Detect web app
+        id: web
+        shell: bash
+        run: |
+          if [ -f apps/web/playwright.config.ts ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::apps/web/playwright.config.ts is not present yet; skipping browser tests."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        if: steps.web.outputs.present == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install Rust stable
+        if: steps.web.outputs.present == 'true'
+        run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        if: steps.web.outputs.present == 'true'
+        run: npm install --global wasm-pack@0.15.0
+
+      - name: Build WASM package
+        if: steps.web.outputs.present == 'true'
+        working-directory: core/bindings/wasm
+        run: wasm-pack build --target web --out-dir pkg
+
+      - name: Install dependencies
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm ci
+
+      # WebKit is the only proxy available in CI for iOS Safari, which is a large
+      # share of the Norwegian market. Reducing this matrix to Chromium would hide
+      # exactly the failures most likely to reach real users.
+      - name: Install Playwright browsers
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run browser tests
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm run test:browser
+
+      - name: Upload report on failure
+        if: failure() && steps.web.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7
+
   contract:
     name: Contract and localization
     runs-on: ubuntu-latest
