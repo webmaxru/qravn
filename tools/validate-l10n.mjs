@@ -11,11 +11,16 @@ const limitations = registry.limitations ?? {};
 const registryCodes = new Set([...Object.keys(findings), ...Object.keys(limitations)]);
 const verdictCodes = ['verdict.known_malicious','verdict.suspicious','verdict.insufficient_evidence','verdict.no_known_threat_found'];
 const uiCodes = ['ui.check','ui.paste_placeholder','ui.result','ui.findings','ui.limitations','ui.what_we_found','ui.open_anyway','ui.open_blocked','ui.copy','ui.scan_again','ui.about','ui.privacy_note','ui.language','ui.raw_payload','ui.real_destination'];
-const allowedCatalogCodes = new Set([...registryCodes, ...verdictCodes, ...uiCodes]);
+// UI chrome for explicit online (redirect-expansion) mode. Listed here so the
+// gate fails if any locale is missing one: the app targets Norway, so an
+// English string silently falling through to a Bokmal/Nynorsk user is a defect,
+// not a cosmetic gap.
+const onlineCodes = ['online.expand_heading','online.disclosure','online.expand_button','online.resolving','online.section_heading','online.path_label','online.final_findings_heading','online.final_badge','online.outcome_resolved','online.outcome_max_hops','online.outcome_incomplete','online.error','online.retry_button'];
+const allowedCatalogCodes = new Set([...registryCodes, ...verdictCodes, ...uiCodes, ...onlineCodes]);
 const declaredParams = new Map();
 for (const [code, meta] of Object.entries(findings)) declaredParams.set(code, new Set(meta.params ?? []));
 for (const [code, meta] of Object.entries(limitations)) declaredParams.set(code, new Set(meta.params ?? []));
-for (const code of [...verdictCodes, ...uiCodes]) declaredParams.set(code, new Set());
+for (const code of [...verdictCodes, ...uiCodes, ...onlineCodes]) declaredParams.set(code, new Set());
 const placeholderPattern = /\{([A-Za-z_][A-Za-z0-9_]*)\}/g;
 
 for (const locale of ['nb', 'nn', 'en']) {

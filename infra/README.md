@@ -221,30 +221,63 @@ opt in explicitly.
 - Azure CLI signed in (`az login`) to the target subscription.
 - The `services/resolver/` service exists with its `Dockerfile` (built by the
   resolver service work).
-- A GitHub PAT with `read:packages` for the Container App to pull the private
-  image (`GHCR_PULL_TOKEN`).
+- A way for the Container App to pull the image on cold start: either a public
+  `ghcr.io` package (no credential) or a GitHub PAT with `read:packages`
+  (`GHCR_PULL_TOKEN`). See step 3 below for the trade-off.
 
 ### Option A - GitHub Actions (recommended, continuous deployment)
 
-1. **Create an Azure AD app + federated credential for OIDC** so the workflow
-   logs in without a stored client secret, and grant it access to the resource
-   group. See
+**Steps 1 and 2 are already done.** The OIDC identity exists and the three Azure
+secrets are set, so only the two items in step 3 remain.
+
+1. ~~**Create an Azure AD app + federated credential for OIDC**~~ - **done.**
+   App `qrrrgh-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
+   has a service principal and a federated credential for
+   `repo:webmaxru/qrrrgh:ref:refs/heads/main`, issuer
+   `https://token.actions.githubusercontent.com`, audience
+   `api://AzureADTokenExchange`. It holds **Contributor scoped to `rg-qrrrgh`
+   only** - not subscription-wide. See
    [Connect from Azure with OpenID Connect](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect).
-   Grant the app the **Contributor** role scoped to `rg-qrrrgh` (least-privilege
-   scope; do not grant subscription-wide).
-2. **Set repository secrets** (values are not printed by any script here):
-   - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` (OIDC login).
-   - `GHCR_PULL_TOKEN` (the `read:packages` PAT the app stores and uses to pull).
-3. **Enable the workflow:** set the repository variable `AZURE_ACA_ENABLED` to
-   `true` (mirrors how `deploy-web.yml` is gated on `AZURE_SWA_ENABLED`).
-   Optionally set `AZURE_RESOURCE_GROUP` to override the default `rg-qrrrgh`.
+   There is no client secret to rotate or leak; the workflow exchanges a
+   short-lived GitHub OIDC token at run time.
+2. ~~**Set repository secrets**~~ - **done for the OIDC trio.**
+   `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` are set.
+   These are identifiers rather than credentials; they are stored as secrets by
+   convention, and alone they grant nothing without the federated trust above.
+3. **Remaining: choose how the Container App pulls the image, then enable.**
+   The image lands in `ghcr.io`, and a Container App needs to pull it on every
+   cold start - after the ephemeral `GITHUB_TOKEN` from the build job is long
+   gone. Two options:
+
+   - **Public package (recommended, no standing credential).** Run the workflow
+     once so the package is created, then set its visibility to public in
+     GitHub (**Package settings -> Change visibility**). A public image needs no
+     pull credential at all, so there is no long-lived token sitting in the
+     Container App. The image contains only the resolver's compiled service -
+     no keys, no config - because all configuration arrives as environment
+     variables at run time. Leave `GHCR_PULL_TOKEN` unset: the workflow logs a
+     notice, and `resolver.bicep` omits the registry block entirely.
+   - **Private package.** Create a PAT with **`read:packages`** and set it as
+     the `GHCR_PULL_TOKEN` secret. This is a long-lived credential: scope it to
+     `read:packages` only, and plan to rotate it.
+
+   Either way the workflow polls `/healthz` after deploying and **fails loudly**
+   if the app never serves, so a pull failure cannot pass as a green deploy.
+
+   Then set repository variable `AZURE_ACA_ENABLED` to `true` (mirrors how
+   `deploy-web.yml` is gated on `AZURE_SWA_ENABLED`). Optionally set
+   `AZURE_RESOURCE_GROUP` to override the default `rg-qrrrgh`.
+
+   Leaving `AZURE_ACA_ENABLED` unset is deliberate and safe: **no Azure
+   resources exist for the resolver yet, so it currently bills nothing at all.**
 4. Push a change under `services/resolver/**` or `infra/**`, or run the **Deploy
    Resolver** workflow via **workflow_dispatch**. It builds the image, pushes it
    to `ghcr.io/<owner>/qrrrgh/resolver:<sha>`, and runs
    `az deployment group create` against `resolver.bicep`.
 
 `provision-resolver.ps1` prints the exact `gh secret set` / `gh variable set`
-commands for steps 2-3.
+commands, which is useful if you ever need to recreate the identity from
+scratch or point the deployment at a different subscription.
 
 ### Option B - one-off from this machine
 

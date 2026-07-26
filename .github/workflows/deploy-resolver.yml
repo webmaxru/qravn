@@ -61,20 +61,26 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          # Long-lived GHCR pull token (PAT with read:packages) that the Container
-          # App stores as a secret and uses to pull the private image on cold
+          # Optional. A long-lived GHCR pull token (PAT with read:packages) that
+          # the Container App stores and uses to pull a PRIVATE image on cold
           # start. The ephemeral GITHUB_TOKEN cannot be used for this because it
-          # expires when the job ends.
+          # expires when the job ends. Leave unset when the ghcr.io package is
+          # public: then no standing credential exists at all, which is the
+          # better security posture. resolver.bicep omits the registry block
+          # entirely when no password is supplied.
           GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
         run: |
           missing=false
-          for v in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID GHCR_PULL_TOKEN; do
+          for v in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
             if [ -z "${!v}" ]; then
-              echo "::error::$v is not set. Run infra/provision-resolver.ps1 and configure the OIDC and GHCR secrets before enabling deployment. See infra/README.md."
+              echo "::error::$v is not set. See infra/README.md."
               missing=true
             fi
           done
           if [ "$missing" = "true" ]; then exit 1; fi
+          if [ -z "$GHCR_PULL_TOKEN" ]; then
+            echo "::notice::GHCR_PULL_TOKEN is not set. Deploying without registry credentials - this only works if the ghcr.io package is PUBLIC. If the app fails to start with an image-pull error, either make the package public or set GHCR_PULL_TOKEN. See infra/README.md."
+          fi
 
       - name: Set up Docker Buildx
         if: steps.inputs.outputs.ready == 'true'
@@ -119,6 +125,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Container Apps
+        id: deploy
         if: steps.inputs.outputs.ready == 'true'
         shell: bash
         env:
@@ -130,7 +137,7 @@ jobs:
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           REGISTRY_USER: ${{ github.actor }}
         run: |
-          az deployment group create \
+          url="$(az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/resolver.bicep \
             --parameters \
@@ -139,4 +146,33 @@ jobs:
               registryUsername="$REGISTRY_USER" \
               registryPassword="$GHCR_PULL_TOKEN" \
             --query "properties.outputs.resolverUrl.value" \
-            --output tsv
+            --output tsv)"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Resolver URL: $url"
+
+      # A successful ARM deployment only means the resource was accepted. If the
+      # image cannot be pulled (private package with no credential) the app stays
+      # down and every later request degrades to "could not follow the link" with
+      # no obvious cause. Prove it actually serves before calling this a success.
+      - name: Verify the resolver is actually serving
+        if: steps.inputs.outputs.ready == 'true'
+        shell: bash
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          if [ -z "$URL" ]; then
+            echo "::error::Deployment produced no resolver URL."
+            exit 1
+          fi
+          # minReplicas is 0, so the first request pays a cold start. Retry.
+          for attempt in $(seq 1 12); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$URL/healthz" || true)"
+            if [ "$code" = "200" ]; then
+              echo "Resolver healthy at $URL/healthz (attempt $attempt)."
+              exit 0
+            fi
+            echo "attempt $attempt: /healthz returned '$code'; retrying in 10s"
+            sleep 10
+          done
+          echo "::error::Resolver never became healthy. The most likely cause is an image pull failure: the ghcr.io package is private and GHCR_PULL_TOKEN is unset. Make the package public or set the token. See infra/README.md."
+          exit 1

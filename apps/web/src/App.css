@@ -95,6 +95,14 @@
   cursor: pointer;
 }
 
+/* The real <input type="file"> is visually hidden, so its own focus ring is
+   invisible. Mirror keyboard focus onto the label a sighted user actually sees,
+   otherwise this control has no perceivable focus indicator (WCAG 2.4.7). */
+.file-picker:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
 .camera-preview {
   width: 100%;
   max-height: 60vh;

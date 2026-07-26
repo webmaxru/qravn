@@ -83,3 +83,63 @@ test('checking a hostile destination never contacts that destination', async ({ 
   await expect(page.getByText('evil.example').first()).toBeVisible();
   expect(forbiddenRequests).toEqual([]);
 });
+
+test('online expansion is opt-in and still never contacts the scanned host', async ({ page }) => {
+  // Online mode is the one place the product invariant is most likely to be
+  // broken by a later change, so assert it directly: expanding a hostile
+  // shortened link must reach OUR resolver only, never the scanned shortener and
+  // never the destination it eventually points at.
+  const forbiddenRequests: string[] = [];
+  let resolverCalls = 0;
+
+  // The stubbed resolver's answer: bit.ly/abc really lands on evil.example.
+  const resolution = {
+    chain: [
+      { url: 'https://bit.ly/abc', status: 301, via: 'http_status' },
+      { url: 'https://evil.example/login', status: 200 },
+    ],
+    finalUrl: 'https://evil.example/login',
+    outcome: 'resolved',
+    resolver: 'e2e-stub',
+  };
+
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    // Neither the scanned shortener nor the final destination may be contacted by
+    // the device — not offline, and not during online expansion.
+    if (url.hostname === 'bit.ly' || url.hostname === 'evil.example') {
+      forbiddenRequests.push(route.request().url());
+      return route.abort();
+    }
+    // Our OWN resolver origin: fulfil it here so the real service is never hit.
+    if (url.pathname === '/v1/resolve') {
+      resolverCalls += 1;
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(resolution),
+      });
+    }
+    return route.continue();
+  });
+
+  await page.goto('/');
+  await submitPayload(page, 'https://bit.ly/abc');
+
+  // The offline check flags the shortener and offers the opt-in — but nothing has
+  // been sent to any server yet. Explicit consent is required.
+  const expandButton = page.getByRole('button', { name: /Expand this link safely/i });
+  await expect(expandButton).toBeVisible();
+  expect(resolverCalls).toBe(0);
+
+  // Only after the user actively opts in is our resolver contacted.
+  await expandButton.click();
+
+  await expect(page.getByRole('heading', { name: /Where this link leads/i })).toBeVisible();
+  await expect(page.locator('.redirect-final-host__value')).toHaveText(/evil\.example/);
+  expect(resolverCalls).toBeGreaterThanOrEqual(1);
+
+  // The payoff: expanding a hostile link told the attacker nothing, because the
+  // device never touched the scanned host or its destination.
+  expect(forbiddenRequests).toEqual([]);
+});

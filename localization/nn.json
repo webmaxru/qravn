@@ -302,5 +302,57 @@
   "limitation.redirect_partial": {
     "title": "Berre delvis følgd",
     "detail": "Oppfølginga stoppa etter {hopCount} steg, så den endelege adressa er ukjend. Denne vurderinga dekkjer berre det som blei nådd."
+  },
+  "online.expand_heading": {
+    "title": "Utvid denne forkorta lenkja",
+    "detail": ""
+  },
+  "online.disclosure": {
+    "title": "Før du utvidar",
+    "detail": "Held du fram, blir adressa til denne lenkja send til tenesta vår. Serveren vår vitjar lenkja og følgjer vidaresendingane. Eininga di kontaktar aldri lenkja."
+  },
+  "online.expand_button": {
+    "title": "Utvid denne lenkja trygt",
+    "detail": ""
+  },
+  "online.resolving": {
+    "title": "Kontaktar tenesta vår …",
+    "detail": "Eininga di kontaktar ikkje lenkja."
+  },
+  "online.section_heading": {
+    "title": "Kvar denne lenkja fører",
+    "detail": ""
+  },
+  "online.path_label": {
+    "title": "Vegen ho følgde",
+    "detail": ""
+  },
+  "online.final_findings_heading": {
+    "title": "Åtvaringar om den endelege destinasjonen",
+    "detail": ""
+  },
+  "online.final_badge": {
+    "title": "Endeleg destinasjon",
+    "detail": ""
+  },
+  "online.outcome_resolved": {
+    "title": "Følgde lenkja til endeleg destinasjon",
+    "detail": "Vi følgde vidaresendingane for deg. Det tyder ikkje at destinasjonen er trygg – les funna nedanfor."
+  },
+  "online.outcome_max_hops": {
+    "title": "Stoppa: for mange vidaresendingar",
+    "detail": "Denne lenkja blei vurdert som utrygg fordi ho heldt fram med å vidaresende forbi grensa på 5 hopp."
+  },
+  "online.outcome_incomplete": {
+    "title": "Kunne ikkje fullføre utvidinga av lenkja",
+    "detail": "Eininga di kontakta framleis ikkje lenkja. Sjå nedanfor kva som ikkje kunne avgjerast."
+  },
+  "online.error": {
+    "title": "Lenkja kunne ikkje utvidast",
+    "detail": "Noko gjekk gale då vi kontakta tenesta vår. Eininga di kontakta ikkje lenkja. Du kan prøve igjen."
+  },
+  "online.retry_button": {
+    "title": "Prøv å utvide igjen",
+    "detail": ""
   }
 }

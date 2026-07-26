@@ -1,0 +1,176 @@
+/* Styles for explicit online (redirect-expansion) mode. Kept in a component
+   stylesheet rather than App.css so this feature owns its own presentation.
+   Design tokens (--info, --warning, ...) are the global ones from index.css. */
+
+/* The per-check opt-in. Uses the calm/info palette so it reads as an offer, not
+   a warning: nothing has gone wrong, the user is simply being asked to consent. */
+.redirect-optin {
+  border-color: var(--info);
+  background: var(--info-bg);
+}
+
+.redirect-disclosure {
+  margin: 0.5rem 0 0.875rem;
+  padding: 0.875rem;
+  border-left: 0.35rem solid var(--info);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.redirect-disclosure strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.redirect-disclosure p {
+  margin: 0;
+}
+
+.redirect-optin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.redirect-resolving {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.redirect-error {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  border-left: 0.35rem solid var(--warning);
+  border-radius: 0.5rem;
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+.redirect-error p {
+  margin: 0;
+}
+
+/* The outcome banner. Framed by kind so a failed/partial expansion never looks
+   like a clean success: incomplete/untrusted use the warning palette. */
+.redirect-outcome {
+  margin: 0 0 0.875rem;
+  padding: 0.75rem 0.875rem;
+  border-left: 0.35rem solid var(--border-strong);
+  border-radius: 0.5rem;
+  background: var(--calm-bg);
+}
+
+.redirect-outcome strong {
+  display: block;
+}
+
+.redirect-outcome p {
+  margin: 0.25rem 0 0;
+}
+
+.redirect-outcome--resolved {
+  border-left-color: var(--info);
+  background: var(--info-bg);
+}
+
+.redirect-outcome--untrusted,
+.redirect-outcome--incomplete {
+  border-left-color: var(--warning);
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+/* The payoff: the final destination host, shown prominently and inert. */
+.redirect-final-host {
+  margin: 0.5rem 0;
+  padding: 0.875rem;
+  border: 1px solid var(--focus);
+  border-radius: 0.75rem;
+  background: var(--host-bg);
+}
+
+.redirect-final-host .eyebrow {
+  margin-bottom: 0.25rem;
+}
+
+.redirect-final-host__value {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.redirect-final-host__domain {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.redirect-path {
+  margin: 0.75rem 0;
+}
+
+.hop-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hop-chain li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.hop-chain li:not(:last-child)::after {
+  content: '\2192';
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.redirect-hops ol {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.redirect-hops code {
+  overflow-wrap: anywhere;
+}
+
+.hop-status {
+  color: var(--text-muted);
+}
+
+/* Findings about the FINAL destination are given their own section with a
+   distinct accent, so a claim about the page a link reaches is never confused
+   with a claim about the scanned code itself. */
+.redirect-final-findings {
+  border-left: 0.35rem solid var(--warning);
+}
+
+.subject-badge {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.subject-badge--final {
+  color: var(--warning-text);
+  background: var(--warning-soft);
+  border: 1px solid var(--warning);
+}

@@ -78,6 +78,73 @@ const verdictTexts: Catalog = {
   },
 };
 
+// UI chrome for explicit online (redirect-expansion) mode.
+//
+// This English copy is a last-resort fallback only. The real strings live in
+// localization/{nb,nn,en}.json and are spread over this map in
+// embeddedCatalogs, so a Norwegian user sees Norwegian. tools/validate-l10n.mjs
+// lists every one of these codes, so the build fails if a locale is missing
+// one - an English string reaching a Bokmal or Nynorsk user is a defect in an
+// app aimed at Norway, not a cosmetic gap.
+const uiTexts: Catalog = {
+  'online.expand_heading': {
+    title: 'Expand this shortened link',
+    detail: '',
+  },
+  'online.disclosure': {
+    title: 'Before you expand',
+    detail:
+      "If you continue, this link's address is sent to our resolver service. Our server visits the link and follows its redirects. Your device never contacts the link.",
+  },
+  'online.expand_button': {
+    title: 'Expand this link safely',
+    detail: '',
+  },
+  'online.resolving': {
+    title: 'Contacting our resolver…',
+    detail: 'Your device is not contacting the link.',
+  },
+  'online.section_heading': {
+    title: 'Where this link leads',
+    detail: '',
+  },
+  'online.path_label': {
+    title: 'Path it followed',
+    detail: '',
+  },
+  'online.final_findings_heading': {
+    title: 'Warnings about the final destination',
+    detail: '',
+  },
+  'online.final_badge': {
+    title: 'Final destination',
+    detail: '',
+  },
+  'online.outcome_resolved': {
+    title: 'Followed to the final destination',
+    detail:
+      'We followed the redirects for you. This does not mean the destination is safe — read the findings below.',
+  },
+  'online.outcome_max_hops': {
+    title: 'Stopped: too many redirects',
+    detail:
+      'This link was judged untrusted because it kept redirecting past the safe limit of 5 hops.',
+  },
+  'online.outcome_incomplete': {
+    title: 'Could not finish expanding this link',
+    detail: 'Your device still did not contact the link. See what could not be determined below.',
+  },
+  'online.error': {
+    title: 'The link could not be expanded',
+    detail:
+      'Something went wrong contacting our resolver. Your device did not contact the link. You can try again.',
+  },
+  'online.retry_button': {
+    title: 'Try expanding again',
+    detail: '',
+  },
+};
+
 const nbOverrides: Catalog = {
   'verdict.known_malicious': { title: 'Kjent skadelig', detail: 'Bevis matcher et skadelig mønster. Ikke åpne målet.' },
   'verdict.suspicious': { title: 'Mistenkelig', detail: 'Denne teksten har faresignaler. Les bevisene før du gjør noe mer.' },
@@ -105,9 +172,9 @@ function externalCatalog(locale: Locale): Catalog {
 }
 
 export const embeddedCatalogs: Catalogs = {
-  en: { ...findingTexts, ...verdictTexts, ...externalCatalog('en') },
-  nb: { ...findingTexts, ...verdictTexts, ...nbOverrides, ...externalCatalog('nb') },
-  nn: { ...findingTexts, ...verdictTexts, ...nnOverrides, ...externalCatalog('nn') },
+  en: { ...findingTexts, ...verdictTexts, ...uiTexts, ...externalCatalog('en') },
+  nb: { ...findingTexts, ...verdictTexts, ...uiTexts, ...nbOverrides, ...externalCatalog('nb') },
+  nn: { ...findingTexts, ...verdictTexts, ...uiTexts, ...nnOverrides, ...externalCatalog('nn') },
 };
 
 export const languageNames: Record<Locale, string> = {

@@ -124,6 +124,15 @@ jobs:
         working-directory: apps/web
         run: npm ci
 
+      # Static accessibility and correctness gate. oxlint runs the jsx-a11y
+      # recommended ruleset (configured in apps/web/.oxlintrc.json), so markup
+      # regressions such as an unlabeled control or a click handler on a
+      # non-interactive element fail the build before they can reach a browser.
+      - name: Lint
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm run lint
+
       - name: Type check
         if: steps.web.outputs.present == 'true'
         working-directory: apps/web

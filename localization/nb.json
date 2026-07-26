@@ -302,5 +302,57 @@
   "limitation.redirect_partial": {
     "title": "Bare delvis fulgt",
     "detail": "Oppfølgingen stoppet etter {hopCount} steg, så den endelige adressen er ukjent. Denne vurderingen dekker bare det som ble nådd."
+  },
+  "online.expand_heading": {
+    "title": "Utvid denne forkortede lenken",
+    "detail": ""
+  },
+  "online.disclosure": {
+    "title": "Før du utvider",
+    "detail": "Hvis du fortsetter, sendes adressen til denne lenken til tjenesten vår. Serveren vår besøker lenken og følger videresendingene. Enheten din kontakter aldri lenken."
+  },
+  "online.expand_button": {
+    "title": "Utvid denne lenken trygt",
+    "detail": ""
+  },
+  "online.resolving": {
+    "title": "Kontakter tjenesten vår …",
+    "detail": "Enheten din kontakter ikke lenken."
+  },
+  "online.section_heading": {
+    "title": "Hvor denne lenken fører",
+    "detail": ""
+  },
+  "online.path_label": {
+    "title": "Veien den fulgte",
+    "detail": ""
+  },
+  "online.final_findings_heading": {
+    "title": "Advarsler om den endelige destinasjonen",
+    "detail": ""
+  },
+  "online.final_badge": {
+    "title": "Endelig destinasjon",
+    "detail": ""
+  },
+  "online.outcome_resolved": {
+    "title": "Fulgte lenken til endelig destinasjon",
+    "detail": "Vi fulgte videresendingene for deg. Det betyr ikke at destinasjonen er trygg – les funnene nedenfor."
+  },
+  "online.outcome_max_hops": {
+    "title": "Stoppet: for mange videresendinger",
+    "detail": "Denne lenken ble vurdert som utrygg fordi den fortsatte å videresende forbi grensen på 5 hopp."
+  },
+  "online.outcome_incomplete": {
+    "title": "Kunne ikke fullføre utvidingen av lenken",
+    "detail": "Enheten din kontaktet fortsatt ikke lenken. Se nedenfor hva som ikke kunne avgjøres."
+  },
+  "online.error": {
+    "title": "Lenken kunne ikke utvides",
+    "detail": "Noe gikk galt da vi kontaktet tjenesten vår. Enheten din kontaktet ikke lenken. Du kan prøve igjen."
+  },
+  "online.retry_button": {
+    "title": "Prøv å utvide igjen",
+    "detail": ""
   }
 }
