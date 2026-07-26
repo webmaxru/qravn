@@ -1,0 +1,45 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock.bak
+
+# WebAssembly build output
+core/bindings/wasm/pkg/
+apps/web/src/wasm/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Agent skill symlinks (machine-local Windows junctions; regenerate with `npx skills add`)
+.claude/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.keystore
+secrets.json
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+logs/
+*.log
+npm-debug.log*
