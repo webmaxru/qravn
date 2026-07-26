@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    name: Rust core
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect core workspace
+        id: core
+        shell: bash
+        run: |
+          if [ -f core/Cargo.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::core/Cargo.toml is not present yet; skipping Rust core checks."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Rust stable
+        if: steps.core.outputs.present == 'true'
+        run: rustup toolchain install stable --profile minimal --component rustfmt,clippy --target wasm32-unknown-unknown
+
+      - name: Use Rust stable
+        if: steps.core.outputs.present == 'true'
+        run: rustup default stable
+
+      - name: Cache cargo
+        if: steps.core.outputs.present == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            core/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('core/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        if: steps.core.outputs.present == 'true'
+        working-directory: core
+        run: cargo fmt --all --check
+
+      - name: Run clippy
+        if: steps.core.outputs.present == 'true'
+        working-directory: core
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Run tests
+        if: steps.core.outputs.present == 'true'
+        working-directory: core
+        run: cargo test --all
+
+      # Hard portability gate: the security core must stay free of APIs that cannot run in browsers.
+      - name: Build safety core for wasm32
+        if: steps.core.outputs.present == 'true'
+        working-directory: core
+        run: cargo build --target wasm32-unknown-unknown -p safety-core
+
+  web:
+    name: Web app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect web app
+        id: web
+        shell: bash
+        run: |
+          if [ -f apps/web/package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::apps/web/package.json is not present yet; skipping web checks."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        if: steps.web.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      # The web app imports the compiled core, so CI must build the WebAssembly package
+      # before type checking, testing or building the app. Without this the web job
+      # would only ever pass against a mock and would go red the moment the real
+      # engine is wired in.
+      - name: Install Rust stable
+        if: steps.web.outputs.present == 'true'
+        run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        if: steps.web.outputs.present == 'true'
+        run: npm install --global wasm-pack@0.15.0
+
+      - name: Build WASM package
+        if: steps.web.outputs.present == 'true'
+        working-directory: core/bindings/wasm
+        run: wasm-pack build --target web --out-dir pkg
+
+      - name: Install dependencies
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Type check
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm run test -- --run
+
+      - name: Build
+        if: steps.web.outputs.present == 'true'
+        working-directory: apps/web
+        run: npm run build
+
+  contract:
+    name: Contract and localization
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check contract registry and localization catalogs
+        run: node tools/check-contract-localization.js

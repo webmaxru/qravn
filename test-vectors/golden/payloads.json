@@ -1,0 +1,185 @@
+[
+  {
+    "id": "wifi-open",
+    "payload": "WIFI:T:nopass;S:Kafe_Gjest;;",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.wifi_network",
+      "payload.wifi_open_network"
+    ],
+    "notes": "Open Wi-Fi QR codes are common and should warn about lack of link-layer encryption."
+  },
+  {
+    "id": "wifi-wpa",
+    "payload": "WIFI:T:WPA;S:Hjemmenett;P:hemmeligpassord;;",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.wifi_network"
+    ],
+    "notes": "WPA Wi-Fi QR should be recognized without URL findings."
+  },
+  {
+    "id": "wifi-hidden",
+    "payload": "WIFI:T:WPA;S:SkjultNett;P:pass;H:true;;",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.wifi_network",
+      "payload.wifi_hidden_network"
+    ],
+    "notes": "Hidden network flag should be visible as its own finding."
+  },
+  {
+    "id": "mailto-simple",
+    "payload": "mailto:kundeservice@example.no",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.email_address"
+    ],
+    "notes": "mailto payloads should be classified as email actions, not web links."
+  },
+  {
+    "id": "email-bare-address",
+    "payload": "ola.nordmann@example.no",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.email_address"
+    ],
+    "notes": "A bare email address is a non-URL payload with an explicit recipient."
+  },
+  {
+    "id": "tel-norway",
+    "payload": "tel:+4722000000",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.phone_number"
+    ],
+    "notes": "Telephone QR content should require explicit user action before calling."
+  },
+  {
+    "id": "tel-premium",
+    "payload": "tel:82012345",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.phone_number",
+      "payload.premium_rate_number"
+    ],
+    "notes": "Norwegian premium-rate-style numbers must be called out before dialing."
+  },
+  {
+    "id": "smsto-basic",
+    "payload": "smsto:+4799999999:Kode 1234",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.sms_message"
+    ],
+    "notes": "SMS payloads can send text to a number and should be reviewed before sending."
+  },
+  {
+    "id": "geo-oslo",
+    "payload": "geo:59.9139,10.7522",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.geo_location"
+    ],
+    "notes": "Geographic QR content should be recognized with coordinates."
+  },
+  {
+    "id": "vcard-basic",
+    "payload": "BEGIN:VCARD\nVERSION:3.0\nFN:Ola Nordmann\nTEL:+4722000000\nEND:VCARD",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.contact_card"
+    ],
+    "notes": "vCard QR content can add contacts and should be previewed first."
+  },
+  {
+    "id": "vevent-basic",
+    "payload": "BEGIN:VEVENT\nSUMMARY:Legetime\nDTSTART:20260801T100000Z\nEND:VEVENT",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.calendar_event"
+    ],
+    "notes": "Calendar event QR content should be previewed before adding to the calendar."
+  },
+  {
+    "id": "bitcoin-basic",
+    "payload": "bitcoin:bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.crypto_address"
+    ],
+    "notes": "Crypto payment destinations are high impact because transfers are hard to reverse."
+  },
+  {
+    "id": "ethereum-basic",
+    "payload": "ethereum:0x0000000000000000000000000000000000000000",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.crypto_address"
+    ],
+    "notes": "Ethereum addresses should be treated as crypto payment payloads."
+  },
+  {
+    "id": "otpauth-totp",
+    "payload": "otpauth://totp/Example:ola?secret=JBSWY3DPEHPK3PXP&issuer=Example",
+    "expectedVerdict": "known_malicious",
+    "expectedFindings": [
+      "payload.otp_secret"
+    ],
+    "notes": "OTP provisioning QR codes contain account secrets and must never be opened casually."
+  },
+  {
+    "id": "vipps-deeplink",
+    "payload": "vipps://pay?amount=100&receiver=12345",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.app_deep_link"
+    ],
+    "notes": "Vipps-style app links can trigger payment flows and need explicit confirmation."
+  },
+  {
+    "id": "bankid-deeplink",
+    "payload": "bankid://auth?session=abc",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.app_deep_link"
+    ],
+    "notes": "BankID-style deep links affect identity flows and should be described without launching."
+  },
+  {
+    "id": "empty-string",
+    "payload": "",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.empty"
+    ],
+    "notes": "Empty QR payloads should return a verdict instead of failing."
+  },
+  {
+    "id": "plain-text",
+    "payload": "Hei, dette er bare tekst",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.not_a_url"
+    ],
+    "notes": "Ordinary plain text is not a URL and should not be treated as navigation."
+  },
+  {
+    "id": "binary-ish",
+    "payload": "\u0000\u0001\u0002QR\u0003",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "payload.binary_content"
+    ],
+    "notes": "Binary-ish content should be handled without unsafe rendering."
+  },
+  {
+    "id": "sms-uri",
+    "payload": "sms:+4799999999?body=Betal%20nå",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "payload.sms_message"
+    ],
+    "notes": "sms: URI payloads can prefill messages and must remain user-confirmed."
+  }
+]

@@ -1,0 +1,275 @@
+[
+  {
+    "id": "legit-dnb",
+    "payload": "https://www.dnb.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-vipps",
+    "payload": "https://www.vipps.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-skatteetaten",
+    "payload": "https://www.skatteetaten.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-altinn",
+    "payload": "https://www.altinn.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-posten",
+    "payload": "https://www.posten.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-nav",
+    "payload": "https://www.nav.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-helsenorge",
+    "payload": "https://www.helsenorge.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.brand_in_subdomain",
+      "url.brand_in_path",
+      "url.hyphenated_brand_domain",
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Legitimate Norwegian institutional domain used to pin false-positive behavior for trusted local traffic without declaring it safe."
+  },
+  {
+    "id": "legit-idn-blaabaer",
+    "payload": "https://blåbær.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Norwegian æ/ø/å IDN must not be flagged as confusable or mixed-script merely for using legitimate Norwegian letters."
+  },
+  {
+    "id": "legit-idn-storrelse",
+    "payload": "https://størrelse.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Norwegian æ/ø/å IDN must not be flagged as confusable or mixed-script merely for using legitimate Norwegian letters."
+  },
+  {
+    "id": "legit-idn-raadhus",
+    "payload": "https://rådhus.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Norwegian æ/ø/å IDN must not be flagged as confusable or mixed-script merely for using legitimate Norwegian letters."
+  },
+  {
+    "id": "legit-idn-naering",
+    "payload": "https://næring.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.confusable_host",
+      "url.mixed_script_host",
+      "url.known_malicious"
+    ],
+    "notes": "Norwegian æ/ø/å IDN must not be flagged as confusable or mixed-script merely for using legitimate Norwegian letters."
+  },
+  {
+    "id": "benign-example",
+    "payload": "https://www.example.com/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-wikipedia",
+    "payload": "https://www.wikipedia.org/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-mozilla",
+    "payload": "https://www.mozilla.org/en-US/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-github",
+    "payload": "https://github.com/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-python",
+    "payload": "https://www.python.org/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-eu",
+    "payload": "https://european-union.europa.eu/index_en",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-nrk",
+    "payload": "https://www.nrk.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-oslo-kommune",
+    "payload": "https://www.oslo.kommune.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-regjeringen",
+    "payload": "https://www.regjeringen.no/no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  },
+  {
+    "id": "benign-udi",
+    "payload": "https://www.udi.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.known_malicious",
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Ordinary benign URL included to control false positives while still avoiding any promise that it is safe."
+  }
+]

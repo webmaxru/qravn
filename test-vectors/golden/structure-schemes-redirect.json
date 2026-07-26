@@ -1,0 +1,215 @@
+[
+  {
+    "id": "ipv4-literal-public",
+    "payload": "http://198.51.100.24/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.ip_literal_host",
+      "url.insecure_scheme"
+    ],
+    "notes": "IP literal hosts hide normal domain ownership; this also exercises HTTP transport."
+  },
+  {
+    "id": "ipv4-literal-private",
+    "payload": "http://192.168.1.1/admin",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.ip_literal_host",
+      "url.insecure_scheme"
+    ],
+    "notes": "Private router-style IPs are common QR admin targets and should be recognized as IP literals."
+  },
+  {
+    "id": "ipv6-literal",
+    "payload": "https://[2001:db8::1]/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.ip_literal_host"
+    ],
+    "notes": "IPv6 literal hosts should be detected as structure evidence."
+  },
+  {
+    "id": "non-standard-port-8443",
+    "payload": "https://example.com:8443/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.non_standard_port"
+    ],
+    "notes": "Port 8443 is common but non-standard for browser HTTPS links."
+  },
+  {
+    "id": "non-standard-port-8080",
+    "payload": "http://example.com:8080/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.non_standard_port",
+      "url.insecure_scheme"
+    ],
+    "notes": "Non-standard HTTP port and insecure transport should both be visible."
+  },
+  {
+    "id": "excessive-subdomains",
+    "payload": "https://a.b.c.d.e.f.g.example.com/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.excessive_subdomains"
+    ],
+    "notes": "Many labels before the registrable domain can hide the actual owner."
+  },
+  {
+    "id": "excessive-length-query",
+    "payload": "https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.excessive_length"
+    ],
+    "notes": "Very long URLs should be bounded and reported without crashing or hiding the host."
+  },
+  {
+    "id": "localhost-no-registrable",
+    "payload": "http://localhost/admin",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.no_registrable_domain",
+      "url.insecure_scheme"
+    ],
+    "notes": "localhost has no registrable public domain and should not be treated like an internet site."
+  },
+  {
+    "id": "single-label-host",
+    "payload": "http://printer/setup",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.no_registrable_domain",
+      "url.insecure_scheme"
+    ],
+    "notes": "Single-label hosts can be local network names and need no-registrable-domain evidence."
+  },
+  {
+    "id": "javascript-alert",
+    "payload": "javascript:alert(document.domain)",
+    "expectedVerdict": "known_malicious",
+    "expectedFindings": [
+      "url.javascript_scheme"
+    ],
+    "notes": "javascript: payloads can execute code and should be blocked."
+  },
+  {
+    "id": "data-html-base64",
+    "payload": "data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+    "expectedVerdict": "known_malicious",
+    "expectedFindings": [
+      "url.data_scheme"
+    ],
+    "notes": "data: HTML can embed an active page without a normal domain."
+  },
+  {
+    "id": "file-etc-passwd",
+    "payload": "file:///etc/passwd",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.file_scheme"
+    ],
+    "notes": "file: payloads refer to local paths and should not be opened as web links."
+  },
+  {
+    "id": "unknown-custom-scheme",
+    "payload": "mybankapp://login?token=abc",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.unknown_scheme",
+      "payload.app_deep_link"
+    ],
+    "notes": "Custom app schemes can trigger app behavior and should be described, not launched."
+  },
+  {
+    "id": "intent-scheme",
+    "payload": "intent://scan/#Intent;scheme=https;package=com.example;end",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.unknown_scheme",
+      "payload.app_deep_link"
+    ],
+    "notes": "Android intent links are not ordinary web navigation and can dispatch to apps."
+  },
+  {
+    "id": "shortener-bitly",
+    "payload": "https://bit.ly/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "bit.ly is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-tinyurl",
+    "payload": "https://tinyurl.com/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "tinyurl.com is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-tco",
+    "payload": "https://t.co/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "t.co is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-googl",
+    "payload": "https://goo.gl/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "goo.gl is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-isgd",
+    "payload": "https://is.gd/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "is.gd is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-owly",
+    "payload": "https://ow.ly/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "ow.ly is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-buffly",
+    "payload": "https://buff.ly/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "buff.ly is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "shortener-rbgy",
+    "payload": "https://rb.gy/AbC123",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "rb.gy is a common shortener; local analysis must report that the final redirect was not expanded."
+  }
+]

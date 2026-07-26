@@ -1,0 +1,158 @@
+[
+  {
+    "id": "credentials-in-authority-basic",
+    "payload": "https://trusted.no@evil.example/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.credentials_in_authority"
+    ],
+    "mustNotContain": [
+      "url.known_malicious"
+    ],
+    "notes": "Userinfo makes the URL read like trusted.no, but the authority host is evil.example."
+  },
+  {
+    "id": "credentials-with-password",
+    "payload": "https://dnb.no:pass@konto.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.credentials_in_authority"
+    ],
+    "notes": "Password-style userinfo should still report that the visible name before @ is not the destination host."
+  },
+  {
+    "id": "brand-in-subdomain-dnb",
+    "payload": "https://dnb.no.sikker-innlogging.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.brand_in_subdomain"
+    ],
+    "mustNotContain": [
+      "url.known_malicious"
+    ],
+    "notes": "DNB appears in subdomains, while the registrable domain is unrelated."
+  },
+  {
+    "id": "brand-in-subdomain-bankid",
+    "payload": "https://bankid.no.verify-login.example/start",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.brand_in_subdomain"
+    ],
+    "notes": "BankID is a Norwegian trust anchor and should be detected when placed before an unrelated main domain."
+  },
+  {
+    "id": "brand-in-subdomain-skatteetaten",
+    "payload": "https://skatteetaten.no.refusjon.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.brand_in_subdomain"
+    ],
+    "notes": "Tax-refund scams are a documented Norwegian pattern; the brand token is not the registrable domain."
+  },
+  {
+    "id": "hyphenated-brand-vipps",
+    "payload": "https://vipps-betaling.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.hyphenated_brand_domain"
+    ],
+    "notes": "Vipps combined with a payment word and hyphen is a common impersonation shape."
+  },
+  {
+    "id": "hyphenated-brand-altinn",
+    "payload": "https://altinn-varsel.example/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.hyphenated_brand_domain"
+    ],
+    "notes": "Altinn plus an urgent-service word in an unrelated domain should produce brand-domain evidence."
+  },
+  {
+    "id": "brand-in-path-dnb",
+    "payload": "https://example.com/dnb/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.brand_in_path"
+    ],
+    "notes": "A brand in the path does not prove the destination belongs to that brand."
+  },
+  {
+    "id": "brand-in-path-nav",
+    "payload": "https://example.org/refusjon/nav",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.brand_in_path"
+    ],
+    "notes": "NAV in a path is attacker-controlled text after the domain and should be explained as such."
+  },
+  {
+    "id": "nested-url-query-plain",
+    "payload": "https://example.com/continue?next=https://evil.example/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.nested_url_in_query",
+      "url.open_redirect_parameter"
+    ],
+    "notes": "A next parameter contains a complete destination URL, a common redirect pattern."
+  },
+  {
+    "id": "nested-url-query-encoded",
+    "payload": "https://portal.example/?url=https%3A%2F%2Fphish.example%2Fbankid",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.nested_url_in_query",
+      "url.open_redirect_parameter"
+    ],
+    "notes": "The nested URL is percent-encoded inside a redirect-looking parameter."
+  },
+  {
+    "id": "open-redirect-redirect",
+    "payload": "https://trusted.example/redirect?to=https://evil.example",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.open_redirect_parameter",
+      "url.nested_url_in_query"
+    ],
+    "notes": "The parameter name and nested URL indicate a possible open redirect."
+  },
+  {
+    "id": "open-redirect-returnurl",
+    "payload": "https://service.example/login?returnUrl=https://evil.example/session",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.open_redirect_parameter",
+      "url.nested_url_in_query"
+    ],
+    "notes": "returnUrl is commonly used to send users onward after login and must be visible."
+  },
+  {
+    "id": "open-redirect-continue",
+    "payload": "https://accounts.example/continue=https://evil.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.open_redirect_parameter",
+      "url.nested_url_in_query"
+    ],
+    "notes": "continue-style parameters can hide the final destination."
+  },
+  {
+    "id": "known-malicious-rule",
+    "payload": "https://malicious.example/phishing-kit",
+    "expectedVerdict": "known_malicious",
+    "expectedFindings": [
+      "url.known_malicious"
+    ],
+    "notes": "Pins the critical verdict path for a local known-malicious rule hit."
+  },
+  {
+    "id": "suspicious-tld-login",
+    "payload": "https://dnb-login.zip/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.suspicious_tld",
+      "url.hyphenated_brand_domain"
+    ],
+    "notes": "A brand-like login domain on an often-abused TLD should produce weak TLD evidence plus brand evidence."
+  }
+]

@@ -1465,6 +1465,66 @@ Exit criteria:
 15. Web QR decoder: `rxing` compiled into the core, or the separate `zxing-wasm` package.
 16. Whether the web application is promoted publicly in Norway before the native applications exist.
 
+## Implementation status
+
+Implementation began on 26 July 2026 with the web surface and the shared core, ahead of the native applications. This section records what is verified rather than planned.
+
+### Repository
+
+| Item | Value |
+|---|---|
+| Repository | `webmaxru/qrrrgh`, private |
+| Default branch | `main` |
+| Layout | as specified in "Proposed repository layout" |
+
+Every completed working session is committed and pushed. Pushing to `main` is the deployment trigger, so an unpushed change is an undeployed change.
+
+### Frozen contract
+
+The v1 seam lives in `contracts/v1/` and is now frozen:
+
+- `assessment.d.ts` defines `Assessment`, `UrlBreakdown`, `Finding`, `Limitation`, `EngineConfig`, `AssessInput`, and the WebAssembly engine interface.
+- `finding-codes.json` is the authoritative registry of 41 finding codes and 7 limitation codes, each carrying severity, category, and parameter names.
+
+Wire format is camelCase JSON. The Rust core reaches it through `#[serde(rename_all = "camelCase")]`, so the TypeScript declarations and the Rust structures describe the same bytes.
+
+Changing the contract requires a coordinated change to the core, the clients, all three localization catalogs, and the golden vectors. Adding a finding code requires a registry entry, text in `nb`, `nn`, and `en`, and at least one golden vector.
+
+### Architecture validation
+
+The four-target compile claim was tested empirically before product code was written, not assumed. A probe crate carrying the real dependency set — `url`, `idna`, `unicode-security`, `serde`, `serde_json`, and `wasm-bindgen` — was compiled to `wasm32-unknown-unknown` with `wasm-pack` and executed in Node.
+
+| Input | Observed result |
+|---|---|
+| `https://trusted.no@evil.example/login` | authority host resolved to `evil.example` |
+| `https://xn--pypal-4ve.com/` | Punycode host detected |
+| `http://192.168.1.1:8080/x` | IP literal and explicit port detected |
+| `notaurl` | typed parse error, no panic |
+
+Resulting module size was 223 KB with that dependency set. The first case is the decisive one: userinfo-based host confusion is the single most common QR phishing construction, and the shared parser resolves it correctly in the browser.
+
+### Build environment constraints on the development machine
+
+These are properties of the current development machine, not of the project, but they block a clean checkout and must be documented.
+
+1. Visual Studio 2022 Enterprise is present without the C++ workload. There is no `VC\Tools\MSVC` directory and no Windows SDK library path, so Rust's default `x86_64-pc-windows-msvc` toolchain cannot link. The account lacks administrator rights, so installing the workload is not available as a remedy.
+2. The working toolchain is `stable-x86_64-pc-windows-gnu`, with `wasm32-unknown-unknown` added as a target.
+3. Building `wasm-pack` from source additionally requires `dlltool.exe`, supplied by MinGW through scoop. Installing the prebuilt `wasm-pack` from npm avoids that compile entirely and is the recommended path.
+
+CI runs on Linux and is unaffected, which is itself a reason to treat CI rather than any developer machine as the definition of a correct build.
+
+### Hosting
+
+| Item | Value |
+|---|---|
+| Service | Azure Static Web Apps, Free tier |
+| Resource group | `rg-qrrrgh` |
+| Region | West Europe |
+| Default hostname | `brave-bay-0ecf82e03.7.azurestaticapps.net` |
+| Deployment | GitHub Actions, using a deployment token stored as a repository secret |
+
+The free tier provides 100 GB of bandwidth per month, managed TLS, custom domains, and staging environments for pull requests. It has no cost, which matters because the product promise is that the service is free and therefore must not develop an operating cost that pressures that promise.
+
 ## Notes
 
 - This plan is based on the companion documents in `qrrrgh/planning/`:
@@ -1476,5 +1536,4 @@ Exit criteria:
 - Completed research remains the design rationale; this plan supersedes the earlier research-only milestone list as the implementation source of truth.
 - The unified-core research of 26 July 2026 revised two earlier decisions: the core must be WebAssembly-clean from the first commit, and classifier inference moves into the Rust core instead of Core ML and LiteRT exports.
 - Project root is `C:\Users\masalnik\Downloads\projects\qrrrgh`. All planning documents live in its `planning/` folder; `planning/README.md` is the index.
-- No repository or application code exists yet.
-- Implementation must not start until the user explicitly approves the plan.
+- Implementation started on 26 July 2026; see "Implementation status" above for what is verified.

@@ -1,0 +1,116 @@
+[
+  {
+    "id": "punycode-host-basic",
+    "payload": "https://xn--pple-43d.com/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.punycode_host"
+    ],
+    "notes": "Punycode host should expose both ASCII and Unicode presentation forms."
+  },
+  {
+    "id": "punycode-norwegian-allowed-observed",
+    "payload": "https://xn--blbr-jra.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "expectedFindings": [],
+    "mustNotContain": [
+      "url.confusable_host",
+      "url.mixed_script_host"
+    ],
+    "notes": "Punycode for a Norwegian IDN should not be treated as mixed-script or confusable solely for æ/ø/å."
+  },
+  {
+    "id": "cyrillic-a-apple",
+    "payload": "https://аpple.com/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.mixed_script_host",
+      "url.confusable_host"
+    ],
+    "notes": "The first character is Cyrillic small a, making a mixed-script lookalike of apple.com."
+  },
+  {
+    "id": "cyrillic-o-microsoft",
+    "payload": "https://micrоsoft.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.mixed_script_host",
+      "url.confusable_host"
+    ],
+    "notes": "The o is Cyrillic, so the hostname visually resembles a known brand while using another script."
+  },
+  {
+    "id": "greek-alpha-bankid",
+    "payload": "https://bαnkid.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.mixed_script_host",
+      "url.confusable_host"
+    ],
+    "notes": "Greek alpha inside a Latin brand token should be detected as mixed-script and confusable."
+  },
+  {
+    "id": "fullwidth-confusable",
+    "payload": "https://ｅxample.com/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.confusable_host"
+    ],
+    "notes": "Fullwidth Latin-like characters can make the host look ordinary while differing technically."
+  },
+  {
+    "id": "bidi-rtl-in-path",
+    "payload": "https://example.com/pay/abc‮gnp.exe",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.bidi_control_characters"
+    ],
+    "notes": "RTL override in the path can change how a filename or suffix appears to the user."
+  },
+  {
+    "id": "bidi-rtl-in-hostlike-text",
+    "payload": "https://example.com/‮on.knab//:sptth",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.bidi_control_characters"
+    ],
+    "notes": "Bidi controls can visually reorder embedded host-like text."
+  },
+  {
+    "id": "percent-encoded-host-dot",
+    "payload": "https://example%2Ecom/login",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.encoded_characters_in_host"
+    ],
+    "notes": "Percent-encoded separators in the host can confuse host parsing and display."
+  },
+  {
+    "id": "percent-encoded-host-at",
+    "payload": "https://trusted%40evil.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.encoded_characters_in_host"
+    ],
+    "notes": "An encoded @ in host text must not be allowed to obscure authority parsing."
+  },
+  {
+    "id": "control-character-newline",
+    "payload": "https://example.com/login\nhttps://evil.example",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.control_characters"
+    ],
+    "notes": "A newline can make one payload appear as two addresses or hide the effective destination."
+  },
+  {
+    "id": "zero-width-confusable",
+    "payload": "https://pay‍pal.example/",
+    "expectedVerdict": "suspicious",
+    "expectedFindings": [
+      "url.control_characters",
+      "url.confusable_host"
+    ],
+    "notes": "A zero-width joiner inside a brand-like host should be treated as hostile display evidence."
+  }
+]

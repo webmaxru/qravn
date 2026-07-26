@@ -1,0 +1,270 @@
+{
+  "url.credentials_in_authority": {
+    "title": "Hidden real domain",
+    "detail": "Text before @ can make the address look as if it belongs somewhere else, while the host after @ is the one actually used. Observed value: {username}, {host}."
+  },
+  "url.ip_literal_host": {
+    "title": "IP address host",
+    "detail": "The link uses an IP address instead of a normal domain name, making ownership harder to judge. Observed value: {host}."
+  },
+  "url.non_standard_port": {
+    "title": "Unusual port",
+    "detail": "The port is not standard for common web links. It may be legitimate, but deserves extra checking. Observed value: {port}."
+  },
+  "url.punycode_host": {
+    "title": "Technical domain spelling",
+    "detail": "The domain has a technical IDN form and a display form. Such domains can be legitimate, including Norwegian names, but should be read carefully. Observed value: {punycodeHost}, {unicodeHost}."
+  },
+  "url.mixed_script_host": {
+    "title": "Mixed writing systems",
+    "detail": "The host mixes writing systems. Similar letters from different scripts can make the domain hard to read correctly. Observed value: {host}, {scripts}."
+  },
+  "url.confusable_host": {
+    "title": "Confusable domain",
+    "detail": "The host contains characters that can look like other characters. This can make a domain appear familiar. Observed value: {host}, {skeleton}."
+  },
+  "url.bidi_control_characters": {
+    "title": "Hidden text direction",
+    "detail": "The content contains characters that can change text direction on screen. This can hide or reorder parts of the address."
+  },
+  "url.control_characters": {
+    "title": "Control characters found",
+    "detail": "The content contains invisible control characters. They can confuse display, copying, or interpretation."
+  },
+  "url.excessive_subdomains": {
+    "title": "Many subdomains",
+    "detail": "The address has many subdomains before the main domain. This can make the real domain harder to spot. Observed value: {count}."
+  },
+  "url.brand_in_subdomain": {
+    "title": "Known name in subdomain",
+    "detail": "A known name appears before the main domain, but that does not prove the link belongs to that organization. Observed value: {brand}, {registrableDomain}."
+  },
+  "url.brand_in_path": {
+    "title": "Known name in path",
+    "detail": "A known name appears in the path after the domain. That part is freely controlled by the site. Observed value: {brand}."
+  },
+  "url.hyphenated_brand_domain": {
+    "title": "Hyphenated known name",
+    "detail": "A known name is combined with a hyphen or extra words in another domain. This is often used for impersonation. Observed value: {brand}, {registrableDomain}."
+  },
+  "url.nested_url_in_query": {
+    "title": "Link inside link",
+    "detail": "The address contains another web address as a value. Such patterns are often used for redirects. Observed value: {nestedHost}."
+  },
+  "url.open_redirect_parameter": {
+    "title": "Possible redirect",
+    "detail": "A parameter name suggests the link may send the user onward. The start and end sites may differ. Observed value: {parameter}."
+  },
+  "url.encoded_characters_in_host": {
+    "title": "Encoded host",
+    "detail": "The host contains percent-encoded characters. That can make the domain less clear."
+  },
+  "url.excessive_length": {
+    "title": "Very long address",
+    "detail": "The address is very long. Important information may be hidden far into the text. Observed value: {length}."
+  },
+  "url.insecure_scheme": {
+    "title": "No HTTPS",
+    "detail": "The link does not use HTTPS. Traffic may be easier to observe or alter in transit."
+  },
+  "url.javascript_scheme": {
+    "title": "JavaScript link",
+    "detail": "The content is a javascript: address. It can run code and must not be opened automatically."
+  },
+  "url.data_scheme": {
+    "title": "Embedded data address",
+    "detail": "The content is inside a data: address. It can display like a web page without a normal domain."
+  },
+  "url.file_scheme": {
+    "title": "Local file address",
+    "detail": "The address points to a local file or system path, not an ordinary website."
+  },
+  "url.unknown_scheme": {
+    "title": "Unknown link type",
+    "detail": "The scheme is not a normal http or https link. It may open an app or start an action. Observed value: {scheme}."
+  },
+  "url.shortener": {
+    "title": "Shortened link",
+    "detail": "The link uses a shortening service. The final destination is not visible until redirect expansion is checked. Observed value: {service}."
+  },
+  "url.suspicious_tld": {
+    "title": "Unusual top-level domain",
+    "detail": "The top-level domain appears more often in abuse. This is a weak signal and must be considered with other evidence. Observed value: {tld}."
+  },
+  "url.known_malicious": {
+    "title": "Known malicious match",
+    "detail": "The address matches local threat data. That is concrete evidence to avoid or block the link. Observed value: {ruleId}."
+  },
+  "url.no_registrable_domain": {
+    "title": "No main domain",
+    "detail": "We could not find a registrable main domain. Ownership and public suffix handling are therefore less certain. Observed value: {host}."
+  },
+  "payload.not_a_url": {
+    "title": "Not a web address",
+    "detail": "The QR content does not look like a normal web address. It may still be text or another format."
+  },
+  "payload.empty": {
+    "title": "Empty content",
+    "detail": "The QR code contains no text that can be assessed. Scan again if this was not expected."
+  },
+  "payload.binary_content": {
+    "title": "Binary content",
+    "detail": "The content resembles binary data or text that cannot be displayed safely. It is not opened automatically."
+  },
+  "payload.wifi_network": {
+    "title": "Wi‑Fi network",
+    "detail": "The QR code describes a Wi‑Fi network. Check that the network is expected before connecting. Observed value: {ssid}, {security}."
+  },
+  "payload.wifi_open_network": {
+    "title": "Open Wi‑Fi",
+    "detail": "The QR code describes an open Wi‑Fi network. Such networks usually do not encrypt traffic to the router. Observed value: {ssid}."
+  },
+  "payload.wifi_hidden_network": {
+    "title": "Hidden Wi‑Fi",
+    "detail": "The QR code describes a hidden Wi‑Fi network. Hidden does not automatically mean safer. Observed value: {ssid}."
+  },
+  "payload.email_address": {
+    "title": "Email address",
+    "detail": "The QR code contains an email address. Sending email is a separate action. Observed value: {address}."
+  },
+  "payload.phone_number": {
+    "title": "Phone number",
+    "detail": "The QR code contains a phone number. Check the number before calling. Observed value: {number}."
+  },
+  "payload.sms_message": {
+    "title": "SMS message",
+    "detail": "The QR code can create an SMS. Read the recipient and content before sending. Observed value: {number}."
+  },
+  "payload.premium_rate_number": {
+    "title": "Possible premium number",
+    "detail": "The number may have extra cost or a special rate. Check price and recipient first. Observed value: {number}."
+  },
+  "payload.geo_location": {
+    "title": "Geographic location",
+    "detail": "The QR code contains a geographic position. Opening it may show or share a location. Observed value: {latitude}, {longitude}."
+  },
+  "payload.contact_card": {
+    "title": "Contact card",
+    "detail": "The QR code contains a contact card. Check the details before saving them. Observed value: {name}."
+  },
+  "payload.calendar_event": {
+    "title": "Calendar event",
+    "detail": "The QR code contains a calendar event. Review time and details before adding it. Observed value: {summary}."
+  },
+  "payload.crypto_address": {
+    "title": "Crypto address",
+    "detail": "The QR code contains a crypto address. Such payments usually cannot be reversed. Observed value: {currency}."
+  },
+  "payload.otp_secret": {
+    "title": "One-time-code secret",
+    "detail": "The QR code contains a one-time-code secret. It can give access to login codes. Observed value: {issuer}."
+  },
+  "payload.app_deep_link": {
+    "title": "App link",
+    "detail": "The QR code uses an app link. It can open an app or start an action. Observed value: {scheme}."
+  },
+  "limitation.offline_no_reputation": {
+    "title": "No online lookup",
+    "detail": "The check was done without online reputation lookup. The result relies on local rules and structure."
+  },
+  "limitation.redirect_not_expanded": {
+    "title": "Redirect not checked",
+    "detail": "We detected a shortened link, but did not fetch the final address. That requires a separate consent-based lookup. Observed value: {service}."
+  },
+  "limitation.rules_stale": {
+    "title": "Rules may be old",
+    "detail": "The local rules may be old. New threats may be missing until an update. Observed value: {ageDays}."
+  },
+  "limitation.rules_unavailable": {
+    "title": "Rules unavailable",
+    "detail": "Local threat rules were unavailable. Structural findings may still be shown."
+  },
+  "limitation.classifier_unavailable": {
+    "title": "Classifier unavailable",
+    "detail": "The local classifier was unavailable. The result relies on rules and observable properties."
+  },
+  "limitation.no_public_suffix_match": {
+    "title": "Unknown public suffix",
+    "detail": "We could not find a known public suffix. The main domain may therefore be calculated with less certainty. Observed value: {host}."
+  },
+  "limitation.payload_not_understood": {
+    "title": "Unknown QR format",
+    "detail": "The QR format was not understood. The content is shown as raw text without triggering actions."
+  },
+  "verdict.known_malicious": {
+    "title": "Known malicious",
+    "detail": "We found a concrete match in threat data or rules. Do not open the link without a specific reason."
+  },
+  "verdict.suspicious": {
+    "title": "Suspicious",
+    "detail": "We found signs often used in scams or misleading links. Read the findings before continuing."
+  },
+  "verdict.insufficient_evidence": {
+    "title": "Insufficient evidence",
+    "detail": "We cannot say enough about the content or final destination. That does not mean it is safe."
+  },
+  "verdict.no_known_threat_found": {
+    "title": "No known threat found",
+    "detail": "We found no known threats in this check. This is not a guarantee that the content is safe."
+  },
+  "ui.check": {
+    "title": "Check",
+    "detail": ""
+  },
+  "ui.paste_placeholder": {
+    "title": "Paste QR content or link",
+    "detail": ""
+  },
+  "ui.result": {
+    "title": "Result",
+    "detail": ""
+  },
+  "ui.findings": {
+    "title": "Findings",
+    "detail": ""
+  },
+  "ui.limitations": {
+    "title": "Limitations",
+    "detail": ""
+  },
+  "ui.what_we_found": {
+    "title": "What we found",
+    "detail": ""
+  },
+  "ui.open_anyway": {
+    "title": "Open anyway",
+    "detail": ""
+  },
+  "ui.open_blocked": {
+    "title": "Opening blocked",
+    "detail": ""
+  },
+  "ui.copy": {
+    "title": "Copy",
+    "detail": ""
+  },
+  "ui.scan_again": {
+    "title": "Scan again",
+    "detail": ""
+  },
+  "ui.about": {
+    "title": "About qrrrgh",
+    "detail": ""
+  },
+  "ui.privacy_note": {
+    "title": "Privacy",
+    "detail": "The check happens locally first."
+  },
+  "ui.language": {
+    "title": "Language",
+    "detail": ""
+  },
+  "ui.raw_payload": {
+    "title": "Raw payload",
+    "detail": ""
+  },
+  "ui.real_destination": {
+    "title": "Real destination",
+    "detail": ""
+  }
+}

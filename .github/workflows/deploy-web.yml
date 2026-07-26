@@ -1,0 +1,152 @@
+name: Deploy Web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-build:
+    name: Build PR preview
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect web and WASM inputs
+        id: inputs
+        shell: bash
+        run: |
+          ready=true
+          if [ ! -f apps/web/package.json ]; then
+            echo "::notice::apps/web/package.json is not present yet; skipping PR preview build."
+            ready=false
+          fi
+          if [ ! -f core/bindings/wasm/Cargo.toml ]; then
+            echo "::notice::core/bindings/wasm/Cargo.toml is not present yet; skipping PR preview build."
+            ready=false
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        if: steps.inputs.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install Rust stable
+        if: steps.inputs.outputs.ready == 'true'
+        run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        if: steps.inputs.outputs.ready == 'true'
+        run: npm install --global wasm-pack@0.15.0
+
+      - name: Build WASM package
+        if: steps.inputs.outputs.ready == 'true'
+        working-directory: core/bindings/wasm
+        run: wasm-pack build --target web --out-dir pkg
+
+      - name: Install web dependencies
+        if: steps.inputs.outputs.ready == 'true'
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Build web app
+        if: steps.inputs.outputs.ready == 'true'
+        working-directory: apps/web
+        run: npm run build
+
+  deploy:
+    name: Deploy to Azure Static Web Apps
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.ref == 'refs/heads/main' && vars.AZURE_SWA_ENABLED == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect web and WASM inputs
+        id: inputs
+        shell: bash
+        run: |
+          ready=true
+          if [ ! -f apps/web/package.json ]; then
+            echo "::notice::apps/web/package.json is not present yet; skipping deployment."
+            ready=false
+          fi
+          if [ ! -f core/bindings/wasm/Cargo.toml ]; then
+            echo "::notice::core/bindings/wasm/Cargo.toml is not present yet; skipping deployment."
+            ready=false
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+      - name: Check deployment token
+        if: steps.inputs.outputs.ready == 'true'
+        env:
+          AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        shell: bash
+        run: |
+          if [ -z "$AZURE_STATIC_WEB_APPS_API_TOKEN" ]; then
+            echo "::error::AZURE_STATIC_WEB_APPS_API_TOKEN is not set. Run infra/provision-swa.ps1 and add the GitHub secret before enabling deployment."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        if: steps.inputs.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install Rust stable
+        if: steps.inputs.outputs.ready == 'true'
+        run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        if: steps.inputs.outputs.ready == 'true'
+        run: npm install --global wasm-pack@0.15.0
+
+      - name: Build WASM package
+        if: steps.inputs.outputs.ready == 'true'
+        working-directory: core/bindings/wasm
+        run: wasm-pack build --target web --out-dir pkg
+
+      - name: Install web dependencies
+        if: steps.inputs.outputs.ready == 'true'
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Build web app
+        if: steps.inputs.outputs.ready == 'true'
+        working-directory: apps/web
+        run: npm run build
+
+      - name: Deploy prebuilt app
+        if: steps.inputs.outputs.ready == 'true'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          # This workflow compiles the Rust core to WebAssembly before Vite runs, so the
+          # app is already built and Oryx must not try to build it again. Per the Static
+          # Web Apps build configuration reference, when skip_app_build is true the
+          # app_location value is the build OUTPUT folder, not the source folder, and
+          # output_location is not used. Pointing app_location at apps/web here would
+          # upload the source tree instead of the compiled site.
+          app_location: apps/web/dist
+          skip_app_build: true
+          skip_api_build: true

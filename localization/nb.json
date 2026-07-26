@@ -1,0 +1,270 @@
+{
+  "url.credentials_in_authority": {
+    "title": "Skjult faktisk domene",
+    "detail": "Tekst før @ kan få adressen til å se ut som den tilhører noen andre, mens verten etter @ er den som faktisk brukes. Observert verdi: {username}, {host}."
+  },
+  "url.ip_literal_host": {
+    "title": "IP-adresse som vert",
+    "detail": "Lenken bruker en IP-adresse i stedet for et vanlig domenenavn, så eierskap er vanskeligere å vurdere. Observert verdi: {host}."
+  },
+  "url.non_standard_port": {
+    "title": "Uvanlig port",
+    "detail": "Porten er ikke standard for vanlige nettlenker. Det kan være legitimt, men bør kontrolleres ekstra. Observert verdi: {port}."
+  },
+  "url.punycode_host": {
+    "title": "Teknisk domeneskrift",
+    "detail": "Domenet har en teknisk IDN-form og en visningsform. Slike domener kan være legitime, også på norsk, men bør leses nøye. Observert verdi: {punycodeHost}, {unicodeHost}."
+  },
+  "url.mixed_script_host": {
+    "title": "Blandede skriftsystemer",
+    "detail": "Vertsnavnet blander skriftsystemer. Lignende tegn fra ulike skriftsystemer kan gjøre domenet vanskelig å lese riktig. Observert verdi: {host}, {scripts}."
+  },
+  "url.confusable_host": {
+    "title": "Forvekselbart domene",
+    "detail": "Vertsnavnet inneholder tegn som kan ligne på andre tegn. Det kan brukes for å få et domene til å se kjent ut. Observert verdi: {host}, {skeleton}."
+  },
+  "url.bidi_control_characters": {
+    "title": "Skjult tekstretning",
+    "detail": "Innholdet har tegn som kan endre tekstretningen på skjermen. Det kan skjule eller omorganisere deler av adressen."
+  },
+  "url.control_characters": {
+    "title": "Kontrolltegn funnet",
+    "detail": "Innholdet har usynlige kontrolltegn. Slike tegn kan forvirre visning, kopiering eller tolking."
+  },
+  "url.excessive_subdomains": {
+    "title": "Mange underdomener",
+    "detail": "Adressen har mange underdomener før hoveddomenet. Det kan gjøre det vanskelig å se hvilket domene som gjelder. Observert verdi: {count}."
+  },
+  "url.brand_in_subdomain": {
+    "title": "Kjent navn i underdomene",
+    "detail": "Et kjent navn står før hoveddomenet, men det beviser ikke at lenken eies av den aktøren. Observert verdi: {brand}, {registrableDomain}."
+  },
+  "url.brand_in_path": {
+    "title": "Kjent navn i sti",
+    "detail": "Et kjent navn står i stien etter domenet. Den delen kan nettstedet selv skrive fritt. Observert verdi: {brand}."
+  },
+  "url.hyphenated_brand_domain": {
+    "title": "Kjent navn med bindestrek",
+    "detail": "Et kjent navn er kombinert med bindestrek eller ekstra ord i et annet domene. Det brukes ofte i etterligning. Observert verdi: {brand}, {registrableDomain}."
+  },
+  "url.nested_url_in_query": {
+    "title": "Lenke inni lenke",
+    "detail": "Adressen inneholder en annen nettadresse som verdi. Slike mønstre brukes ofte til videresending. Observert verdi: {nestedHost}."
+  },
+  "url.open_redirect_parameter": {
+    "title": "Mulig videresending",
+    "detail": "Et parameternavn tyder på at lenken kan sende brukeren videre. Startstedet og sluttstedet kan være ulike. Observert verdi: {parameter}."
+  },
+  "url.encoded_characters_in_host": {
+    "title": "Kodet vert",
+    "detail": "Vertsnavnet inneholder prosentkodede tegn. Det kan gjøre domenet mindre tydelig."
+  },
+  "url.excessive_length": {
+    "title": "Svært lang adresse",
+    "detail": "Adressen er svært lang. Viktig informasjon kan bli skjult langt ute i teksten. Observert verdi: {length}."
+  },
+  "url.insecure_scheme": {
+    "title": "Uten HTTPS",
+    "detail": "Lenken bruker ikke HTTPS. Trafikk kan lettere observeres eller endres underveis."
+  },
+  "url.javascript_scheme": {
+    "title": "JavaScript-lenke",
+    "detail": "Innholdet er en javascript:-adresse. Den kan kjøre kode og skal ikke åpnes automatisk."
+  },
+  "url.data_scheme": {
+    "title": "Innebygd dataadresse",
+    "detail": "Innholdet ligger direkte i en data:-adresse. Det kan vises som en nettside uten vanlig domene."
+  },
+  "url.file_scheme": {
+    "title": "Lokal filadresse",
+    "detail": "Adressen peker på en lokal fil eller systemsti, ikke en vanlig nettside."
+  },
+  "url.unknown_scheme": {
+    "title": "Ukjent lenketype",
+    "detail": "Skjemaet er ikke en vanlig http- eller https-lenke. Det kan åpne en app eller starte en handling. Observert verdi: {scheme}."
+  },
+  "url.shortener": {
+    "title": "Forkortet lenke",
+    "detail": "Lenken bruker en forkortingstjeneste. Den endelige destinasjonen er ikke synlig før videresending sjekkes. Observert verdi: {service}."
+  },
+  "url.suspicious_tld": {
+    "title": "Uvanlig toppdomene",
+    "detail": "Toppdomenet forekommer oftere i misbruk. Dette er et svakt signal og må vurderes sammen med annet. Observert verdi: {tld}."
+  },
+  "url.known_malicious": {
+    "title": "Kjent skadelig treff",
+    "detail": "Adressen samsvarer med lokale trusseldata. Det er konkret grunnlag for å unngå eller blokkere lenken. Observert verdi: {ruleId}."
+  },
+  "url.no_registrable_domain": {
+    "title": "Manglende hoveddomene",
+    "detail": "Vi fant ikke et registrerbart hoveddomene. Da er eierskap og offentlig suffiks mer usikkert. Observert verdi: {host}."
+  },
+  "payload.not_a_url": {
+    "title": "Ikke en nettadresse",
+    "detail": "QR-innholdet ser ikke ut som en vanlig nettadresse. Det kan fortsatt være tekst eller et annet format."
+  },
+  "payload.empty": {
+    "title": "Tomt innhold",
+    "detail": "QR-koden inneholder ingen tekst som kan vurderes. Skann på nytt hvis dette ikke var forventet."
+  },
+  "payload.binary_content": {
+    "title": "Binært innhold",
+    "detail": "Innholdet ligner binære data eller tekst som ikke kan vises trygt. Det åpnes ikke automatisk."
+  },
+  "payload.wifi_network": {
+    "title": "Wi‑Fi-nettverk",
+    "detail": "QR-koden beskriver et Wi‑Fi-nettverk. Kontroller at nettverket er forventet før du kobler til. Observert verdi: {ssid}, {security}."
+  },
+  "payload.wifi_open_network": {
+    "title": "Åpent Wi‑Fi",
+    "detail": "QR-koden beskriver et åpent Wi‑Fi-nettverk. Slike nett krypterer vanligvis ikke trafikken til ruteren. Observert verdi: {ssid}."
+  },
+  "payload.wifi_hidden_network": {
+    "title": "Skjult Wi‑Fi",
+    "detail": "QR-koden beskriver et skjult Wi‑Fi-nettverk. Skjult betyr ikke automatisk tryggere. Observert verdi: {ssid}."
+  },
+  "payload.email_address": {
+    "title": "E-postadresse",
+    "detail": "QR-koden inneholder en e-postadresse. Å sende e-post er en separat handling. Observert verdi: {address}."
+  },
+  "payload.phone_number": {
+    "title": "Telefonnummer",
+    "detail": "QR-koden inneholder et telefonnummer. Kontroller nummeret før du ringer. Observert verdi: {number}."
+  },
+  "payload.sms_message": {
+    "title": "SMS-melding",
+    "detail": "QR-koden kan opprette en SMS. Les mottaker og innhold før du sender. Observert verdi: {number}."
+  },
+  "payload.premium_rate_number": {
+    "title": "Mulig betalingstelefon",
+    "detail": "Nummeret kan ha ekstra kostnad eller spesiell takst. Kontroller pris og mottaker først. Observert verdi: {number}."
+  },
+  "payload.geo_location": {
+    "title": "Geografisk posisjon",
+    "detail": "QR-koden inneholder en geografisk posisjon. Å åpne den kan vise eller dele en plassering. Observert verdi: {latitude}, {longitude}."
+  },
+  "payload.contact_card": {
+    "title": "Kontaktkort",
+    "detail": "QR-koden inneholder et kontaktkort. Kontroller opplysningene før du lagrer dem. Observert verdi: {name}."
+  },
+  "payload.calendar_event": {
+    "title": "Kalenderhendelse",
+    "detail": "QR-koden inneholder en kalenderhendelse. Se gjennom tidspunkt og detaljer før du legger den til. Observert verdi: {summary}."
+  },
+  "payload.crypto_address": {
+    "title": "Krypto-adresse",
+    "detail": "QR-koden inneholder en krypto-adresse. Slike betalinger kan normalt ikke reverseres. Observert verdi: {currency}."
+  },
+  "payload.otp_secret": {
+    "title": "Engangskode-hemmelighet",
+    "detail": "QR-koden inneholder en hemmelighet for engangskoder. Den kan gi tilgang til innloggingskoder. Observert verdi: {issuer}."
+  },
+  "payload.app_deep_link": {
+    "title": "App-lenke",
+    "detail": "QR-koden bruker en app-lenke. Den kan åpne en app eller starte en handling. Observert verdi: {scheme}."
+  },
+  "limitation.offline_no_reputation": {
+    "title": "Ingen nettoppslag",
+    "detail": "Kontrollen ble gjort uten nettoppslag mot omdømmedata. Resultatet bygger på lokale regler og struktur."
+  },
+  "limitation.redirect_not_expanded": {
+    "title": "Videresending ikke sjekket",
+    "detail": "Vi oppdaget en forkortet lenke, men hentet ikke endelig adresse. Det krever et separat oppslag med samtykke. Observert verdi: {service}."
+  },
+  "limitation.rules_stale": {
+    "title": "Regler kan være gamle",
+    "detail": "De lokale reglene kan være gamle. Nye trusler kan mangle frem til oppdatering. Observert verdi: {ageDays}."
+  },
+  "limitation.rules_unavailable": {
+    "title": "Regler utilgjengelige",
+    "detail": "Lokale trusselregler var ikke tilgjengelige. Strukturelle funn kan fortsatt vises."
+  },
+  "limitation.classifier_unavailable": {
+    "title": "Klassifisering utilgjengelig",
+    "detail": "Den lokale klassifisereren var ikke tilgjengelig. Resultatet bygger på regler og observerbare egenskaper."
+  },
+  "limitation.no_public_suffix_match": {
+    "title": "Ukjent offentlig suffiks",
+    "detail": "Vi fant ikke et kjent offentlig suffiks. Hoveddomenet kan derfor være mer usikkert beregnet. Observert verdi: {host}."
+  },
+  "limitation.payload_not_understood": {
+    "title": "Ukjent QR-format",
+    "detail": "QR-formatet ble ikke forstått. Innholdet vises som rå tekst uten å utløse handlinger."
+  },
+  "verdict.known_malicious": {
+    "title": "Kjent skadelig",
+    "detail": "Vi fant et konkret treff i trusseldata eller regler. Ikke åpne lenken uten en særskilt grunn."
+  },
+  "verdict.suspicious": {
+    "title": "Mistenkelig",
+    "detail": "Vi fant tegn som ofte brukes i svindel eller villedende lenker. Les funnene før du går videre."
+  },
+  "verdict.insufficient_evidence": {
+    "title": "For lite grunnlag",
+    "detail": "Vi kan ikke si nok om innholdet eller endelig destinasjon. Det betyr ikke at det er trygt."
+  },
+  "verdict.no_known_threat_found": {
+    "title": "Ingen kjente trusler funnet",
+    "detail": "Vi fant ingen kjente trusler i denne kontrollen. Det er ikke en garanti for at innholdet er trygt."
+  },
+  "ui.check": {
+    "title": "Sjekk",
+    "detail": ""
+  },
+  "ui.paste_placeholder": {
+    "title": "Lim inn QR-innhold eller lenke",
+    "detail": ""
+  },
+  "ui.result": {
+    "title": "Resultat",
+    "detail": ""
+  },
+  "ui.findings": {
+    "title": "Funn",
+    "detail": ""
+  },
+  "ui.limitations": {
+    "title": "Begrensninger",
+    "detail": ""
+  },
+  "ui.what_we_found": {
+    "title": "Dette fant vi",
+    "detail": ""
+  },
+  "ui.open_anyway": {
+    "title": "Åpne likevel",
+    "detail": ""
+  },
+  "ui.open_blocked": {
+    "title": "Åpning blokkert",
+    "detail": ""
+  },
+  "ui.copy": {
+    "title": "Kopier",
+    "detail": ""
+  },
+  "ui.scan_again": {
+    "title": "Skann på nytt",
+    "detail": ""
+  },
+  "ui.about": {
+    "title": "Om qrrrgh",
+    "detail": ""
+  },
+  "ui.privacy_note": {
+    "title": "Personvern",
+    "detail": "Kontrollen skjer først lokalt."
+  },
+  "ui.language": {
+    "title": "Språk",
+    "detail": ""
+  },
+  "ui.raw_payload": {
+    "title": "Rått innhold",
+    "detail": ""
+  },
+  "ui.real_destination": {
+    "title": "Faktisk destinasjon",
+    "detail": ""
+  }
+}
