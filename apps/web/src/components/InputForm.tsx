@@ -16,6 +16,11 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
+      // The submit button is disabled until the analyser is ready. Without this
+      // guard the keyboard path bypassed that gate, so a keyboard user could
+      // submit while a pointer user could not, and the check silently produced
+      // nothing because no engine existed yet.
+      if (disabled) return;
       onSubmit(payload);
     }
   }

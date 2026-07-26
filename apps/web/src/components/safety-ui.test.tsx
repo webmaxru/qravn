@@ -5,6 +5,7 @@ import App from '../App';
 import type { Assessment, Finding, Verdict } from '../contracts/assessment';
 import { MockSafetyEngine } from '../engine/mockSafetyEngine';
 import { FindingsList } from './FindingsList';
+import { InputForm } from './InputForm';
 import { ResultPanel } from './ResultPanel';
 import { VerdictBanner } from './VerdictBanner';
 
@@ -80,5 +81,45 @@ describe('safety UI', () => {
     expect(screen.getAllByText('<script>alert(1)</script>').length).toBeGreaterThan(0);
     expect(alertSpy).not.toHaveBeenCalled();
     alertSpy.mockRestore();
+  });
+
+  describe('InputForm keyboard parity', () => {
+    it('submits on Enter when the analyser is ready', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      render(<InputForm onSubmit={onSubmit} />);
+
+      await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'https://example.com{Enter}');
+
+      expect(onSubmit).toHaveBeenCalledWith('https://example.com');
+    });
+
+    // The submit button is disabled until the WebAssembly engine loads. The
+    // Enter handler previously ignored that, so the keyboard path could start a
+    // check with no engine while the pointer path could not. The check then
+    // produced nothing at all, which is the worst possible outcome for a
+    // keyboard user: silence that looks identical to a clean result.
+    it('does not submit on Enter while the analyser is still loading', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      render(<InputForm onSubmit={onSubmit} disabled />);
+
+      await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'https://example.com{Enter}');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: /check/i })).toBeDisabled();
+    });
+
+    it('keeps Shift+Enter as a newline rather than a submit', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      render(<InputForm onSubmit={onSubmit} />);
+
+      const field = screen.getByLabelText(/Paste a suspicious link/i);
+      await user.type(field, 'line one{Shift>}{Enter}{/Shift}line two');
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(field).toHaveValue('line one\nline two');
+    });
   });
 });

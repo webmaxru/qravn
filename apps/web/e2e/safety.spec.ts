@@ -53,6 +53,10 @@ test('switching language changes rendered text', async ({ page }) => {
 
 test('keyboard-only submit moves focus to the announced result region', async ({ page }) => {
   await page.goto('/');
+  // The pointer-driven tests get this wait for free, because Playwright's click
+  // waits for the button to become enabled. Typing does not, so this test raced
+  // the WebAssembly load and failed intermittently on a cold runner.
+  await expect(page.getByRole('button', { name: /^Check$/ })).toBeEnabled();
   await page.getByLabel(/Paste a suspicious link/i).focus();
   await page.keyboard.type('https://example.com');
   await page.keyboard.press('Enter');
