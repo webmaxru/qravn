@@ -232,14 +232,23 @@ secrets are set, so only the two items in step 3 remain.
 
 1. ~~**Create an Azure AD app + federated credential for OIDC**~~ - **done.**
    App `qrrrgh-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
-   has a service principal and a federated credential for
-   `repo:webmaxru/qrrrgh:ref:refs/heads/main`, issuer
-   `https://token.actions.githubusercontent.com`, audience
+   has a service principal and federated credentials for this repository on
+   `main`, issuer `https://token.actions.githubusercontent.com`, audience
    `api://AzureADTokenExchange`. It holds **Contributor scoped to `rg-qrrrgh`
    only** - not subscription-wide. See
    [Connect from Azure with OpenID Connect](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect).
    There is no client secret to rotate or leak; the workflow exchanges a
    short-lived GitHub OIDC token at run time.
+
+   > **Trap worth knowing.** GitHub presented the subject
+   > `repo:webmaxru@1560278/qrrrgh@1312680270:ref:refs/heads/main` - with
+   > **numeric owner and repository ids**, not the documented
+   > `repo:OWNER/NAME:ref:refs/heads/main` form. A credential registered with
+   > only the documented form fails with `AADSTS700213: No matching federated
+   > identity record found for presented assertion subject`. Both subjects are
+   > registered here (`github-main` and `github-main-immutable`), so either
+   > format works. If you ever see AADSTS700213, read the exact subject out of
+   > the error and register that verbatim rather than assuming the docs' shape.
 2. ~~**Set repository secrets**~~ - **done for the OIDC trio.**
    `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` are set.
    These are identifiers rather than credentials; they are stored as secrets by
@@ -268,8 +277,30 @@ secrets are set, so only the two items in step 3 remain.
    `deploy-web.yml` is gated on `AZURE_SWA_ENABLED`). Optionally set
    `AZURE_RESOURCE_GROUP` to override the default `rg-qrrrgh`.
 
-   Leaving `AZURE_ACA_ENABLED` unset is deliberate and safe: **no Azure
-   resources exist for the resolver yet, so it currently bills nothing at all.**
+   Leaving `AZURE_ACA_ENABLED` unset is deliberate and safe: the resolver
+   revision cannot start until the image can be pulled, so nothing runs and
+   nothing bills.
+
+   **Current state (26 July 2026).** A `workflow_dispatch` run has already:
+   built the image and pushed it to
+   `ghcr.io/webmaxru/qrrrgh/resolver:<sha>`; logged in to Azure over OIDC; and
+   deployed `resolver.bicep`, which created the managed environment and the
+   Container App. The app is in `Failed` state for exactly one reason, and the
+   deployment error names it:
+
+   ```
+   Field 'template.containers.resolver.image' is invalid ... ghcr.io: UNAUTHORIZED: authentication required
+   ```
+
+   The package is private and no pull credential was supplied. **Make the
+   package public (one click) or set `GHCR_PULL_TOKEN`, then re-run the
+   workflow** - everything else is already in place.
+
+   This confirms the cost design against reality rather than only on paper:
+   `rg-qrrrgh` contains the static site, the managed environment and the
+   container app, **and no Log Analytics workspace and no container registry**.
+   The app reports `minReplicas: 0`, `maxReplicas: 3`, matching the template.
+   With zero replicas running there is no compute charge.
 4. Push a change under `services/resolver/**` or `infra/**`, or run the **Deploy
    Resolver** workflow via **workflow_dispatch**. It builds the image, pushes it
    to `ghcr.io/<owner>/qrrrgh/resolver:<sha>`, and runs
