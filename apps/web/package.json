@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "test": "vitest",
     "test:browser": "playwright test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:prod": "node scripts/prod-smoke.mjs"
   },
   "dependencies": {
     "qrrrgh-safety-wasm": "file:../../core/bindings/wasm/pkg",

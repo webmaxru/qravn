@@ -1525,6 +1525,22 @@ CI runs on Linux and is unaffected, which is itself a reason to treat CI rather 
 
 The free tier provides 100 GB of bandwidth per month, managed TLS, custom domains, and staging environments for pull requests. It has no cost, which matters because the product promise is that the service is free and therefore must not develop an operating cost that pressures that promise.
 
+### Verified in production
+
+The deployed site was checked against the live URL in both Chromium and WebKit, not only in local tests:
+
+| Check | Result |
+|---|---|
+| Real WebAssembly engine serving verdicts, no mock fallback | pass |
+| `https://trusted.no@evil.example/login` yields the credential-in-authority finding | pass |
+| `evil.example` surfaced as the true destination | pass |
+| No unguarded open link offered for that payload | pass |
+| **No request ever issued to the scanned destination** | pass |
+| No console errors | pass |
+| All five security headers applied, both WebAssembly modules served as `application/wasm` | pass |
+
+The fifth row is the one that matters most. The product's central claim is that checking a hostile code contacts nothing, and it is enforced in three independent places: `connect-src 'self'` in the Content Security Policy, a Playwright test that fails on any request to a scanned host, and this production check. Re-run it after any deployment with `npm run test:prod` in `apps/web`.
+
 ## Notes
 
 - This plan is based on the companion documents in `qrrrgh/planning/`:

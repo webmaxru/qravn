@@ -4,7 +4,9 @@ A free, privacy-first QR code safety application for Norway.
 
 Scan a QR code, see exactly what is inside it, and get an evidence-based safety assessment **before** anything opens.
 
-> **Status:** early implementation. The shared core and the web surface are being built first. No public release yet.
+> **Status:** early implementation. The shared core and the web surface are live; the native applications have not started.
+>
+> **Web app:** <https://brave-bay-0ecf82e03.7.azurestaticapps.net>
 
 ---
 
