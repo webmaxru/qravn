@@ -1484,11 +1484,35 @@ Every completed working session is committed and pushed. Pushing to `main` is th
 The v1 seam lives in `contracts/v1/` and is now frozen:
 
 - `assessment.d.ts` defines `Assessment`, `UrlBreakdown`, `Finding`, `Limitation`, `EngineConfig`, `AssessInput`, and the WebAssembly engine interface.
-- `finding-codes.json` is the authoritative registry of 41 finding codes and 7 limitation codes, each carrying severity, category, and parameter names.
+- `finding-codes.json` is the authoritative registry of 48 finding codes and 9 limitation codes, each carrying severity, category, and parameter names.
 
 Wire format is camelCase JSON. The Rust core reaches it through `#[serde(rename_all = "camelCase")]`, so the TypeScript declarations and the Rust structures describe the same bytes.
 
 Changing the contract requires a coordinated change to the core, the clients, all three localization catalogs, and the golden vectors. Adding a finding code requires a registry entry, text in `nb`, `nn`, and `en`, and at least one golden vector.
+
+The registry now holds 57 codes. The nine added for redirect analysis are registered ahead of their implementation, which is safe in one direction only and worth stating precisely:
+
+- The registry check is **one-directional**: every code the core emits must exist in the registry. Registering a code the core does not yet emit therefore passes.
+- Golden vectors are checked in **both** directions. A redirect vector added before the core implements redirect analysis fails conformance. Vectors land with the implementation, not before it.
+
+### Contract drift control
+
+The contract is only a seam if every surface genuinely builds against the same file. The web application originally kept a hand-written copy of it, and that copy had already drifted to roughly a third of the real contract, missing the redirect types entirely.
+
+Nothing detected the drift, and nothing could have: a stale contract is still internally consistent, so the TypeScript compiler accepts it without complaint. The divergence would only have surfaced at runtime, on the surface where the wrong behaviour is least visible.
+
+Two controls now prevent recurrence:
+
+| Gate | Asserts |
+|---|---|
+| `tools/sync-contract.mjs --check` | `apps/web/src/contracts/assessment.ts` is byte-identical to a regeneration from `contracts/v1/assessment.d.ts`. The file carries a do-not-edit header and is produced by `node tools/sync-contract.mjs`. |
+| `tools/validate-l10n.mjs` | Every `{placeholder}` used in a localized string is declared for that code in the registry, across all three locales. |
+
+The second gate existed but had never been wired into CI. Without it, a localized message referencing an undeclared parameter renders the placeholder literally to the user — a defect that unit tests do not catch because no code path asserts on message text.
+
+Both run in the `Contract and localization` CI job alongside `tools/check-contract-localization.js`.
+
+The general rule this establishes: **a contract copied by hand is not a contract.** Any future surface that needs the types in its own language must generate them and gate the generation, exactly as the web surface now does. This applies directly to the Swift and Kotlin bindings, which UniFFI generates — CI must fail on uncommitted binding changes for the same reason.
 
 ### Architecture validation
 
