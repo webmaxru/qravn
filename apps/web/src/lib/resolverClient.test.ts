@@ -3,9 +3,31 @@ import type { RedirectResolution } from '../contracts/assessment';
 import {
   isOnlineModeAvailable,
   resolveRedirect,
+  RESOLVER_TIMEOUT_MS,
   resolverBaseUrl,
   ResolverUnavailableError,
 } from './resolverClient';
+
+/**
+ * The resolver's own ceiling (TOTAL_TIMEOUT_MS in services/resolver/src/config.ts).
+ * Duplicated here deliberately: this test exists to catch the client timeout
+ * drifting back below what the service can legitimately take.
+ */
+const RESOLVER_SERVER_CEILING_MS = 10_000;
+
+/** Measured cold start of the scale-to-zero Container App, 27 July 2026. */
+const OBSERVED_COLD_START_MS = 10_100;
+
+describe('client timeout budget', () => {
+  it('covers a cold start on top of the resolver ceiling', () => {
+    // Regression guard. The original 12s was derived from the server ceiling
+    // alone, which ignored that minReplicas is 0: the first expansion after an
+    // idle period pays a container cold start before the request is served.
+    // In production that combination measured ~12.4s, so the first user after
+    // idle saw a spurious failure from a perfectly healthy service.
+    expect(RESOLVER_TIMEOUT_MS).toBeGreaterThan(RESOLVER_SERVER_CEILING_MS + OBSERVED_COLD_START_MS);
+  });
+});
 
 const BASE = 'https://resolver.example';
 const SCANNED = 'https://bit.ly/hostile';

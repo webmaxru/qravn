@@ -16,12 +16,31 @@ import type { RedirectHop, RedirectOutcome, RedirectResolution } from '../contra
  */
 
 /**
- * Hard client-side timeout. The resolver's own ceiling is 10s; this sits just
- * above it so the resolver's own graceful response (e.g. a 504 carrying
- * `outcome: "timeout"`) usually wins the race, while still guaranteeing the UI
- * never hangs waiting on the network.
+ * Hard client-side timeout.
+ *
+ * This must cover a **cold start**, not just the resolver's own work. The
+ * Container App runs with `minReplicas: 0` so that idle cost is genuinely zero,
+ * which means the first expansion after an idle period waits for a container to
+ * be scheduled and booted before the request is even served.
+ *
+ * Measured against the live deployment on 27 July 2026:
+ *
+ *   cold start (0 -> 1 replica)      ~10.1s
+ *   resolver's own ceiling            10.0s  (TOTAL_TIMEOUT_MS in the service)
+ *   --------------------------------------
+ *   realistic worst case             ~20s
+ *
+ * The previous value of 12s was derived from the resolver's 10s ceiling alone.
+ * That was right for a warm service and wrong for this one: a real cold start
+ * plus a real chain measured ~12.4s, so the very first user after an idle period
+ * would have seen a spurious "could not follow the link" for a service that was
+ * working perfectly. 30s leaves headroom for cold-start variance while still
+ * guaranteeing the UI never hangs on the network indefinitely.
+ *
+ * A timeout still never reads as a clean result: it degrades to
+ * `outcome: "timeout"`, which the core renders as a limitation.
  */
-export const RESOLVER_TIMEOUT_MS = 12_000;
+export const RESOLVER_TIMEOUT_MS = 30_000;
 
 /** Every `outcome` the contract allows, used to validate an untrusted body. */
 const RESOLUTION_OUTCOMES: readonly RedirectOutcome[] = [
