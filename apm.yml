@@ -2,12 +2,15 @@ name: bb
 version: 1.0.0
 description: APM project for Copilot Agents
 author: webmaxru
-# Deploy to both harnesses explicitly. Without this, `apm install` auto-detects
-# from whichever directory happens to exist and picked `claude` alone, which put
-# the skills in .claude/ only - a path GitHub Copilot CLI does not read, so the
-# installed skills were invisible to the agent actually being used here.
-# Copilot reads .agents/skills/ and .github/prompts/.
-target: copilot,claude
+# This project targets GitHub Copilot only.
+#
+# Pinned deliberately: `apm install` otherwise auto-detects its target from
+# whichever agent directory happens to exist. It found .claude/ and deployed
+# there alone - a path that is gitignored here and that Copilot CLI does not
+# read - so installed skills were invisible to the agent actually in use, while
+# the install still reported success. Copilot reads .agents/skills/ and
+# .github/prompts/.
+target: copilot
 dependencies:
   apm:
   - webmaxru/ai-native-dev/skills/agent-package-manager
