@@ -211,5 +211,48 @@
       "limitation.redirect_not_expanded"
     ],
     "notes": "rb.gy is a common shortener; local analysis must report that the final redirect was not expanded."
+  },
+  {
+    "id": "possible-shortener-short-domain-opaque-path",
+    "payload": "https://q7.no/A1b2C3",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.possible_shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "mustNotContain": [
+      "url.shortener"
+    ],
+    "notes": "A short registrable domain plus one short opaque path segment with letters and digits should warn as a possible redirect when it is not in the known shortener registry."
+  },
+  {
+    "id": "possible-shortener-bare-domain-near-miss",
+    "payload": "https://q7.no/",
+    "expectedVerdict": "no_known_threat_found",
+    "mustNotContain": [
+      "url.possible_shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "A bare short domain has no short opaque path segment and must not be treated as a possible redirect on that signal alone."
+  },
+  {
+    "id": "possible-shortener-normal-path-near-miss",
+    "payload": "https://q7.no/vanlig-side",
+    "expectedVerdict": "no_known_threat_found",
+    "mustNotContain": [
+      "url.possible_shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "A normal word-like path without digits is not an opaque short code and must not trigger the possible-shortener heuristic."
+  },
+  {
+    "id": "possible-shortener-known-brand-near-miss",
+    "payload": "https://dnb.no/A1b2C3",
+    "expectedVerdict": "no_known_threat_found",
+    "mustNotContain": [
+      "url.possible_shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "notes": "Known brand domains are explicitly excluded from the heuristic even when the path segment looks like a short code."
   }
 ]

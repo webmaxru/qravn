@@ -22,6 +22,11 @@
   max-width: 46rem;
 }
 
+.hero-controls {
+  display: grid;
+  gap: 0.75rem;
+}
+
 .eyebrow {
   margin: 0;
   color: var(--text-muted);
@@ -38,6 +43,40 @@
   padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+}
+
+.offline-mode-control {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.switch-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.switch-row input {
+  width: 2.75rem;
+  height: 1.5rem;
+  accent-color: var(--button-primary);
+}
+
+.switch-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.switch-title {
+  font-weight: 900;
+}
+
+.switch-detail {
+  color: var(--text-muted);
+  font-size: 0.92rem;
 }
 
 .language-switcher label {
@@ -330,6 +369,27 @@ pre {
 
 .limitations {
   background: var(--calm-bg);
+}
+
+.offline-limitation,
+.possible-redirect-warning {
+  border-left: 0.35rem solid var(--warning);
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+.possible-redirect-warning {
+  margin: 0.25rem 0 1rem;
+}
+
+.possible-redirect-warning h2,
+.offline-limitation h2 {
+  margin-bottom: 0.25rem;
+}
+
+.possible-redirect-warning p,
+.offline-limitation p {
+  margin: 0.25rem 0 0;
 }
 
 .action-row {

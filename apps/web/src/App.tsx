@@ -7,7 +7,7 @@ import { ResultPanel } from './components/ResultPanel';
 import type { ExpansionState, OnlineExpansion } from './components/RedirectPanel';
 import type { Assessment, RedirectResolution } from './contracts/assessment';
 import { createEngine } from './engine/createEngine';
-import { normaliseLocale, type Locale } from './engine/catalog';
+import { normaliseLocale, textForCode, type Locale } from './engine/catalog';
 import type { EngineInstance, SafetyEngine } from './engine/types';
 import { isOnlineModeAvailable, resolveRedirect } from './lib/resolverClient';
 
@@ -28,6 +28,16 @@ interface AppProps {
   resolverOverride?: AppResolver;
 }
 
+const OFFLINE_MODE_STORAGE_KEY = 'qrrrgh.offlineMode';
+
+function readStoredOfflineMode(): boolean {
+  try {
+    return window.localStorage.getItem(OFFLINE_MODE_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 function App({ engineOverride, resolverOverride }: AppProps) {
   const [locale, setLocale] = useState<Locale>('en');
   const [engineInstance, setEngineInstance] = useState<EngineInstance | null>(
@@ -40,12 +50,34 @@ function App({ engineOverride, resolverOverride }: AppProps) {
   // change and so the individual hops can be rendered.
   const [redirectResolution, setRedirectResolution] = useState<RedirectResolution | null>(null);
   const [expansionState, setExpansionState] = useState<ExpansionState>('idle');
+  const [offlineMode, setOfflineMode] = useState(readStoredOfflineMode);
   const resultRef = useRef<HTMLDivElement | null>(null);
 
   const resolver = useMemo<AppResolver>(
     () => resolverOverride ?? { available: isOnlineModeAvailable(), resolve: (url) => resolveRedirect(url) },
     [resolverOverride],
   );
+  const effectiveResolver = useMemo<AppResolver>(
+    () =>
+      offlineMode
+        ? {
+            available: false,
+            resolve: async () => {
+              throw new Error('Redirect expansion is disabled in offline mode.');
+            },
+          }
+        : resolver,
+    [offlineMode, resolver],
+  );
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(OFFLINE_MODE_STORAGE_KEY, String(offlineMode));
+    } catch {
+      // Persistence is best-effort; the runtime choice still applies.
+    }
+    if (offlineMode) setExpansionState('idle');
+  }, [offlineMode]);
 
   useEffect(() => {
     if (engineOverride) return;
@@ -106,11 +138,11 @@ function App({ engineOverride, resolverOverride }: AppProps) {
   // failure comes back as a resolution with a failure outcome, which the core
   // renders as a limitation, so it never reads as a clean result.
   async function handleExpand() {
-    if (!assessment || !engineInstance) return;
+    if (!assessment || !engineInstance || !effectiveResolver.available) return;
     const target = assessment.rawPayload;
     setExpansionState('resolving');
     try {
-      const resolution = await resolver.resolve(target);
+      const resolution = await effectiveResolver.resolve(target);
       setRedirectResolution(resolution);
       const next = assessWith(target, locale, resolution);
       setExpansionState(next ? 'idle' : 'error');
@@ -140,10 +172,13 @@ function App({ engineOverride, resolverOverride }: AppProps) {
   }
 
   const online: OnlineExpansion = {
-    available: resolver.available,
+    available: effectiveResolver.available,
     state: expansionState,
     onExpand: () => void handleExpand(),
   };
+  const offlineLabel = textForCode('ui.offline_mode_label', {}, locale);
+  const offlineDescription = textForCode('ui.offline_mode_description', {}, locale);
+  const offlineLimitation = textForCode('ui.offline_redirect_limitation', {}, locale);
 
   return (
     <main className="app-shell">
@@ -153,8 +188,35 @@ function App({ engineOverride, resolverOverride }: AppProps) {
           <h1>Check a QR link without opening it</h1>
           <p>Paste a suspicious link or QR payload. The check runs locally in your browser and explains the evidence before any external action.</p>
         </div>
-        <LanguageSwitcher locale={locale} onChange={changeLocale} />
+        <div className="hero-controls">
+          <LanguageSwitcher locale={locale} onChange={changeLocale} />
+          <section className="offline-mode-control" aria-labelledby="offline-mode-heading">
+            <label className="switch-row">
+              <input
+                type="checkbox"
+                role="switch"
+                checked={offlineMode}
+                aria-describedby="offline-mode-description"
+                onChange={(event) => setOfflineMode(event.currentTarget.checked)}
+              />
+              <span className="switch-copy">
+                <span id="offline-mode-heading" className="switch-title">{offlineLabel.title}</span>
+                <span id="offline-mode-description" className="switch-detail">
+                  <strong>{offlineDescription.title}</strong>
+                  {offlineDescription.detail ? ` — ${offlineDescription.detail}` : ''}
+                </span>
+              </span>
+            </label>
+          </section>
+        </div>
       </header>
+
+      {offlineMode ? (
+        <section className="panel offline-limitation" role="note" aria-labelledby="offline-limitation-heading">
+          <h2 id="offline-limitation-heading">{offlineLimitation.title}</h2>
+          {offlineLimitation.detail ? <p>{offlineLimitation.detail}</p> : null}
+        </section>
+      ) : null}
 
       {engineInstance?.message ? <div className="dev-banner" role="status">{engineInstance.message}</div> : null}
       {engineError ? (
@@ -168,7 +230,14 @@ function App({ engineOverride, resolverOverride }: AppProps) {
       <InputForm onSubmit={runCheck} disabled={!engineInstance || Boolean(engineError)} />
 
       {assessment ? (
-        <ResultPanel assessment={assessment} locale={locale} redirectResolution={redirectResolution} online={online} ref={resultRef} />
+        <ResultPanel
+          assessment={assessment}
+          locale={locale}
+          redirectResolution={redirectResolution}
+          online={online}
+          offlineMode={offlineMode}
+          ref={resultRef}
+        />
       ) : (
         <section className="panel empty-state" aria-live="polite">
           <h2>Ready when you paste</h2>
@@ -178,7 +247,7 @@ function App({ engineOverride, resolverOverride }: AppProps) {
 
       <section className="panel privacy" aria-labelledby="privacy-heading">
         <h2 id="privacy-heading">About / privacy</h2>
-        <p>Everything in this prototype runs locally in the browser. There is no analytics, telemetry, tracking pixel, link preview, favicon lookup, or backend API call — unless you explicitly ask us to expand a shortened link, which sends only that link to our own resolver so your device never contacts it.</p>
+        <p>Everything in this prototype runs locally in the browser. There is no analytics, telemetry, tracking pixel, link preview, favicon lookup, or backend API call — unless offline mode is off and you explicitly ask us to expand a shortened link, which sends only that link to our own resolver so your device never contacts it. Offline mode disables that expansion option entirely.</p>
       </section>
     </main>
   );

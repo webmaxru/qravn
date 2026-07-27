@@ -63,14 +63,16 @@ impl SafetyEngine {
                 let scanned_domain = url
                     .as_ref()
                     .and_then(|breakdown| breakdown.registrable_domain.clone());
-                let scanned_is_shortener = payload_analysis
-                    .findings
-                    .iter()
-                    .any(|finding| finding.code == "url.shortener");
+                let scanned_has_redirect_cue = payload_analysis.findings.iter().any(|finding| {
+                    matches!(
+                        finding.code.as_str(),
+                        "url.shortener" | "url.possible_shortener"
+                    )
+                });
                 let output = redirect::analyze(
                     resolution,
                     scanned_domain.as_deref(),
-                    scanned_is_shortener,
+                    scanned_has_redirect_cue,
                     &payload_analysis.findings,
                     &self.rules,
                 );

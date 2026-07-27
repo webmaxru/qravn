@@ -293,6 +293,7 @@ pub fn severity_for_code(code: &str) -> Severity {
         | "payload.sms_message"
         | "payload.app_deep_link" => Severity::Medium,
         "url.non_standard_port"
+        | "url.possible_shortener"
         | "url.excessive_subdomains"
         | "url.suspicious_tld"
         | "redirect.multiple_hops"

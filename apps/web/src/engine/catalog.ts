@@ -45,6 +45,11 @@ const findingTexts: Catalog = {
     title: 'Shortened link',
     detail: '{service} hides the final destination. This local check does not expand redirects.',
   },
+  'url.possible_shortener': {
+    title: 'Possible shortened link',
+    detail:
+      'The domain and short code look like a redirecting link, but this service is not in the known shortener list. The final destination is not visible until redirect expansion is checked. Observed value: {host}.',
+  },
   'url.known_malicious': {
     title: 'Known malicious test rule matched',
     detail: 'The development rule {ruleId} matched this payload.',
@@ -142,6 +147,24 @@ const uiTexts: Catalog = {
   'online.retry_button': {
     title: 'Try expanding again',
     detail: '',
+  },
+  'ui.offline_mode_label': {
+    title: 'Offline mode',
+    detail: '',
+  },
+  'ui.offline_mode_description': {
+    title: 'Check locally only',
+    detail:
+      'When offline mode is on, the app uses local rules only and does not ask the resolver to follow redirects.',
+  },
+  'ui.offline_redirect_limitation': {
+    title: 'Redirects cannot be followed in offline mode',
+    detail: 'The final destination may be unknown unless you turn off offline mode and choose redirect expansion.',
+  },
+  'ui.possible_redirect_warning': {
+    title: 'Possibly a redirect',
+    detail:
+      'This may send you to a different final destination. That does not mean the link is safe or unsafe by itself.',
   },
 };
 

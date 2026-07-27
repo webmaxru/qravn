@@ -120,14 +120,25 @@ pub fn detect_url(
         _ => {}
     }
 
-    if rules.shortener_hosts.iter().any(|host| host == &url.host) {
+    let redirect_cue_host = if rules.shortener_hosts.iter().any(|host| host == &url.host) {
         findings.push(Finding::new(
             "url.shortener",
             params(&[("service", url.host.clone())]),
         ));
+        Some(url.host.clone())
+    } else if is_possible_shortener(url, rules) {
+        findings.push(Finding::new(
+            "url.possible_shortener",
+            params(&[("host", url.host.clone())]),
+        ));
+        Some(url.host.clone())
+    } else {
+        None
+    };
+    if let Some(host) = redirect_cue_host {
         limitations.push(Limitation::new(
             "limitation.redirect_not_expanded",
-            params(&[("service", url.host.clone())]),
+            params(&[("service", host)]),
         ));
     }
     if let Some(suffix) = &url.public_suffix {
@@ -215,6 +226,61 @@ fn detect_brand_impersonation(
             ));
         }
     }
+}
+
+fn is_possible_shortener(url: &UrlBreakdown, rules: &RulePackage) -> bool {
+    if !matches!(url.scheme.as_str(), "http" | "https")
+        || url.query.is_some()
+        || url.fragment.is_some()
+    {
+        return false;
+    }
+    let Some(registrable) = url.registrable_domain.as_deref() else {
+        return false;
+    };
+    if url.host != registrable || !url.subdomains.is_empty() {
+        return false;
+    }
+    if rules
+        .brands
+        .iter()
+        .any(|brand| rules.is_allowed_brand_domain(brand, registrable))
+    {
+        return false;
+    }
+
+    let mut labels = registrable.split('.');
+    let Some(stem) = labels.next() else {
+        return false;
+    };
+    let Some(suffix) = labels.next() else {
+        return false;
+    };
+    if labels.next().is_some()
+        || !(1..=5).contains(&stem.len())
+        || !stem.bytes().all(|b| b.is_ascii_alphanumeric())
+        || !(2..=4).contains(&suffix.len())
+        || !suffix.bytes().all(|b| b.is_ascii_alphabetic())
+    {
+        return false;
+    }
+
+    let path = url.path.as_str();
+    let Some(segment) = path.strip_prefix('/') else {
+        return false;
+    };
+    let segment = segment.strip_suffix('/').unwrap_or(segment);
+    if segment.is_empty()
+        || segment.contains('/')
+        || segment.contains('.')
+        || !(4..=12).contains(&segment.len())
+        || !segment
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+    {
+        return false;
+    }
+    segment.bytes().any(|b| b.is_ascii_alphabetic()) && segment.bytes().any(|b| b.is_ascii_digit())
 }
 
 fn detect_query_signals(url: &UrlBreakdown, findings: &mut Vec<Finding>) {

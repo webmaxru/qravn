@@ -87,6 +87,10 @@
     "title": "Forkortet lenke",
     "detail": "Lenken bruker en forkortingstjeneste. Den endelige destinasjonen er ikke synlig før videresending sjekkes. Observert verdi: {service}."
   },
+  "url.possible_shortener": {
+    "title": "Mulig forkortet lenke",
+    "detail": "Domenet og den korte koden ligner en lenke som videresender, men tjenesten står ikke i den kjente listen over forkortere. Den endelige destinasjonen er ikke synlig før videresending sjekkes. Observert verdi: {host}."
+  },
   "url.suspicious_tld": {
     "title": "Uvanlig toppdomene",
     "detail": "Toppdomenet forekommer oftere i misbruk. Dette er et svakt signal og må vurderes sammen med annet. Observert verdi: {tld}."
@@ -266,6 +270,22 @@
   "ui.real_destination": {
     "title": "Faktisk destinasjon",
     "detail": ""
+  },
+  "ui.offline_mode_label": {
+    "title": "Frakoblet modus",
+    "detail": ""
+  },
+  "ui.offline_mode_description": {
+    "title": "Sjekk bare lokalt",
+    "detail": "Når frakoblet modus er på, bruker appen bare lokale regler og ber ikke tjenesten om å følge videresendinger."
+  },
+  "ui.offline_redirect_limitation": {
+    "title": "Videresendinger kan ikke følges i frakoblet modus",
+    "detail": "Den endelige destinasjonen kan være ukjent med mindre du slår av frakoblet modus og velger utviding av videresending."
+  },
+  "ui.possible_redirect_warning": {
+    "title": "Mulig videresending",
+    "detail": "Dette kan sende deg til en annen endelig destinasjon. Det betyr ikke i seg selv at lenken er trygg eller utrygg."
   },
   "redirect.cross_domain": {
     "title": "Ender på et annet domene",

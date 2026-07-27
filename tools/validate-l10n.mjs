@@ -10,7 +10,7 @@ const findings = registry.findings ?? {};
 const limitations = registry.limitations ?? {};
 const registryCodes = new Set([...Object.keys(findings), ...Object.keys(limitations)]);
 const verdictCodes = ['verdict.known_malicious','verdict.suspicious','verdict.insufficient_evidence','verdict.no_known_threat_found'];
-const uiCodes = ['ui.check','ui.paste_placeholder','ui.result','ui.findings','ui.limitations','ui.what_we_found','ui.open_anyway','ui.open_blocked','ui.copy','ui.scan_again','ui.about','ui.privacy_note','ui.language','ui.raw_payload','ui.real_destination'];
+const uiCodes = ['ui.check','ui.paste_placeholder','ui.result','ui.findings','ui.limitations','ui.what_we_found','ui.open_anyway','ui.open_blocked','ui.copy','ui.scan_again','ui.about','ui.privacy_note','ui.language','ui.raw_payload','ui.real_destination','ui.offline_mode_label','ui.offline_mode_description','ui.offline_redirect_limitation','ui.possible_redirect_warning'];
 // UI chrome for explicit online (redirect-expansion) mode. Listed here so the
 // gate fails if any locale is missing one: the app targets Norway, so an
 // English string silently falling through to a Bokmal/Nynorsk user is a defect,

@@ -3,7 +3,7 @@ use serde::Deserialize;
 use std::collections::BTreeMap;
 
 const THIRTY_DAYS_MS: u64 = 30 * 24 * 60 * 60 * 1000;
-const DEFAULT_GENERATED_AT_MS: u64 = 1_783_382_400_000; // 2026-07-01T00:00:00Z
+const DEFAULT_GENERATED_AT_MS: u64 = 1_785_628_800_000; // 2026-07-27T00:00:00Z
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -112,7 +112,7 @@ impl RulePackage {
 }
 
 fn default_version() -> String {
-    "bundled-2026-07-01".to_owned()
+    "bundled-2026-07-27".to_owned()
 }
 
 fn default_generated_at_ms() -> u64 {
@@ -121,19 +121,43 @@ fn default_generated_at_ms() -> u64 {
 
 fn default_shorteners() -> Vec<String> {
     [
+        "adf.ly",
+        "amzn.to",
         "bit.ly",
-        "t.co",
-        "tinyurl.com",
-        "goo.gl",
-        "ow.ly",
-        "is.gd",
+        "bitly.com",
+        "bl.ink",
         "buff.ly",
-        "rebrand.ly",
+        "clck.ru",
         "cutt.ly",
-        "shorturl.at",
+        "dlvr.it",
+        "eepurl.com",
+        "fb.me",
+        "g.co",
+        "geni.us",
+        "goo.gl",
+        "goo.su",
+        "ift.tt",
+        "is.gd",
+        "linkfire.com",
         "lnkd.in",
+        "ow.ly",
+        "po.st",
         "qrco.de",
         "rb.gy",
+        "rebrand.ly",
+        "s.id",
+        "short.io",
+        "shorte.st",
+        "shorturl.at",
+        "t.co",
+        "t.ly",
+        "t.me",
+        "tiny.cc",
+        "tinyurl.com",
+        "trib.al",
+        "v.gd",
+        "vk.cc",
+        "wa.me",
     ]
     .iter()
     .map(|s| (*s).to_owned())

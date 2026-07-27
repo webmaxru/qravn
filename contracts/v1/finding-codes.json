@@ -1,5 +1,5 @@
 {
-  "$comment": "Canonical registry of finding and limitation codes. Source of truth for the Rust core, the web app, and every localization catalog. Adding a code requires three things: an entry here, text in localization/{nb,nn,en}.json, and a golden test vector.",
+  "$comment": "Canonical registry of finding and limitation codes. Source of truth for the Rust core, the web app, and every localization catalog. Adding a code requires three things: an entry here, text in localization/{nb,nn,en}.json, and a golden test vector. Redirect cue semantics: url.shortener is emitted when the normalized lowercase authority host exactly matches an entry in the known shortener registry. url.possible_shortener is emitted only when url.shortener did not match and this strict heuristic matches: the URL is http or https; a public-suffix based registrableDomain is known; the authority host exactly equals the registrableDomain with no subdomains; the registrableDomain has exactly one dot; the domain stem before the dot is 1-5 ASCII alphanumeric characters with no hyphen; the public suffix after the dot is 2-4 ASCII letters; the path is exactly one segment, with optional trailing slash, whose raw segment is 4-12 characters from [A-Za-z0-9_-], contains at least one ASCII letter and at least one digit, contains no dot, and there is no query or fragment; and the registrableDomain is not an allowed/protected domain for any known brand or ordinary site rule. It must never match a known shortener, a known brand domain, a bare domain with no path, a URL with subdomains, a normal long or multi-segment path, a path without a digit, or a path containing words separated by slashes. url.shortener and url.possible_shortener are mutually exclusive. limitation.redirect_not_expanded is emitted whenever either redirect cue is present and the assessment has no resolved redirect chain; use the cue host as the service parameter.",
   "schemaVersion": 1,
   "severities": ["info", "low", "medium", "high", "critical"],
   "findings": {
@@ -25,6 +25,7 @@
     "url.file_scheme": { "severity": "high", "category": "dangerous_scheme", "params": [] },
     "url.unknown_scheme": { "severity": "medium", "category": "dangerous_scheme", "params": ["scheme"] },
     "url.shortener": { "severity": "medium", "category": "redirection", "params": ["service"] },
+    "url.possible_shortener": { "severity": "low", "category": "redirection", "params": ["host"] },
     "url.suspicious_tld": { "severity": "low", "category": "reputation", "params": ["tld"] },
     "url.known_malicious": { "severity": "critical", "category": "reputation", "params": ["ruleId"] },
     "url.no_registrable_domain": { "severity": "medium", "category": "structure", "params": ["host"] },

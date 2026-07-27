@@ -87,6 +87,10 @@
     "title": "Forkorta lenkje",
     "detail": "Lenkja brukar ei forkortingsteneste. Den endelege destinasjonen er ikkje synleg før vidaresending blir sjekka. Observert verdi: {service}."
   },
+  "url.possible_shortener": {
+    "title": "Mogleg forkorta lenkje",
+    "detail": "Domenet og den korte koden liknar ei lenkje som vidaresender, men tenesta står ikkje i den kjende lista over forkortarar. Den endelege destinasjonen er ikkje synleg før vidaresending blir sjekka. Observert verdi: {host}."
+  },
   "url.suspicious_tld": {
     "title": "Uvanleg toppdomene",
     "detail": "Toppdomenet førekjem oftare i misbruk. Dette er eit svakt signal og må vurderast saman med anna. Observert verdi: {tld}."
@@ -266,6 +270,22 @@
   "ui.real_destination": {
     "title": "Faktisk destinasjon",
     "detail": ""
+  },
+  "ui.offline_mode_label": {
+    "title": "Fråkopla modus",
+    "detail": ""
+  },
+  "ui.offline_mode_description": {
+    "title": "Sjekk berre lokalt",
+    "detail": "Når fråkopla modus er på, brukar appen berre lokale reglar og ber ikkje tenesta om å følgje vidaresendingar."
+  },
+  "ui.offline_redirect_limitation": {
+    "title": "Vidaresendingar kan ikkje følgjast i fråkopla modus",
+    "detail": "Den endelege destinasjonen kan vere ukjend med mindre du slår av fråkopla modus og vel utviding av vidaresending."
+  },
+  "ui.possible_redirect_warning": {
+    "title": "Mogleg vidaresending",
+    "detail": "Dette kan sende deg til ein annan endeleg destinasjon. Det betyr ikkje i seg sjølv at lenkja er trygg eller utrygg."
   },
   "redirect.cross_domain": {
     "title": "Endar på eit anna domene",

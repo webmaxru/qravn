@@ -29,6 +29,7 @@ const codeSeverities: Record<string, Severity> = {
   'url.javascript_scheme': 'critical',
   'url.data_scheme': 'critical',
   'url.shortener': 'medium',
+  'url.possible_shortener': 'low',
   'url.known_malicious': 'critical',
   // Redirect-chain findings. Severities mirror core `severity_for_code`.
   'redirect.downgrade_to_http': 'high',
@@ -49,11 +50,43 @@ const MULTIPLE_HOPS_THRESHOLD = 2;
 const CHAINED_SHORTENERS_THRESHOLD = 2;
 
 const shorteners = new Map([
+  ['adf.ly', 'adf.ly'],
+  ['amzn.to', 'amzn.to'],
   ['bit.ly', 'bit.ly'],
-  ['tinyurl.com', 'TinyURL'],
-  ['t.co', 't.co'],
+  ['bitly.com', 'bitly.com'],
+  ['bl.ink', 'bl.ink'],
+  ['buff.ly', 'buff.ly'],
+  ['clck.ru', 'clck.ru'],
+  ['cutt.ly', 'cutt.ly'],
+  ['dlvr.it', 'dlvr.it'],
+  ['eepurl.com', 'eepurl.com'],
+  ['fb.me', 'fb.me'],
+  ['g.co', 'g.co'],
+  ['geni.us', 'geni.us'],
   ['goo.gl', 'goo.gl'],
+  ['goo.su', 'goo.su'],
+  ['ift.tt', 'ift.tt'],
+  ['is.gd', 'is.gd'],
+  ['linkfire.com', 'linkfire.com'],
+  ['lnkd.in', 'lnkd.in'],
   ['ow.ly', 'ow.ly'],
+  ['po.st', 'po.st'],
+  ['qrco.de', 'qrco.de'],
+  ['rb.gy', 'rb.gy'],
+  ['rebrand.ly', 'rebrand.ly'],
+  ['s.id', 's.id'],
+  ['short.io', 'short.io'],
+  ['shorte.st', 'shorte.st'],
+  ['shorturl.at', 'shorturl.at'],
+  ['t.co', 't.co'],
+  ['t.ly', 't.ly'],
+  ['t.me', 't.me'],
+  ['tiny.cc', 'tiny.cc'],
+  ['tinyurl.com', 'tinyurl.com'],
+  ['trib.al', 'trib.al'],
+  ['v.gd', 'v.gd'],
+  ['vk.cc', 'vk.cc'],
+  ['wa.me', 'wa.me'],
 ]);
 
 const norwegianBrands = ['dnb', 'vipps', 'bankid', 'altinn', 'posten', 'digipost'];
@@ -129,6 +162,7 @@ function breakdown(url: URL): UrlBreakdown {
 function verdictFor(findings: Finding[], kind: PayloadKind): Verdict {
   if (findings.some((item) => item.severity === 'critical')) return 'known_malicious';
   if (findings.some((item) => item.severity === 'high' || item.severity === 'medium')) return 'suspicious';
+  if (findings.some((item) => item.code === 'url.possible_shortener')) return 'insufficient_evidence';
   if (kind !== 'url') return 'insufficient_evidence';
   return 'no_known_threat_found';
 }
@@ -139,6 +173,30 @@ function limitationFor(code: string, params: Record<string, string>, locale: str
 
 function isShortenerHost(host: string): boolean {
   return shorteners.has(host.toLowerCase());
+}
+
+function isPossibleShortener(url: URL, urlBreakdown: UrlBreakdown): boolean {
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
+  if (url.search || url.hash) return false;
+
+  const host = urlBreakdown.host.toLowerCase();
+  const registrableDomain = urlBreakdown.registrableDomain;
+  if (!registrableDomain || host !== registrableDomain || urlBreakdown.subdomains.length > 0) return false;
+  if (brandOwnedDomains.has(registrableDomain)) return false;
+
+  const labels = registrableDomain.split('.');
+  if (labels.length !== 2) return false;
+  const [stem, suffix] = labels;
+  if (!stem || !suffix) return false;
+  if (!/^[a-z0-9]{1,5}$/i.test(stem)) return false;
+  if (!/^[a-z]{2,4}$/i.test(suffix)) return false;
+
+  const raw = url.pathname;
+  const segment = raw.endsWith('/') ? raw.slice(1, -1) : raw.slice(1);
+  if (!segment || segment.includes('/')) return false;
+  if (!/^[A-Za-z0-9_-]{4,12}$/.test(segment)) return false;
+  if (segment.includes('.')) return false;
+  return /[A-Za-z]/.test(segment) && /\d/.test(segment);
 }
 
 /** Run every URL detector against `url`. Reused for the scanned URL and, during
@@ -160,7 +218,11 @@ function detectUrlFindings(url: URL, urlBreakdown: UrlBreakdown, locale: string)
       finding('url.punycode_host', { punycodeHost: urlBreakdown.host, unicodeHost: urlBreakdown.unicodeHost ?? urlBreakdown.host }, locale),
     );
   }
-  if (isShortenerHost(host)) out.push(finding('url.shortener', { service: shorteners.get(host) ?? host }, locale));
+  if (isShortenerHost(host)) {
+    out.push(finding('url.shortener', { service: shorteners.get(host) ?? host }, locale));
+  } else if (isPossibleShortener(url, urlBreakdown)) {
+    out.push(finding('url.possible_shortener', { host }, locale));
+  }
 
   const subdomainText = urlBreakdown.subdomains.join('.');
   const pathText = decodeURIComponent(url.pathname).toLowerCase();
@@ -369,7 +431,9 @@ function actionsFor(verdict: Verdict, findings: Finding[], url?: URL): Recommend
   const blocked =
     verdict === 'known_malicious' ||
     findings.some((item) => item.code === 'url.javascript_scheme' || item.code === 'url.data_scheme');
-  if (findings.some((item) => item.code === 'url.shortener')) actions.unshift('expand_redirect_online');
+  if (findings.some((item) => item.code === 'url.shortener' || item.code === 'url.possible_shortener')) {
+    actions.unshift('expand_redirect_online');
+  }
   if (blocked) return ['open_blocked', ...actions];
   if (url && (url.protocol === 'https:' || url.protocol === 'http:')) actions.unshift('open_with_confirmation');
   return actions;
@@ -391,7 +455,7 @@ export class MockSafetyEngine implements SafetyEngine {
       limitationFor('limitation.offline_no_reputation', {}, locale),
     ];
     let urlBreakdown: UrlBreakdown | undefined;
-    let scannedIsShortener = false;
+    let scannedHasRedirectCue = false;
 
     if (kind === 'empty') {
       findings.push(finding('payload.empty', {}, locale));
@@ -400,11 +464,11 @@ export class MockSafetyEngine implements SafetyEngine {
     } else {
       urlBreakdown = breakdown(url);
       findings.push(...detectUrlFindings(url, urlBreakdown, locale));
-      scannedIsShortener = isShortenerHost(urlBreakdown.host);
+      scannedHasRedirectCue = findings.some((item) => item.code === 'url.shortener' || item.code === 'url.possible_shortener');
       // Offline cue: a shortener hides its destination. Emitting this is what
       // lets the UI offer explicit online expansion. Removed below once the
       // chain has actually been expanded.
-      if (scannedIsShortener) {
+      if (scannedHasRedirectCue) {
         limitations.push(limitationFor('limitation.redirect_not_expanded', { service: urlBreakdown.host }, locale));
       }
     }
@@ -416,7 +480,7 @@ export class MockSafetyEngine implements SafetyEngine {
       const output = analyzeRedirect(
         input.redirectResolution,
         urlBreakdown.registrableDomain,
-        scannedIsShortener,
+        scannedHasRedirectCue,
         findings,
         locale,
       );

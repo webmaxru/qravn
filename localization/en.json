@@ -87,6 +87,10 @@
     "title": "Shortened link",
     "detail": "The link uses a shortening service. The final destination is not visible until redirect expansion is checked. Observed value: {service}."
   },
+  "url.possible_shortener": {
+    "title": "Possible shortened link",
+    "detail": "The domain and short code look like a redirecting link, but this service is not in the known shortener list. The final destination is not visible until redirect expansion is checked. Observed value: {host}."
+  },
   "url.suspicious_tld": {
     "title": "Unusual top-level domain",
     "detail": "The top-level domain appears more often in abuse. This is a weak signal and must be considered with other evidence. Observed value: {tld}."
@@ -266,6 +270,22 @@
   "ui.real_destination": {
     "title": "Real destination",
     "detail": ""
+  },
+  "ui.offline_mode_label": {
+    "title": "Offline mode",
+    "detail": ""
+  },
+  "ui.offline_mode_description": {
+    "title": "Check locally only",
+    "detail": "When offline mode is on, the app uses local rules only and does not ask the resolver to follow redirects."
+  },
+  "ui.offline_redirect_limitation": {
+    "title": "Redirects cannot be followed in offline mode",
+    "detail": "The final destination may be unknown unless you turn off offline mode and choose redirect expansion."
+  },
+  "ui.possible_redirect_warning": {
+    "title": "Possibly a redirect",
+    "detail": "This may send you to a different final destination. That does not mean the link is safe or unsafe by itself."
   },
   "redirect.cross_domain": {
     "title": "Ends on a different domain",

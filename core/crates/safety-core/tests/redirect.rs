@@ -107,6 +107,60 @@ fn offline_shortener_still_reports_not_expanded() {
     assert!(a.redirect.is_none());
 }
 
+#[test]
+fn offline_possible_shortener_reports_not_expanded_and_can_be_expanded() {
+    let a = assess_plain("https://q7.no/A1b2C3/");
+    assert_eq!(a.verdict, Verdict::InsufficientEvidence);
+    assert!(has_finding(&a, "url.possible_shortener"));
+    assert!(!has_finding(&a, "url.shortener"));
+    assert!(has_limitation(&a, "limitation.redirect_not_expanded"));
+    assert!(a
+        .limitations
+        .iter()
+        .any(|l| l.code == "limitation.redirect_not_expanded"
+            && l.params
+                .get("service")
+                .is_some_and(|service| service == "q7.no")));
+    assert!(a
+        .recommended_actions
+        .iter()
+        .any(|action| matches!(action, safety_core::RecommendedAction::ExpandRedirectOnline)));
+}
+
+#[test]
+fn possible_shortener_heuristic_rejects_near_misses() {
+    let cases = [
+        ("known shortener", "https://bit.ly/A1b2C3"),
+        ("brand domain", "https://dnb.no/A1b2C3"),
+        ("bare domain", "https://q7.no/"),
+        ("subdomain", "https://www.q7.no/A1b2C3"),
+        ("long path", "https://q7.no/this-is-a-normal-long-path-123"),
+        ("multi segment", "https://q7.no/A1b2/C3d4"),
+        ("path without digit", "https://q7.no/AbCdEf"),
+        ("path with dot", "https://q7.no/A1b2.c3"),
+        ("query", "https://q7.no/A1b2C3?utm=1"),
+        ("fragment", "https://q7.no/A1b2C3#target"),
+        ("hyphenated domain stem", "https://q-7.no/A1b2C3"),
+        ("long domain stem", "https://abcdef.no/A1b2C3"),
+        ("multi-label registrable domain", "https://q7.co.uk/A1b2C3"),
+        ("words separated by slashes", "https://q7.no/login/side1"),
+    ];
+
+    for (name, payload) in cases {
+        let a = assess_plain(payload);
+        assert!(
+            !has_finding(&a, "url.possible_shortener"),
+            "{name} unexpectedly matched possible shortener"
+        );
+        if !has_finding(&a, "url.shortener") {
+            assert!(
+                !has_limitation(&a, "limitation.redirect_not_expanded"),
+                "{name} unexpectedly emitted redirect_not_expanded"
+            );
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Hop budget: the user's stated requirement.
 // ---------------------------------------------------------------------------

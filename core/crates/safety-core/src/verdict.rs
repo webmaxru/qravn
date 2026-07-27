@@ -81,6 +81,7 @@ fn is_insufficient_code(code: &str) -> bool {
     matches!(
         code,
         "url.shortener"
+            | "url.possible_shortener"
             | "payload.not_a_url"
             | "payload.empty"
             | "payload.binary_content"
@@ -102,7 +103,10 @@ fn recommended_actions(verdict: &Verdict, findings: &[Finding]) -> Vec<Recommend
             actions.push(RecommendedAction::OpenAllowed);
         }
     }
-    if findings.iter().any(|f| f.code == "url.shortener") {
+    if findings
+        .iter()
+        .any(|f| matches!(f.code.as_str(), "url.shortener" | "url.possible_shortener"))
+    {
         actions.push(RecommendedAction::ExpandRedirectOnline);
     }
     actions.push(RecommendedAction::Copy);
