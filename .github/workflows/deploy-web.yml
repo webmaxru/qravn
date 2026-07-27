@@ -67,6 +67,14 @@ jobs:
       - name: Build web app
         if: steps.inputs.outputs.ready == 'true'
         working-directory: apps/web
+        env:
+          # Public HTTPS origin of the redirect resolver. Not a secret - it is
+          # compiled into the client bundle and visible to every visitor. When
+          # unset the app simply has no online mode and never offers expansion.
+          # The build also injects this origin into connect-src in
+          # staticwebapp.config.json, so the browser can reach the resolver and
+          # nothing else; see scripts/inject-resolver-csp.mjs.
+          VITE_RESOLVER_URL: ${{ vars.VITE_RESOLVER_URL }}
         run: npm run build
 
   deploy:
@@ -133,6 +141,12 @@ jobs:
       - name: Build web app
         if: steps.inputs.outputs.ready == 'true'
         working-directory: apps/web
+        env:
+          # See the note on the same variable in the build job above. Set as a
+          # repository variable rather than a secret: it is a public URL that
+          # ships inside the client bundle, so marking it secret would imply a
+          # confidentiality the value does not have.
+          VITE_RESOLVER_URL: ${{ vars.VITE_RESOLVER_URL }}
         run: npm run build
 
       - name: Deploy prebuilt app
