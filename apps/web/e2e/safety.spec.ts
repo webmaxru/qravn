@@ -10,7 +10,17 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function submitPayload(page: import('@playwright/test').Page, payload: string) {
-  await page.getByLabel(/Paste a suspicious link/i).fill(payload);
+  // Wait for the analyser BEFORE typing, not just before clicking. Playwright's
+  // click() waits for the button to become enabled, so the click was always
+  // safe — but the fill() ahead of it was not: while the app is still starting,
+  // the dev server can still reload the page, which clears the textarea. The
+  // click then submitted an empty payload and the assertion failed against a
+  // perfectly correct "Empty content" result, in whichever test happened to run
+  // first. a11y.spec.ts already gates on the same signal for this reason.
+  await expect(page.getByRole('button', { name: /^Check$/ })).toBeEnabled({ timeout: 25_000 });
+  const field = page.getByLabel(/Paste a suspicious link/i);
+  await field.fill(payload);
+  await expect(field).toHaveValue(payload);
   await page.getByRole('button', { name: /^Check$/ }).click();
 }
 

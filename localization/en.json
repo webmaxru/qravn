@@ -324,7 +324,7 @@
     "detail": "Following stopped after {hopCount} steps, so the final address is unknown. This assessment covers only what was reached."
   },
   "online.expand_heading": {
-    "title": "Expand this shortened link",
+    "title": "Check where this link really goes",
     "detail": ""
   },
   "online.disclosure": {

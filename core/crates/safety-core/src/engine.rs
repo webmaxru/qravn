@@ -90,7 +90,19 @@ impl SafetyEngine {
             payload_kind,
             PayloadKind::Text | PayloadKind::Empty | PayloadKind::Binary
         ) && !payload_analysis.url_candidate;
-        let verdict_result = verdict::decide(payload_unknown, &payload_analysis.findings);
+        // Any http(s) URL can redirect, so the expansion option is offered
+        // whenever a chain has not already been resolved. Gating it on a
+        // shortener cue meant an unlisted redirector such as aka.ms was
+        // reported as "no known threat found" with no way to see where it went.
+        let redirect_expandable = redirect.is_none()
+            && url
+                .as_ref()
+                .is_some_and(|breakdown| matches!(breakdown.scheme.as_str(), "http" | "https"));
+        let verdict_result = verdict::decide(
+            payload_unknown,
+            &payload_analysis.findings,
+            redirect_expandable,
+        );
         let locale = input
             .locale
             .or_else(|| self.config.locale.clone())

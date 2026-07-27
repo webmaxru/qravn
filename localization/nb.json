@@ -324,7 +324,7 @@
     "detail": "Oppfølgingen stoppet etter {hopCount} steg, så den endelige adressen er ukjent. Denne vurderingen dekker bare det som ble nådd."
   },
   "online.expand_heading": {
-    "title": "Utvid denne forkortede lenken",
+    "title": "Sjekk hvor denne lenken faktisk går",
     "detail": ""
   },
   "online.disclosure": {

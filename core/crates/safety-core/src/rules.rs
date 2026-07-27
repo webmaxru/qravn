@@ -122,6 +122,7 @@ fn default_generated_at_ms() -> u64 {
 fn default_shorteners() -> Vec<String> {
     [
         "adf.ly",
+        "aka.ms",
         "amzn.to",
         "bit.ly",
         "bitly.com",

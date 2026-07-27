@@ -254,5 +254,18 @@
       "limitation.redirect_not_expanded"
     ],
     "notes": "Known brand domains are explicitly excluded from the heuristic even when the path segment looks like a short code."
+  },
+  {
+    "id": "known-shortener-aka-ms-word-slug",
+    "payload": "https://aka.ms/learn-azure",
+    "expectedVerdict": "insufficient_evidence",
+    "expectedFindings": [
+      "url.shortener",
+      "limitation.redirect_not_expanded"
+    ],
+    "mustNotContain": [
+      "url.possible_shortener"
+    ],
+    "notes": "aka.ms is Microsoft's official shortener and uses readable word slugs with no digits, so the opaque-code heuristic can never catch it. It must be in the bundled registry, otherwise the destination stays hidden and the result reads as no_known_threat_found."
   }
 ]

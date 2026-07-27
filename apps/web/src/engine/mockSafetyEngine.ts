@@ -51,6 +51,7 @@ const CHAINED_SHORTENERS_THRESHOLD = 2;
 
 const shorteners = new Map([
   ['adf.ly', 'adf.ly'],
+  ['aka.ms', 'aka.ms'],
   ['amzn.to', 'amzn.to'],
   ['bit.ly', 'bit.ly'],
   ['bitly.com', 'bitly.com'],
@@ -426,12 +427,19 @@ function analyzeRedirect(
   };
 }
 
-function actionsFor(verdict: Verdict, findings: Finding[], url?: URL): RecommendedAction[] {
+// Mirrors the Rust core: any http(s) URL can redirect, so expansion is offered
+// whenever a chain has not already been resolved, not only for known shorteners.
+function actionsFor(
+  verdict: Verdict,
+  findings: Finding[],
+  url?: URL,
+  redirectExpandable = false,
+): RecommendedAction[] {
   const actions: RecommendedAction[] = ['copy', 'report'];
   const blocked =
     verdict === 'known_malicious' ||
     findings.some((item) => item.code === 'url.javascript_scheme' || item.code === 'url.data_scheme');
-  if (findings.some((item) => item.code === 'url.shortener' || item.code === 'url.possible_shortener')) {
+  if (redirectExpandable) {
     actions.unshift('expand_redirect_online');
   }
   if (blocked) return ['open_blocked', ...actions];
@@ -504,7 +512,12 @@ export class MockSafetyEngine implements SafetyEngine {
       limitations,
       verdict,
       confidence: findings.some((item) => item.severity === 'critical') ? 0.95 : findings.length > 0 ? 0.76 : 0.62,
-      recommendedActions: actionsFor(verdict, findings, url),
+      recommendedActions: actionsFor(
+        verdict,
+        findings,
+        url,
+        !redirect && Boolean(url) && (url?.protocol === 'https:' || url?.protocol === 'http:'),
+      ),
       summary: verdictText(verdict, locale).detail,
       engineVersion: this.version(),
       rulesVersion: 'mock-dev-rules',

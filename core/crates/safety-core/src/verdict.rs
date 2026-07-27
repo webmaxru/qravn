@@ -7,7 +7,11 @@ pub struct VerdictResult {
     pub actions: Vec<RecommendedAction>,
 }
 
-pub fn decide(payload_unknown: bool, findings: &[Finding]) -> VerdictResult {
+pub fn decide(
+    payload_unknown: bool,
+    findings: &[Finding],
+    redirect_expandable: bool,
+) -> VerdictResult {
     let has_known_malicious = findings.iter().any(|f| f.code == "url.known_malicious");
     let has_critical = findings.iter().any(|f| f.severity == Severity::Critical);
     let high_count = findings
@@ -36,7 +40,7 @@ pub fn decide(payload_unknown: bool, findings: &[Finding]) -> VerdictResult {
         Verdict::InsufficientEvidence => 0.45,
         Verdict::NoKnownThreatFound => 0.72,
     };
-    let actions = recommended_actions(&verdict, findings);
+    let actions = recommended_actions(&verdict, redirect_expandable);
     VerdictResult {
         verdict,
         confidence,
@@ -94,7 +98,12 @@ fn is_insufficient_code(code: &str) -> bool {
     )
 }
 
-fn recommended_actions(verdict: &Verdict, findings: &[Finding]) -> Vec<RecommendedAction> {
+/// Any http(s) URL can redirect, whether or not it looks like a shortener, so
+/// the option to resolve it is offered for every unexpanded http(s) URL rather
+/// than only for hosts the bundled registry happens to know. Detection cues
+/// stay deliberately conservative because a false *warning* is noise, whereas
+/// an always-available *option* the user must choose costs nothing.
+fn recommended_actions(verdict: &Verdict, redirect_expandable: bool) -> Vec<RecommendedAction> {
     let mut actions = Vec::new();
     match verdict {
         Verdict::KnownMalicious => actions.push(RecommendedAction::OpenBlocked),
@@ -103,10 +112,7 @@ fn recommended_actions(verdict: &Verdict, findings: &[Finding]) -> Vec<Recommend
             actions.push(RecommendedAction::OpenAllowed);
         }
     }
-    if findings
-        .iter()
-        .any(|f| matches!(f.code.as_str(), "url.shortener" | "url.possible_shortener"))
-    {
+    if redirect_expandable {
         actions.push(RecommendedAction::ExpandRedirectOnline);
     }
     actions.push(RecommendedAction::Copy);

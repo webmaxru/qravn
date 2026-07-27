@@ -25,7 +25,7 @@ describe('RedirectPanel opt-in', () => {
       <RedirectPanel assessment={assessOnline(SHORTENER)} resolution={null} locale="en" online={online({ onExpand })} />,
     );
 
-    expect(screen.getByRole('heading', { name: /Expand this shortened link/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Check where this link really goes/i })).toBeInTheDocument();
     expect(screen.getByText(/this link's address is sent to our resolver/i)).toBeInTheDocument();
     expect(screen.getByText(/Your device never contacts the link/i)).toBeInTheDocument();
 
@@ -48,9 +48,22 @@ describe('RedirectPanel opt-in', () => {
     expect(screen.queryByRole('button', { name: /Expand this link safely/i })).not.toBeInTheDocument();
   });
 
-  it('renders nothing when the offline check found no shortener cue', () => {
+  // Regression: aka.ms is a real shortener that uses readable word slugs, so the
+  // opaque-code heuristic cannot catch it. Gating the opt-in on a shortener cue
+  // left such links reported as "no known threat found" with no way to check
+  // where they lead. Any unexpanded http(s) URL must be checkable on request.
+  it.each([
+    ['an unlisted redirector with a word slug', 'https://aka.ms/learn-azure'],
+    ['an ordinary URL with no redirect cue', 'https://example.com/login'],
+  ])('offers expansion for %s', (_label, payload) => {
+    render(<RedirectPanel assessment={assessOnline(payload)} resolution={null} locale="en" online={online()} />);
+
+    expect(screen.getByRole('button', { name: /Expand this link safely/i })).toBeInTheDocument();
+  });
+
+  it('renders nothing when the payload cannot be expanded at all', () => {
     const { container } = render(
-      <RedirectPanel assessment={assessOnline('https://example.com/login')} resolution={null} locale="en" online={online()} />,
+      <RedirectPanel assessment={assessOnline('just some scanned text')} resolution={null} locale="en" online={online()} />,
     );
     expect(container).toBeEmptyDOMElement();
   });

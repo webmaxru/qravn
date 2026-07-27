@@ -67,10 +67,11 @@ The plan must match the real repository, not only the planning documents.
 | Area | Verified state on 27 July 2026 |
 |---|---|
 | Contract registry | `contracts/v1/finding-codes.json` contains `url.shortener`, `url.possible_shortener` (severity `low`, category `redirection`), and `limitation.redirect_not_expanded`. The registry `$comment` carries the verbatim emission spec that core and every surface must implement identically. |
-| Bundled shorteners | `core/crates/safety-core/src/rules.rs` has 37 hosts, including `t.me`, `wa.me`, `fb.me`, `amzn.to`, `g.co`, `t.ly`, and `goo.su` alongside the original 13. `youtu.be` is deliberately excluded: it is predominantly a direct video host, so flagging it would add noise on every YouTube link. |
+| Bundled shorteners | `core/crates/safety-core/src/rules.rs` has 38 hosts, including `aka.ms`, `t.me`, `wa.me`, `fb.me`, `amzn.to`, `g.co`, `t.ly`, and `goo.su` alongside the original 13. `youtu.be` is deliberately excluded: it is predominantly a direct video host, so flagging it would add noise on every YouTube link. |
 | Rule metadata | The bundled `RulePackage` has `version` and `generated_at_ms`; the default is `bundled-2026-07-27`, bumped with the registry expansion so `freshness_limitations()` does not immediately emit `limitation.rules_stale`. |
 | Rule staleness | `RulePackage::freshness_limitations(now_ms)` emits `limitation.rules_stale` after 30 days. The host supplies `now_ms`; the core does not read time. |
 | Current shortener detection | `detect.rs` emits `url.shortener` for an exact bundled shortener host and `url.possible_shortener` for the heuristic case; the two are mutually exclusive. `limitation.redirect_not_expanded` now fires for either cue when no chain was resolved. |
+| Expansion availability | `verdict.rs` offers `expand_redirect_online` for **every** unexpanded http(s) URL, independently of the detection cues. See §5.4. |
 | Current limitations | `detect.rs` always adds `limitation.offline_no_reputation` and `limitation.classifier_unavailable` in the offline path. |
 | Redirect folding | `engine.rs` accepts optional `redirect_resolution`, analyzes it in the core, and removes `limitation.redirect_not_expanded` after a supplied resolution. |
 | Web resolver | `apps/web/src/lib/resolverClient.ts` talks only to the configured first-party resolver URL, has a 30s timeout for Azure Container Apps cold start, validates the untrusted response shape, and synthesizes non-reassuring failure outcomes. |
@@ -129,6 +130,43 @@ Signed rule updates are already contemplated in the implementation plan. For thi
 3. Offline mode ON disables automatic and manual in-app rule refresh. The only update path then is installing a newer app/build or PWA asset version.
 4. Offline mode OFF may offer rule refresh, but it must not be hidden inside a scan. Either refresh only after explicit settings consent, or ask before the first first-party update request.
 5. If rules are stale and cannot be refreshed because offline mode is ON, surface `limitation.rules_stale` plainly: the app can still check locally, but the shortener and reputation lists may be outdated.
+
+---
+
+### 5.4 Warnings are conservative; the expansion option is not
+
+A defect found on 27 July 2026 forced this distinction to be made explicit. `aka.ms/learn-azure`
+was assessed as `no_known_threat_found` with no way to check where it went: `aka.ms` was missing
+from the bundled registry, and the heuristic in `detect.rs` requires the path segment to contain
+both a letter and a digit, so a readable word slug can never match it. The UI then gated the
+expansion control on a detection cue being present, so an unlisted redirector produced a
+reassuring verdict about a destination the product had never seen.
+
+The two concerns are now separated, and must stay separated on every surface:
+
+| | Detection cues (`url.shortener`, `url.possible_shortener`) | Expansion option (`expand_redirect_online`) |
+|---|---|---|
+| Question answered | "Should we warn about this?" | "Can the user ask us to check?" |
+| Policy | Conservative. Only a registry hit or a strict heuristic. | Permissive. Every unexpanded http(s) URL. |
+| Cost of being wrong | A false warning is noise, and noise trains users to ignore warnings. | None. The user must actively choose it. |
+| Owner | `detect.rs` | `verdict.rs::recommended_actions` |
+
+The heuristic was deliberately **not** relaxed to catch word slugs. Dropping the digit requirement
+would flag `vg.no/sport` and `nrk.no/nyheter` — mainstream Norwegian news links — which is
+unacceptable in the launch market.
+
+Consequences to preserve:
+
+1. Any URL can redirect, and no bundled registry can ever know them all, so expansion availability
+   must not depend on the registry. Adding a host to the registry changes whether the user is
+   *warned*, never whether they *can check*.
+2. Offering expansion costs nothing in false positives, because it is an option the user chooses
+   rather than a claim the product makes.
+3. The privacy invariant is unchanged: expansion is per-check consented, runs in the isolated
+   resolver, and the device never contacts the scanned destination.
+4. Expansion is offered only while `redirect_resolution` is absent, so it disappears once a chain
+   has been expanded.
+5. Non-http(s) payloads (`javascript:`, `wifi:`, plain text) never offer it.
 
 ---
 
@@ -280,7 +318,7 @@ If App Group storage is unavailable, fail closed for network: treat offline mode
 The iOS client follows the same pattern as web:
 
 1. Run local core assessment first.
-2. If offline mode is OFF and the result contains `url.shortener` or `url.possible_shortener`, show a per-check consent sheet.
+2. If offline mode is OFF, offer expansion for any unexpanded http(s) URL — not only for ones carrying a shortener cue (§5.4) — through a per-check consent sheet.
 3. Send only the scanned URL to the first-party resolver service.
 4. Pass the returned `RedirectResolution` to the shared core through UniFFI.
 5. Render the core's updated verdict, findings, limitations, and redirect analysis.
@@ -401,11 +439,11 @@ The redirect cue must appear in addition to the verdict, not instead of it.
 Recommended order:
 
 1. Verdict card.
-2. Extra redirect warning, if `url.shortener` or `url.possible_shortener` is present.
+2. Extra redirect warning, if `url.shortener` or `url.possible_shortener` is present. This is the *warning*, which stays conservative.
 3. Up-front offline limitation if offline mode is ON.
 4. Findings list.
 5. Limitations list.
-6. Optional online expansion panel, only if offline mode is OFF and per-check expansion is available.
+6. Optional online expansion panel, offered for any unexpanded http(s) URL whenever offline mode is OFF and a resolver is configured. This is the *option*, which is always available (§5.4), so its presence must never be read as a warning.
 
 Accessibility rules:
 
@@ -492,7 +530,7 @@ Still to do:
 | Risk / question | Why it matters | Current plan |
 |---|---|---|
 | Heuristic false positives | `url.possible_shortener` could warn on legitimate short domains or messaging links. | Keep wording as `possibly`; make it an extra warning, not a verdict; measure false positives before tightening verdict policy. |
-| Shortener registry coverage | The bundled list is now 37 hosts including `t.me`, but any fixed list goes stale and `youtu.be` is intentionally omitted. | Expand through reviewed bundled rules and signed updates; add golden vectors with every registry expansion; rely on `url.possible_shortener` to cover hosts the list has not caught yet. |
+| Shortener registry coverage | The bundled list is now 38 hosts including `aka.ms` and `t.me`, but any fixed list goes stale and `youtu.be` is intentionally omitted. | Expand through reviewed bundled rules and signed updates; add golden vectors with every registry expansion; rely on `url.possible_shortener` to cover hosts the list has not caught yet, and on always-available expansion (§5.4) so an unlisted redirector is still checkable. |
 | Resolver cost at scale | Azure Container Apps scale-to-zero controls idle cost, but popular use could create real egress and compute cost. | Keep per-check consent, hop/time/body budgets, caching only if privacy-reviewed, and operational dashboards that do not log sensitive payloads unnecessarily. |
 | Cold starts | Scale-to-zero can make the first expansion slow. | Web already uses a 30s client timeout because measured cold start plus resolver budget can exceed 12s. Native clients need the same honest progress and timeout framing. |
 | Store review scrutiny | A security-claims app with URL checks, extensions, and first-party networking may get App Store / Play Store privacy and safety questions. | Keep claims narrow, avoid `safe`, document data flows, and prepare review fixtures proving the client does not contact destinations. |

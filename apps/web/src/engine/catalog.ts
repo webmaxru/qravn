@@ -93,7 +93,7 @@ const verdictTexts: Catalog = {
 // app aimed at Norway, not a cosmetic gap.
 const uiTexts: Catalog = {
   'online.expand_heading': {
-    title: 'Expand this shortened link',
+    title: 'Check where this link really goes',
     detail: '',
   },
   'online.disclosure': {

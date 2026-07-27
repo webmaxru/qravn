@@ -1,6 +1,6 @@
 import type { Assessment, RedirectOutcome, RedirectResolution } from '../contracts/assessment';
 import { textForCode, type Locale } from '../engine/catalog';
-import { finalFindings, hasRedirectCue, neutralizeForDisplay } from '../lib/assessment';
+import { finalFindings, neutralizeForDisplay } from '../lib/assessment';
 import { FindingItems } from './FindingsList';
 import './RedirectPanel.css';
 
@@ -115,10 +115,11 @@ export function RedirectPanel({ assessment, resolution, locale, online }: Redire
     );
   }
 
-  // No expansion yet: offer the opt-in only when the offline check flagged a
-  // shortener AND a resolver is configured. Otherwise render nothing (the
-  // offline `limitation.redirect_not_expanded` still explains the situation).
-  if (!hasRedirectCue(assessment) || !online.available) return null;
+  // No expansion yet: offer the opt-in whenever the core says the chain can
+  // still be resolved AND a resolver is configured. This is driven by the
+  // core's recommended action rather than by a shortener cue, because any
+  // http(s) URL can redirect and the registry cannot know every redirector.
+  if (!assessment.recommendedActions.includes('expand_redirect_online') || !online.available) return null;
 
   const heading = textForCode('online.expand_heading', {}, locale).title;
   const disclosure = textForCode('online.disclosure', {}, locale);

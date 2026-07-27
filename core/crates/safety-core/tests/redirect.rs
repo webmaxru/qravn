@@ -162,6 +162,69 @@ fn possible_shortener_heuristic_rejects_near_misses() {
 }
 
 // ---------------------------------------------------------------------------
+// Redirect expansion is offered for every unexpanded http(s) URL.
+// ---------------------------------------------------------------------------
+
+fn offers_expansion(a: &Assessment) -> bool {
+    a.recommended_actions
+        .iter()
+        .any(|action| matches!(action, safety_core::RecommendedAction::ExpandRedirectOnline))
+}
+
+#[test]
+fn aka_ms_is_a_known_shortener() {
+    // aka.ms uses readable word slugs with no digits, so the opaque-code
+    // heuristic can never catch it. Without the registry entry the destination
+    // stays hidden while the result reads as "no known threat found".
+    for payload in ["https://aka.ms/learn-azure", "aka.ms/learn-azure"] {
+        let a = assess_plain(payload);
+        assert!(
+            has_finding(&a, "url.shortener"),
+            "{payload} missed registry"
+        );
+        assert!(!has_finding(&a, "url.possible_shortener"));
+        assert!(has_limitation(&a, "limitation.redirect_not_expanded"));
+        assert_eq!(a.verdict, Verdict::InsufficientEvidence, "{payload}");
+        assert!(offers_expansion(&a), "{payload} offered no expansion");
+    }
+}
+
+#[test]
+fn expansion_is_offered_for_any_unexpanded_http_url() {
+    // Any URL can redirect, so the option must not depend on a shortener cue.
+    // These hosts must stay free of redirect *warnings* while remaining
+    // checkable on request.
+    for payload in [
+        "https://example.com/page",
+        "https://vg.no/sport",
+        "https://nrk.no/nyheter",
+        "http://example.com/",
+    ] {
+        let a = assess_plain(payload);
+        assert!(offers_expansion(&a), "{payload} offered no expansion");
+        assert!(
+            !has_finding(&a, "url.possible_shortener"),
+            "{payload} raised a false redirect warning"
+        );
+        assert!(
+            !has_limitation(&a, "limitation.redirect_not_expanded"),
+            "{payload} raised a false redirect limitation"
+        );
+    }
+}
+
+#[test]
+fn expansion_is_not_offered_for_non_http_payloads() {
+    for payload in ["not a url at all", "mailto:someone@example.com"] {
+        let a = assess_plain(payload);
+        assert!(
+            !offers_expansion(&a),
+            "{payload} should not offer redirect expansion"
+        );
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Hop budget: the user's stated requirement.
 // ---------------------------------------------------------------------------
 
