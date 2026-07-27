@@ -40,7 +40,6 @@ export interface Config {
 }
 
 const DEFAULT_CORS_ORIGINS = [
-  "https://brave-bay-0ecf82e03.7.azurestaticapps.net",
   "http://localhost:5173",
   "http://localhost:4173",
   "http://127.0.0.1:5173",

@@ -68,11 +68,25 @@ param maxReplicas int = 3
 @minValue(1)
 param concurrentRequests int = 20
 
+@description('Optional custom HTTPS hostname for the web frontend, for example qrrrgh.isainative.dev. Empty means no custom web hostname is configured.')
+param webCustomHostname string = ''
+
+@description('Optional custom HTTPS hostname for the resolver API, for example qrrrgh-api.isainative.dev. Empty means no custom API hostname is configured. Binding is completed by the provisioning script after DNS exists.')
+param resolverCustomHostname string = ''
+
+@description('Comma-separated exact CORS origins for the resolver. Empty uses localhost dev origins plus webCustomHostname when provided. Never use a wildcard.')
+param resolverCorsAllowedOrigins string = ''
+
 // Only wire up registry authentication when a password/token was supplied. This
 // keeps the secret out of the template (it is always passed at deploy time) and
 // also allows a public image to be used with no credentials.
 var useRegistryAuth = !empty(registryPassword)
 var registryPasswordSecretName = 'registry-password'
+var devCorsAllowedOrigins = 'http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173'
+var customWebOrigin = empty(webCustomHostname) ? '' : 'https://${webCustomHostname}'
+var effectiveCorsAllowedOrigins = !empty(resolverCorsAllowedOrigins)
+  ? resolverCorsAllowedOrigins
+  : (empty(customWebOrigin) ? devCorsAllowedOrigins : '${devCorsAllowedOrigins},${customWebOrigin}')
 
 var commonTags = {
   project: 'qrrrgh'
@@ -141,9 +155,6 @@ resource resolver 'Microsoft.App/containerApps@2024-03-01' = {
           // secrets, so these are safe as literal env values. Setting them here
           // makes the deployed configuration self-documenting. Environment
           // variables add no cost, so this does not affect the zero-idle math.
-          // CORS_ALLOWED_ORIGINS is deliberately NOT set: the service already
-          // defaults to the live Static Web App origin plus localhost dev ports,
-          // and duplicating that list here would just be a second place to miss.
           env: [
             {
               // Authoritative production switch. In production the service must
@@ -171,6 +182,13 @@ resource resolver 'Microsoft.App/containerApps@2024-03-01' = {
               // values must be strings, hence string().
               name: 'PORT'
               value: string(targetPort)
+            }
+            {
+              // Exact allow-list only. During a domain cutover, pass both the old
+              // and new web origins. Do not use '*': browsers would then allow any
+              // site to call the public resolver from a visitor's browser.
+              name: 'CORS_ALLOWED_ORIGINS'
+              value: effectiveCorsAllowedOrigins
             }
           ]
           // Modest sizing. 0.25 vCPU / 0.5 GiB is plenty for a redirect
@@ -256,3 +274,6 @@ output resolverFqdn string = resolver.properties.configuration.ingress.fqdn
 
 @description('The resolver HTTPS base URL the web app should call.')
 output resolverUrl string = 'https://${resolver.properties.configuration.ingress.fqdn}'
+
+@description('The desired custom resolver HTTPS base URL, or an empty string when resolverCustomHostname is empty.')
+output resolverCustomUrl string = empty(resolverCustomHostname) ? '' : 'https://${resolverCustomHostname}'

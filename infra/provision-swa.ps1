@@ -3,7 +3,8 @@ param(
     [string]$ResourceGroupName = "rg-qrrrgh",
     [string]$Location = "westeurope",
     [string]$Name = "qrrrgh-web",
-    [string]$Repo = "webmaxru/qrrrgh"
+    [string]$Repo = "webmaxru/qrrrgh",
+    [string]$CustomHostname = ""
 )
 
 Set-StrictMode -Version Latest
@@ -54,6 +55,18 @@ function Invoke-LoggedCommand {
     return $null
 }
 
+function Get-DnsCnameTarget {
+    param([string]$Hostname)
+
+    $answer = Resolve-DnsName -Name $Hostname -Type CNAME -ErrorAction SilentlyContinue |
+        Where-Object { $_.Type -eq "CNAME" } |
+        Select-Object -First 1
+    if ($answer) {
+        return ($answer.NameHost.TrimEnd("."))
+    }
+    return $null
+}
+
 if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
     throw "Azure CLI is not installed or is not on PATH."
 }
@@ -91,6 +104,15 @@ Invoke-LoggedCommand -Executable "az" -Arguments @(
     "--output", "none"
 )
 
+$defaultHostname = Invoke-LoggedCommand -Executable "az" -Arguments @(
+    "staticwebapp", "show",
+    "--name", $Name,
+    "--resource-group", $ResourceGroupName,
+    "--query", "defaultHostname",
+    "--output", "tsv"
+) -Capture
+$defaultHostname = ($defaultHostname -join "").Trim()
+
 $deploymentToken = Invoke-LoggedCommand -Executable "az" -Arguments @(
     "staticwebapp", "secrets", "list",
     "--name", $Name,
@@ -101,6 +123,32 @@ $deploymentToken = Invoke-LoggedCommand -Executable "az" -Arguments @(
 
 if (-not $WhatIfPreference -and [string]::IsNullOrWhiteSpace(($deploymentToken -join ""))) {
     throw "Azure Static Web Apps deployment token could not be retrieved."
+}
+
+if (-not [string]::IsNullOrWhiteSpace($CustomHostname)) {
+    Write-Host ""
+    Write-Host "Custom Static Web Apps domain requested: $CustomHostname"
+    Write-Host "Create this DNS record first (DNS-only in Cloudflare):"
+    Write-Host "  CNAME $CustomHostname -> $defaultHostname"
+
+    $cnameTarget = Get-DnsCnameTarget -Hostname $CustomHostname
+    if ($cnameTarget -eq $defaultHostname) {
+        Invoke-LoggedCommand -Executable "az" -Arguments @(
+            "staticwebapp", "hostname", "set",
+            "--name", $Name,
+            "--resource-group", $ResourceGroupName,
+            "--hostname", $CustomHostname,
+            "--validation-method", "cname-delegation",
+            "--output", "none"
+        )
+        Write-Host "Custom web domain is configured. Verify with:"
+        Write-Host "  Invoke-WebRequest https://$CustomHostname"
+    } else {
+        Write-Warning "DNS is not ready, so Azure Static Web Apps hostname validation was not attempted. Add the CNAME above, wait for DNS, then rerun this script with -CustomHostname $CustomHostname."
+        if ($cnameTarget) {
+            Write-Warning "Observed CNAME target: $cnameTarget"
+        }
+    }
 }
 
 $secretCommand = "az staticwebapp secrets list --name $Name --resource-group $ResourceGroupName --query `"properties.apiKey`" -o tsv | gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN --repo $Repo"

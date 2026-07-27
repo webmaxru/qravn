@@ -167,18 +167,19 @@ describe("server: CORS", () => {
     expect(res.headers.get("access-control-allow-origin")).toBe("http://localhost:5173");
   });
 
-  it("allows the production web origin", async () => {
-    const app = await startApp({ resolveFn: resolvedStub("resolved") });
+  it("allows configured production web origins", async () => {
+    const app = await startApp({
+      env: { CORS_ALLOWED_ORIGINS: "https://web.example" },
+      resolveFn: resolvedStub("resolved"),
+    });
     const res = await fetch(`${app.origin}/v1/resolve`, {
       method: "OPTIONS",
       headers: {
-        Origin: "https://brave-bay-0ecf82e03.7.azurestaticapps.net",
+        Origin: "https://web.example",
         "Access-Control-Request-Method": "POST",
       },
     });
-    expect(res.headers.get("access-control-allow-origin")).toBe(
-      "https://brave-bay-0ecf82e03.7.azurestaticapps.net",
-    );
+    expect(res.headers.get("access-control-allow-origin")).toBe("https://web.example");
   });
 
   it("does NOT echo a disallowed Origin", async () => {

@@ -211,6 +211,176 @@ Keep these in mind; each one turns "free at idle" into "billed at idle":
 
 ---
 
+## Custom domains on Cloudflare
+
+Target hostnames:
+
+- Web frontend: `https://qrrrgh.isainative.dev`
+- Resolver API: `https://qrrrgh-api.isainative.dev`
+
+The hostnames are configurable. Leave the parameters and repository variables
+empty for a deployment with no custom domain.
+
+| Setting | Value |
+| --- | --- |
+| Bicep parameters | `webCustomHostname`, `resolverCustomHostname`, `resolverCorsAllowedOrigins` |
+| Resolver script parameters | `-WebCustomHostname`, `-ResolverCustomHostname`, `-ResolverCorsAllowedOrigins` |
+| Static Web Apps script parameter | `-CustomHostname` |
+| GitHub repository variables | `WEB_CUSTOM_HOSTNAME`, `RESOLVER_CUSTOM_HOSTNAME`, `RESOLVER_CORS_ALLOWED_ORIGINS`, `VITE_RESOLVER_URL` |
+
+### Cloudflare DNS records to create
+
+Create these records in the `isainative.dev` zone. Keep both CNAME records
+**DNS-only** (grey cloud) for Azure validation, certificate issuance, and
+managed certificate renewal.
+
+| Type | Name | Value / target | TTL | Proxy status |
+| --- | --- | --- | --- | --- |
+| CNAME | `qrrrgh` | `brave-bay-0ecf82e03.7.azurestaticapps.net` | Auto | DNS-only (grey cloud) |
+| CNAME | `qrrrgh-api` | `qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
+| TXT | `asuid.qrrrgh-api` | `5BFCC063D1C3C26567C5CE072026BB5CE03258385AE700DF177521A0BEF0DA62` | Auto | DNS-only (TXT is never proxied) |
+| CAA | `@` | `0 issue "digicert.com"` | Auto | DNS-only (only needed if restrictive CAA records do not already allow DigiCert) |
+
+Current check on 27 July 2026: no DNS records were observed for
+`qrrrgh.isainative.dev`, `qrrrgh-api.isainative.dev`,
+`asuid.qrrrgh-api.isainative.dev`, or `_dnsauth.qrrrgh.isainative.dev`. CAA
+records were observed on `isainative.dev`, including `digicert.com`, so Azure
+Container Apps managed certificate issuance is not blocked by CAA right now.
+
+### Why Cloudflare must be DNS-only here
+
+Cloudflare says proxied records route HTTP/HTTPS through Cloudflare and DNS-only
+records return the origin target directly. It also says records that prove domain
+ownership, including CNAME verification records, should not be proxied. Azure
+Container Apps is stricter: for subdomains, the CNAME must map directly to the
+generated `azurecontainerapps.io` name, and intermediate values such as
+Cloudflare block certificate issuance and renewal. Azure Static Web Apps also
+requires the custom domain to be publicly resolvable to the Static Web App for
+automatic certificate renewal.
+
+If the orange cloud is left on, expect Azure validation to fail, the Container
+Apps certificate to stay unissued or unrenewable, or HTTPS to fail later at
+renewal. The symptom is Azure custom-domain validation or certificate status not
+reaching `Secured` even though the hostname appears to resolve in a browser.
+
+Set Cloudflare SSL/TLS mode to **Full (strict)** for the zone. With DNS-only
+records Cloudflare is not in the request path for these hostnames, but this keeps
+the zone safe if a record is ever proxied later. Do not use **Flexible**:
+Cloudflare documents Flexible as HTTPS from visitor to Cloudflare but HTTP from
+Cloudflare to the origin, which removes end-to-end TLS and is wrong for Azure
+origins that already serve valid HTTPS certificates. Cloudflare Universal SSL
+covers the root domain and first-level subdomains on a full setup, so it covers
+`qrrrgh.isainative.dev` and `qrrrgh-api.isainative.dev`. It does not cover
+deeper names such as `x.qrrrgh.isainative.dev`, which are not used here.
+
+### Azure commands after Cloudflare DNS exists
+
+First verify DNS from a terminal:
+
+```powershell
+Resolve-DnsName qrrrgh.isainative.dev -Type CNAME
+Resolve-DnsName qrrrgh-api.isainative.dev -Type CNAME
+Resolve-DnsName asuid.qrrrgh-api.isainative.dev -Type TXT
+```
+
+Then bind the web domain:
+
+```powershell
+az staticwebapp hostname set `
+  --name qrrrgh-web `
+  --resource-group rg-qrrrgh `
+  --hostname qrrrgh.isainative.dev `
+  --validation-method cname-delegation
+```
+
+Bind the resolver API domain and let Container Apps create the free managed
+certificate:
+
+```powershell
+az containerapp hostname add `
+  --name qrrrgh-resolver `
+  --resource-group rg-qrrrgh `
+  --hostname qrrrgh-api.isainative.dev
+
+az containerapp hostname bind `
+  --name qrrrgh-resolver `
+  --resource-group rg-qrrrgh `
+  --environment qrrrgh-resolver-env `
+  --hostname qrrrgh-api.isainative.dev `
+  --validation-method CNAME
+```
+
+The idempotent scripts can do the same when DNS is ready:
+
+```powershell
+./infra/provision-swa.ps1 -CustomHostname qrrrgh.isainative.dev
+./infra/provision-resolver.ps1 `
+  -WebCustomHostname qrrrgh.isainative.dev `
+  -ResolverCustomHostname qrrrgh-api.isainative.dev `
+  -ResolverCorsAllowedOrigins "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qrrrgh.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+```
+
+Verify:
+
+```powershell
+az staticwebapp hostname show `
+  --name qrrrgh-web `
+  --resource-group rg-qrrrgh `
+  --hostname qrrrgh.isainative.dev
+
+az containerapp hostname list `
+  --name qrrrgh-resolver `
+  --resource-group rg-qrrrgh `
+  -o table
+
+Invoke-WebRequest https://qrrrgh.isainative.dev
+Invoke-WebRequest https://qrrrgh-api.isainative.dev/healthz
+```
+
+### Safe cutover order for CORS and CSP
+
+Keep both the old and new origins working during the transition.
+
+1. Add the Cloudflare DNS records above with grey-cloud DNS-only status.
+2. Bind `qrrrgh-api.isainative.dev` in Azure Container Apps and verify
+   `https://qrrrgh-api.isainative.dev/healthz`.
+3. Configure resolver CORS to allow both web origins:
+
+   ```powershell
+   gh variable set RESOLVER_CORS_ALLOWED_ORIGINS `
+     --repo webmaxru/qrrrgh `
+     --body "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qrrrgh.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+   ```
+
+   The live Container App can be updated immediately without widening to a
+   wildcard:
+
+   ```powershell
+   az containerapp update `
+     --name qrrrgh-resolver `
+     --resource-group rg-qrrrgh `
+     --set-env-vars CORS_ALLOWED_ORIGINS="https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qrrrgh.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+   ```
+
+4. Bind `qrrrgh.isainative.dev` in Azure Static Web Apps and verify the site.
+5. Only after the API custom domain works over HTTPS, move the web build to it:
+
+   ```powershell
+   gh variable set VITE_RESOLVER_URL `
+     --repo webmaxru/qrrrgh `
+     --body "https://qrrrgh-api.isainative.dev"
+   ```
+
+6. Run the **Deploy Web** workflow or push a normal web change. The build runs
+   `apps/web/scripts/inject-resolver-csp.mjs`, which injects only the origin of
+   `VITE_RESOLVER_URL` into `connect-src`. If `VITE_RESOLVER_URL` is changed
+   before the API hostname works, online mode fails in the browser with a CSP or
+   network error.
+7. After the new web hostname is fully live, the old Static Web Apps origin can
+   remain in CORS for a cooling-off period, then be removed deliberately.
+
+---
+
 ## Deploying (manual steps for the user)
 
 Nothing here deploys automatically or creates billed resources on its own. You
@@ -384,3 +554,11 @@ Remove-Item infra/resolver.compiled.json
 - [Container Apps pricing](https://azure.microsoft.com/pricing/details/container-apps/) and [Container Registry pricing](https://azure.microsoft.com/pricing/details/container-registry/) and [Bandwidth pricing](https://azure.microsoft.com/pricing/details/bandwidth/) - list rates and free allowances.
 - [Connect from Azure with OpenID Connect](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect) - OIDC federated credentials for GitHub Actions.
 - [Start analyzing costs](https://learn.microsoft.com/azure/cost-management-billing/costs/quick-acm-cost-analysis) - verifying spend in the portal.
+- [Custom domains with Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/custom-domain) - free managed certificates, custom-domain options, public DNS and renewal requirements.
+- [Set up a custom domain in Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/custom-domain-external) - external DNS CNAME setup for a subdomain.
+- [Set up an apex domain in Azure Static Web Apps](https://learn.microsoft.com/azure/static-web-apps/apex-domain-external) - apex TXT validation and ALIAS/ANAME/CNAME flattening or A record options.
+- [Custom domain names and free managed certificates in Azure Container Apps](https://learn.microsoft.com/azure/container-apps/custom-domains-managed-certificates) - `asuid` TXT verification, direct CNAME/A requirements, managed certificate binding, external ingress, and CAA `digicert.com` requirement.
+- [Cloudflare proxy status](https://developers.cloudflare.com/dns/proxy-status/) - proxied versus DNS-only behavior and why domain ownership records should not be proxied.
+- [Cloudflare SSL/TLS encryption modes](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/) - Flexible, Full, and Full (strict) behavior.
+- [Cloudflare Universal SSL](https://developers.cloudflare.com/ssl/edge-certificates/universal-ssl/) - free edge certificates and first-level subdomain coverage.
+- [Cloudflare CAA records](https://developers.cloudflare.com/ssl/edge-certificates/caa-records/) - CAA record purpose, inheritance, and CNAME-chain considerations.

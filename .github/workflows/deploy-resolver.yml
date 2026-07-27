@@ -169,6 +169,42 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      # A deploy that silently narrows CORS to localhost looks completely healthy:
+      # /healthz still returns 200 and only real browsers fail, so online mode dies
+      # for users while every signal stays green. RESOLVER_CORS_ALLOWED_ORIGINS is a
+      # repo variable, so clearing or mistyping it would do exactly that. The
+      # resolver deliberately falls back to localhost-only (closed, not wildcard),
+      # which is safe but silent - so fail loudly here instead.
+      - name: Verify the CORS allowlist still covers production
+        if: steps.inputs.outputs.ready == 'true'
+        shell: bash
+        env:
+          WEB_CUSTOM_HOSTNAME: ${{ vars.WEB_CUSTOM_HOSTNAME }}
+          RESOLVER_CORS_ALLOWED_ORIGINS: ${{ vars.RESOLVER_CORS_ALLOWED_ORIGINS }}
+        run: |
+          origins="$(printf '%s' "$RESOLVER_CORS_ALLOWED_ORIGINS" | tr -d '[:space:]')"
+          if [ -z "$origins" ]; then
+            echo "::error::RESOLVER_CORS_ALLOWED_ORIGINS is empty. The resolver would fall back to localhost-only origins, so online mode would break in the browser while /healthz still reported healthy."
+            exit 1
+          fi
+          case "$origins" in
+            *https://*) ;;
+            *)
+              echo "::error::RESOLVER_CORS_ALLOWED_ORIGINS contains no https:// origin (value: $origins). Production browsers would be refused."
+              exit 1
+              ;;
+          esac
+          if [ -n "$WEB_CUSTOM_HOSTNAME" ]; then
+            case ",$origins," in
+              *",https://$WEB_CUSTOM_HOSTNAME,"*) ;;
+              *)
+                echo "::error::WEB_CUSTOM_HOSTNAME is '$WEB_CUSTOM_HOSTNAME' but https://$WEB_CUSTOM_HOSTNAME is absent from RESOLVER_CORS_ALLOWED_ORIGINS. The custom domain would be refused by the resolver."
+                exit 1
+                ;;
+            esac
+          fi
+          echo "CORS allowlist covers production: $origins"
+
       - name: Deploy to Azure Container Apps
         id: deploy
         if: steps.inputs.outputs.ready == 'true'
@@ -180,6 +216,9 @@ jobs:
           GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qrrrgh' }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
+          WEB_CUSTOM_HOSTNAME: ${{ vars.WEB_CUSTOM_HOSTNAME }}
+          RESOLVER_CUSTOM_HOSTNAME: ${{ vars.RESOLVER_CUSTOM_HOSTNAME }}
+          RESOLVER_CORS_ALLOWED_ORIGINS: ${{ vars.RESOLVER_CORS_ALLOWED_ORIGINS }}
           # Deliberately github.repository_owner, NOT github.actor. The stored
           # credential is a PAT belonging to the repository owner, so the username
           # must be stable. github.actor is whoever triggered the run - a
@@ -196,6 +235,9 @@ jobs:
               registryServer="ghcr.io" \
               registryUsername="$REGISTRY_USER" \
               registryPassword="$GHCR_PULL_TOKEN" \
+              webCustomHostname="$WEB_CUSTOM_HOSTNAME" \
+              resolverCustomHostname="$RESOLVER_CUSTOM_HOSTNAME" \
+              resolverCorsAllowedOrigins="$RESOLVER_CORS_ALLOWED_ORIGINS" \
             --query "properties.outputs.resolverUrl.value" \
             --output tsv)"
           echo "url=$url" >> "$GITHUB_OUTPUT"

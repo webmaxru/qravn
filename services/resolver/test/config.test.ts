@@ -19,6 +19,16 @@ describe("config: safe defaults", () => {
     expect(c.port).toBe(8080);
     expect(c.host).toBe("0.0.0.0");
   });
+
+  it("keeps production CORS origins configurable by environment", () => {
+    const c = loadConfig({
+      CORS_ALLOWED_ORIGINS: "https://web.example, https://api-client.example",
+    });
+    expect([...c.corsAllowedOrigins]).toEqual([
+      "https://web.example",
+      "https://api-client.example",
+    ]);
+  });
 });
 
 describe("config: dev bypasses take effect ONLY outside production", () => {
