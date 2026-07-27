@@ -1,9 +1,9 @@
 # QR Safety Application: Planning and Research Index
 
 **Consolidated:** 26 July 2026
-**Last updated:** 26 July 2026 — added the web surface and unified-core research
+**Last updated:** 27 July 2026 — added the offline-mode and redirect-expansion cross-platform plan
 **Location:** `qrrrgh/planning/`
-**Status:** Research complete. Implementation plan awaiting approval. No application code written yet.
+**Status:** Research complete. Web implementation in progress. Native implementations planned.
 
 This folder is the single source of truth for the product's market research, technical research, platform start guides, and the implementation plan.
 
@@ -17,9 +17,9 @@ The application:
 
 - Decodes QR codes locally and never opens a link automatically.
 - Shows the complete payload before any external action.
-- Expands shortened URLs and redirect chains through isolated server infrastructure, never from the user's device.
+- Expands shortened URLs and redirect chains through isolated server infrastructure after explicit per-check consent, never from the user's device.
 - Combines deterministic rules with a compact on-device classifier.
-- Works fully offline by default, with an explicitly enabled online mode for deeper analysis.
+- Runs every check locally first; the offline mode toggle is off by default, and turning it on disables all network calls including redirect expansion.
 - Explains evidence in Bokmål and Nynorsk.
 - Uses generative AI only to explain evidence, never to decide the verdict.
 
@@ -44,6 +44,7 @@ The interface never shows an unqualified **Safe** label.
 | `qr-safety-android-development-start-guide.md` | Google Play licensing, Android Studio setup, CameraX/ML Kit, Play release path, GitHub Copilot use | ~59 KB |
 | `qr-safety-unified-core-and-web-surface.md` | Whether iOS, Android, and web can share one core; Rust/WASM evidence; web platform limits; recommended stack | ~29 KB |
 | `qr-safety-implementation-plan.md` | iOS-first, platform-agnostic-core implementation plan with phased todos | ~36 KB |
+| `qr-safety-offline-mode-and-redirect-expansion-plan.md` | Cross-platform offline-mode toggle, shortener registry, redirect warning, final-destination display, and per-platform checklists | ~32 KB |
 
 ---
 
@@ -59,10 +60,11 @@ The interface never shows an unqualified **Safe** label.
 
 1. `qr-safety-implementation-plan.md` in full.
 2. `qr-safety-unified-core-and-web-surface.md` in full — it revises the plan's classifier and core-portability decisions.
-3. `qr-safety-technical-research.md` sections 4-13 for detection design.
-4. `qr-safety-technical-research.md` sections 14-17 for native integration.
-5. `qr-safety-technical-research.md` sections 27-39 for offline AI.
-6. Platform start guide for whichever client is being built.
+3. `qr-safety-offline-mode-and-redirect-expansion-plan.md` before changing offline mode, redirect expansion, shortener warnings, rule updates, or related platform entry points.
+4. `qr-safety-technical-research.md` sections 4-13 for detection design.
+5. `qr-safety-technical-research.md` sections 14-17 for native integration.
+6. `qr-safety-technical-research.md` sections 27-39 for offline AI.
+7. Platform start guide for whichever client is being built.
 
 ### For legal and compliance work
 
@@ -192,10 +194,10 @@ The web stages are numbered separately because they run alongside the mobile pha
 | Apple Developer Program | 99 USD per year, required for TestFlight and App Store |
 | Google Play Console | 25 USD one-time registration |
 | Web hosting | Azure Static Web Apps free tier |
-| Online-mode backend | Azure Container Apps, only once online mode ships |
+| Online-mode backend | Azure Container Apps for explicitly consented redirect expansion and future first-party enrichment |
 | GitHub Copilot | Free tier available; paid plans optional |
 
-The offline-first design means the free static hosting tier carries the entire default web experience. Backend cost begins only when a user explicitly enables online mode.
+The local-first design means the free static hosting tier carries the default web experience. Backend cost begins only when users explicitly consent to checks that call first-party services, such as redirect expansion.
 
 GitHub Copilot may be used to build the commercial application. It does not remove responsibility for code review, security testing, dependency license checks, or protecting keys, credentials, user scans, and private datasets.
 
