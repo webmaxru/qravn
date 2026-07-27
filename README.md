@@ -4,9 +4,11 @@ A free, privacy-first QR code safety application for Norway.
 
 Scan a QR code, see exactly what is inside it, and get an evidence-based safety assessment **before** anything opens.
 
-> **Status:** early implementation. The shared core and the web surface are live; the native applications have not started.
+> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live; the native applications have not started.
 >
 > **Web app:** <https://brave-bay-0ecf82e03.7.azurestaticapps.net>
+>
+> **Resolver:** <https://qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io> — used only when you explicitly ask to expand a shortened link. It scales to zero, so it costs nothing while idle.
 
 ---
 

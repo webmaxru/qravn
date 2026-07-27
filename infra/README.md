@@ -317,7 +317,23 @@ secrets are set, so only step 3 remains.
 
    The package was private and no pull credential had been supplied - which is
    precisely what the `/healthz` gate exists to expose. Supplying
-   `GHCR_PULL_TOKEN` and re-running is the fix.
+   `GHCR_PULL_TOKEN` and re-running was the fix.
+
+   **Live since 27 July 2026.** `GHCR_PULL_TOKEN` and `AZURE_ACA_ENABLED=true`
+   are set, and the deploy completes in about 80 seconds with all steps green,
+   including the health probe. The service answers at:
+
+   ```
+   https://qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io
+   ```
+
+   Verified against the running service rather than the test doubles: the hop
+   budget truncates a real 10-redirect chain at 6 entries with `max_hops`; the
+   metadata IP, loopback, RFC1918 and `file://` are all refused with HTTP 422;
+   and `localtest.me`, a public DNS name that resolves to 127.0.0.1, is refused
+   too - which is the case that proves IP validation happens *after* DNS rather
+   than being a literal-IP blocklist. CORS echoes the live site origin and sends
+   no allow header at all for an unknown one.
 
    This confirms the cost design against reality rather than only on paper:
    `rg-qrrrgh` contains the static site, the managed environment and the
