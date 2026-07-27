@@ -116,6 +116,51 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # The Container App runs with minReplicas 0, so it re-pulls the image on
+      # every cold start - not just at deploy time. The pull credential is
+      # therefore a permanent liveness dependency: if the PAT expires or is
+      # revoked, the service stops coming back up, silently, long after this
+      # workflow last ran green. Prove the credential can actually pull THIS
+      # image now, so a bad or expired token fails here with a clear message
+      # instead of surfacing later as an unexplained outage.
+      - name: Verify the image is pullable with the stored credential
+        if: steps.inputs.outputs.ready == 'true'
+        shell: bash
+        env:
+          GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+        run: |
+          set -uo pipefail
+          # ghcr.io/<path>:<tag> -> <path>, <tag>
+          path="${IMAGE_REF#ghcr.io/}"; tag="${path##*:}"; path="${path%:*}"
+          scope="repository:${path}:pull"
+
+          if [ -n "$GHCR_PULL_TOKEN" ]; then
+            auth=(-u "${OWNER}:${GHCR_PULL_TOKEN}")
+            mode="the stored GHCR_PULL_TOKEN"
+          else
+            auth=()
+            mode="anonymous access (package must be public)"
+          fi
+
+          bearer="$(curl -s "${auth[@]}" \
+            "https://ghcr.io/token?service=ghcr.io&scope=${scope}" | jq -r '.token // empty')"
+          if [ -z "$bearer" ]; then
+            echo "::error::ghcr.io refused to issue a pull token using ${mode}."
+            exit 1
+          fi
+
+          code="$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${bearer}" \
+            -H 'Accept: application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json,application/vnd.docker.distribution.manifest.v2+json' \
+            "https://ghcr.io/v2/${path}/manifests/${tag}")"
+          if [ "$code" != "200" ]; then
+            echo "::error::Cannot pull ${IMAGE_REF} using ${mode} (HTTP ${code}). If GHCR_PULL_TOKEN is set, it is expired, revoked, or lacks the read:packages scope. If it is unset, the package is private. See infra/README.md."
+            exit 1
+          fi
+          echo "Image is pullable using ${mode}."
+
       - name: Azure login (OIDC)
         if: steps.inputs.outputs.ready == 'true'
         uses: azure/login@v2
@@ -135,7 +180,13 @@ jobs:
           GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qrrrgh' }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
-          REGISTRY_USER: ${{ github.actor }}
+          # Deliberately github.repository_owner, NOT github.actor. The stored
+          # credential is a PAT belonging to the repository owner, so the username
+          # must be stable. github.actor is whoever triggered the run - a
+          # Dependabot push would store 'dependabot[bot]' against the owner's PAT
+          # and the Container App would then fail to pull on its next cold start,
+          # long after the deploy reported success.
+          REGISTRY_USER: ${{ github.repository_owner }}
         run: |
           url="$(az deployment group create \
             --resource-group "$RESOURCE_GROUP" \

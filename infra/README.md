@@ -221,14 +221,15 @@ opt in explicitly.
 - Azure CLI signed in (`az login`) to the target subscription.
 - The `services/resolver/` service exists with its `Dockerfile` (built by the
   resolver service work).
-- A way for the Container App to pull the image on cold start: either a public
-  `ghcr.io` package (no credential) or a GitHub PAT with `read:packages`
-  (`GHCR_PULL_TOKEN`). See step 3 below for the trade-off.
+- A way for the Container App to pull the image on cold start. This project uses
+  a **private `ghcr.io` package plus a classic PAT with `read:packages`** stored
+  as the `GHCR_PULL_TOKEN` secret. A public package (no credential) also works.
+  See step 3 below for the trade-off and the expiry risk.
 
 ### Option A - GitHub Actions (recommended, continuous deployment)
 
 **Steps 1 and 2 are already done.** The OIDC identity exists and the three Azure
-secrets are set, so only the two items in step 3 remain.
+secrets are set, so only step 3 remains.
 
 1. ~~**Create an Azure AD app + federated credential for OIDC**~~ - **done.**
    App `qrrrgh-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
@@ -253,22 +254,34 @@ secrets are set, so only the two items in step 3 remain.
    `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` are set.
    These are identifiers rather than credentials; they are stored as secrets by
    convention, and alone they grant nothing without the federated trust above.
-3. **Remaining: choose how the Container App pulls the image, then enable.**
+3. **Chosen: private package + a `read:packages` PAT.**
    The image lands in `ghcr.io`, and a Container App needs to pull it on every
    cold start - after the ephemeral `GITHUB_TOKEN` from the build job is long
-   gone. Two options:
+   gone. Two options existed:
 
-   - **Public package (recommended, no standing credential).** Run the workflow
-     once so the package is created, then set its visibility to public in
-     GitHub (**Package settings -> Change visibility**). A public image needs no
-     pull credential at all, so there is no long-lived token sitting in the
-     Container App. The image contains only the resolver's compiled service -
-     no keys, no config - because all configuration arrives as environment
-     variables at run time. Leave `GHCR_PULL_TOKEN` unset: the workflow logs a
-     notice, and `resolver.bicep` omits the registry block entirely.
-   - **Private package.** Create a PAT with **`read:packages`** and set it as
-     the `GHCR_PULL_TOKEN` secret. This is a long-lived credential: scope it to
-     `read:packages` only, and plan to rotate it.
+   - **Public package (no standing credential).** Set the package's visibility to
+     public in GitHub (**Package settings -> Change visibility**); a public image
+     needs no pull credential at all. GitHub has **no REST or GraphQL endpoint
+     for this** - the Packages API covers metadata, delete and restore only - so
+     it is a manual UI action and cannot be scripted.
+   - **Private package (selected).** Create a classic PAT with **`read:packages`
+     only** and set it as the `GHCR_PULL_TOKEN` secret. `resolver.bicep` stores
+     it as a Container App secret and references it by name, never as a literal.
+
+   **The pull credential is a liveness dependency, not just a deploy input.**
+   Because `minReplicas` is 0, the app is re-pulled whenever it scales up from
+   zero - not only when it is deployed. If the PAT expires or is revoked, the
+   resolver stops coming back up, silently, potentially months after the last
+   green workflow run. Mitigations in place:
+
+   - Create the PAT with **no expiration** (or diary its rotation), and grant it
+     `read:packages` and nothing else.
+   - The workflow **verifies the credential can actually pull the just-pushed
+     image** (`Verify the image is pullable with the stored credential`) before
+     it deploys, so an expired token fails fast with a named cause.
+   - The registry username is `github.repository_owner`, **not** `github.actor`:
+     the PAT belongs to the owner, so a run triggered by anyone else (Dependabot,
+     a collaborator) must not store their login against the owner's token.
 
    Either way the workflow polls `/healthz` after deploying and **fails loudly**
    if the app never serves, so a pull failure cannot pass as a green deploy.
@@ -281,20 +294,30 @@ secrets are set, so only the two items in step 3 remain.
    revision cannot start until the image can be pulled, so nothing runs and
    nothing bills.
 
-   **Current state (26 July 2026).** A `workflow_dispatch` run has already:
-   built the image and pushed it to
-   `ghcr.io/webmaxru/qrrrgh/resolver:<sha>`; logged in to Azure over OIDC; and
-   deployed `resolver.bicep`, which created the managed environment and the
-   Container App. The app is in `Failed` state for exactly one reason, and the
-   deployment error names it:
+   **How to confirm visibility without any token.** GHCR issues an anonymous
+   pull token for public packages only, so this distinguishes the two states
+   from any machine:
+
+   ```bash
+   t=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:webmaxru/qrrrgh/resolver:pull" | jq -r .token)
+   curl -s -o /dev/null -w '%{http_code}\n' -H "Authorization: Bearer $t" \
+     -H 'Accept: application/vnd.oci.image.index.v1+json' \
+     https://ghcr.io/v2/webmaxru/qrrrgh/resolver/manifests/<sha>
+   # 200 => public, 401 => private
+   ```
+
+   **History (26 July 2026).** A `workflow_dispatch` run built and pushed the
+   image, logged in to Azure over OIDC, and deployed `resolver.bicep`, creating
+   the managed environment and the Container App. The app went to `Failed` state
+   for exactly one reason, named by the deployment error:
 
    ```
    Field 'template.containers.resolver.image' is invalid ... ghcr.io: UNAUTHORIZED: authentication required
    ```
 
-   The package is private and no pull credential was supplied. **Make the
-   package public (one click) or set `GHCR_PULL_TOKEN`, then re-run the
-   workflow** - everything else is already in place.
+   The package was private and no pull credential had been supplied - which is
+   precisely what the `/healthz` gate exists to expose. Supplying
+   `GHCR_PULL_TOKEN` and re-running is the fix.
 
    This confirms the cost design against reality rather than only on paper:
    `rg-qrrrgh` contains the static site, the managed environment and the
