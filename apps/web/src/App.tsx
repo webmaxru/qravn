@@ -191,22 +191,26 @@ function App({ engineOverride, resolverOverride }: AppProps) {
         <div className="hero-controls">
           <LanguageSwitcher locale={locale} onChange={changeLocale} />
           <section className="offline-mode-control" aria-labelledby="offline-mode-heading">
-            <label className="switch-row">
+            <div className="switch-row">
               <input
+                id="offline-mode-toggle"
                 type="checkbox"
                 role="switch"
                 checked={offlineMode}
+                aria-checked={offlineMode}
                 aria-describedby="offline-mode-description"
                 onChange={(event) => setOfflineMode(event.currentTarget.checked)}
               />
               <span className="switch-copy">
-                <span id="offline-mode-heading" className="switch-title">{offlineLabel.title}</span>
+                <label id="offline-mode-heading" className="switch-title" htmlFor="offline-mode-toggle">
+                  {offlineLabel.title}
+                </label>
                 <span id="offline-mode-description" className="switch-detail">
                   <strong>{offlineDescription.title}</strong>
                   {offlineDescription.detail ? ` — ${offlineDescription.detail}` : ''}
                 </span>
               </span>
-            </label>
+            </div>
           </section>
         </div>
       </header>

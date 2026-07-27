@@ -22,7 +22,9 @@
 - Core: `cd core && cargo fmt --all --check && cargo clippy --all-targets -- -D warnings && cargo test --all`
 - WASM gate: `cd core && cargo build --target wasm32-unknown-unknown -p safety-core`
 - WASM package: `cd core/bindings/wasm && wasm-pack build --target web --out-dir pkg`
-- Web: `cd apps/web && npm ci && npx tsc --noEmit && npm run test -- --run && npm run build`
+- Web: `cd apps/web && npm ci && npx tsc --noEmit && npm run lint && npm run test -- --run && npm run build`
+  - `npm run lint` (oxlint) is a separate CI step and enforces `jsx-a11y` rules that `tsc` and vitest do not catch. Run it before pushing any JSX change.
+- Browser/a11y: `cd apps/web && npx playwright test --workers=1`
 - Contract: `node tools/check-contract-localization.js`
 
 ## Contract changes
