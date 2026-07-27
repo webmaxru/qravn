@@ -1,0 +1,20 @@
+name: bb
+version: 1.0.0
+description: APM project for Copilot Agents
+author: webmaxru
+# Deploy to both harnesses explicitly. Without this, `apm install` auto-detects
+# from whichever directory happens to exist and picked `claude` alone, which put
+# the skills in .claude/ only - a path GitHub Copilot CLI does not read, so the
+# installed skills were invisible to the agent actually being used here.
+# Copilot reads .agents/skills/ and .github/prompts/.
+target: copilot,claude
+dependencies:
+  apm:
+  - webmaxru/ai-native-dev/skills/agent-package-manager
+  - anthropics/skills/skills/frontend-design
+  - rysweet/amplihack-rs/amplifier-bundle/skills/storytelling-synthesizer#b123c107c7ab2e3d436926747c135e78a90545b6
+  - webmaxru/ai-native-dev/prompts/seo-and-agent-readiness.prompt.md#main
+  - webmaxru/cookieless-insights/skills/cookieless-insights
+  mcp: []
+includes: auto
+scripts: {}

@@ -43,3 +43,6 @@ Thumbs.db
 logs/
 *.log
 npm-debug.log*
+
+# APM dependencies
+apm_modules/
