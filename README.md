@@ -4,7 +4,7 @@ A free, privacy-first QR code safety application for Norway.
 
 Scan a QR code, see exactly what is inside it, and get an evidence-based safety assessment **before** anything opens.
 
-> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live; the native applications have not started.
+> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live. The Android application is implemented against the same core and is not yet published; iOS has not started.
 >
 > **Web app:** <https://brave-bay-0ecf82e03.7.azurestaticapps.net>
 >
@@ -53,7 +53,7 @@ One Rust core, compiled four ways. The security logic exists exactly once.
                     └─────────────┬─────────────┘
                                   │
         ┌──────────────┬──────────┴──────────┬──────────────┐
-        │ UniFFI       │ UniFFI              │ wasm-bindgen │ direct
+        │ UniFFI       │ JNI                 │ wasm-bindgen │ direct
         ▼              ▼                     ▼              ▼
     iOS (Swift)   Android (Kotlin)      Web (TypeScript)  Backend
     SwiftUI       Compose               Vite + PWA        Rust service
@@ -78,7 +78,9 @@ The core owns **security meaning**. Each application owns **platform lifecycle a
 core/            Rust workspace — the shared safety core
   crates/        payload, url-policy, verdict, rules, classifier, evidence
   bindings/wasm/ wasm-bindgen wrapper published to the web app
+  bindings/android/  JNI wrapper loaded by the Android app
 apps/web/        Vite + TypeScript progressive web application
+apps/android/    Kotlin + Compose application — see apps/android/README.md
 contracts/       Versioned schemas shared by every surface
 localization/    nb, nn, en catalogs keyed by finding code
 test-vectors/    Golden corpora, including decoder conformance
@@ -99,6 +101,13 @@ cargo build --target wasm32-unknown-unknown -p safety-core
 
 # Web
 cd apps/web && npm install && npm run dev
+```
+
+The Android application additionally needs the Android SDK, the NDK and
+`cargo-ndk`. See [`apps/android/README.md`](apps/android/README.md).
+
+```bash
+cd apps/android && ./gradlew assembleDebug
 ```
 
 ---

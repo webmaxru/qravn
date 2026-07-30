@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!--
+        Adaptive launcher icons have to stay in a -v26 folder. The resource
+        merger does not pick up a bare `anydpi` qualifier for mipmaps, so
+        removing the version qualifier makes the launcher icon disappear
+        entirely. The qualifier is required here, not obsolete.
+    -->
+    <issue id="ObsoleteSdkInt">
+        <ignore path="src/main/res/mipmap-anydpi-v26" />
+    </issue>
+</lint>

@@ -30,7 +30,19 @@ blob-report/
 *.key
 *.p12
 *.keystore
+*.jks
 secrets.json
+keystore.properties
+
+# Android
+apps/android/local.properties
+apps/android/.gradle/
+apps/android/build/
+apps/android/*/build/
+apps/android/.kotlin/
+*.apk
+*.aab
+.cxx/
 
 # Editor / OS
 .vscode/

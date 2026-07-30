@@ -1,0 +1,14 @@
+[package]
+name = "qrrrgh-safety-jni"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "qrrrgh_safety_jni"
+crate-type = ["cdylib"]
+
+[dependencies]
+safety-core = { path = "../../crates/safety-core" }
+serde_json.workspace = true
+jni = { version = "0.21", default-features = false }

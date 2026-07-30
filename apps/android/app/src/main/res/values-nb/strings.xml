@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QR Safety</string>
+    <string name="share_target_label">Sjekk med QR Safety</string>
+    <string name="tile_label">Sjekk QR-kode</string>
+
+    <string name="scan_title">Rett kameraet mot en QR-kode</string>
+    <string name="scan_hint">Ingenting åpnes, og ingenting forlater telefonen din.</string>
+    <string name="scan_viewfinder_description">Kamerasøker. En QR-kode leses automatisk når den er i bildet.</string>
+    <string name="scan_again">Skann på nytt</string>
+    <string name="scan_torch_on">Slå på lommelykt</string>
+    <string name="scan_torch_off">Slå av lommelykt</string>
+    <string name="scan_from_image">Sjekk et bilde</string>
+    <string name="scan_from_clipboard">Sjekk kopiert tekst</string>
+    <string name="scan_settings">Innstillinger</string>
+    <string name="scan_analysing">Sjekker…</string>
+
+    <string name="permission_title">Kameratilgang trengs for å skanne</string>
+    <string name="permission_body">Kameraet brukes bare mens denne skjermen er åpen. Bildene blir på telefonen og lastes aldri opp.</string>
+    <string name="permission_grant">Tillat kamera</string>
+    <string name="permission_denied_title">Kameraet er utilgjengelig</string>
+    <string name="permission_denied_body">Du kan fortsatt sjekke et lagret bilde eller kopiert tekst.</string>
+    <string name="permission_open_settings">Åpne appinnstillinger</string>
+
+    <string name="result_destination">Mål</string>
+    <string name="result_content">Innhold</string>
+    <string name="result_open_browser">Åpne i nettleser</string>
+    <string name="result_open_anyway">Åpne likevel</string>
+    <string name="result_open_blocked">Åpning er blokkert</string>
+    <string name="result_copy">Kopier</string>
+    <string name="result_share">Del</string>
+    <string name="result_copied">Kopiert</string>
+    <string name="result_why">Hvorfor dette resultatet</string>
+    <string name="result_technical">Tekniske detaljer</string>
+    <string name="result_limitations">Dette kunne ikke sjekkes</string>
+    <string name="result_no_browser">Ingen nettleser er installert</string>
+    <string name="result_confirm_title">Åpne denne adressen?</string>
+    <string name="result_confirm_body">Du er i ferd med å forlate QR Safety og åpne %1$s i nettleseren. Denne sjekken fant faresignaler. En nettleser har egen beskyttelse, men den gjør ikke målet trygt.</string>
+    <string name="result_confirm_open">Åpne</string>
+    <string name="result_cancel">Avbryt</string>
+    <string name="result_no_evidence">Ingen faresignaler funnet</string>
+    <plurals name="result_evidence_count">
+        <item quantity="one">%1$d faresignal funnet</item>
+        <item quantity="other">%1$d faresignaler funnet</item>
+    </plurals>
+    <string name="result_subject_final">Gjelder det endelige målet</string>
+
+    <string name="url_scheme">Protokoll</string>
+    <string name="url_host">Vert</string>
+    <string name="url_unicode_host">Vises som</string>
+    <string name="url_registrable_domain">Registrert domene</string>
+    <string name="url_port">Port</string>
+    <string name="url_path">Sti</string>
+    <string name="url_query">Spørrestreng</string>
+    <string name="url_fragment">Fragment</string>
+    <string name="url_credentials">Tekst før @</string>
+    <string name="url_subdomains">Underdomener</string>
+
+    <string name="settings_title">Innstillinger</string>
+    <string name="settings_haptics">Vibrer ved skanning</string>
+    <string name="settings_haptics_description">En kort vibrasjon når en kode er lest.</string>
+    <string name="settings_technical">Vis alltid tekniske detaljer</string>
+    <string name="settings_technical_description">Utvid adresseoppdelingen automatisk.</string>
+    <string name="settings_language">Språk</string>
+    <string name="settings_language_description">Velg språk for denne appen.</string>
+    <string name="settings_about">Om</string>
+    <string name="settings_engine_version">Analysemotor %1$s, regler %2$s</string>
+    <string name="settings_offline_notice">Denne versjonen fungerer helt uten nett. Den har ingen internettillatelse og kan derfor ikke kontakte en skannet adresse eller noen tjener.</string>
+    <string name="settings_back">Tilbake</string>
+
+    <string name="error_engine_title">Sikkerhetssjekken kan ikke starte</string>
+    <string name="error_engine_body">Analysemotoren ble ikke lastet, så ingen vurdering kan vises. Å installere appen på nytt løser dette som regel.</string>
+    <string name="error_no_qr_in_image">Fant ingen QR-kode i det bildet</string>
+    <string name="error_image_too_large">Det bildet er for stort til å sjekkes</string>
+    <string name="error_image_unreadable">Det bildet kunne ikke leses</string>
+    <string name="error_camera_unavailable">Kameraet kunne ikke startes</string>
+    <string name="error_clipboard_empty">Det er ingen tekst å sjekke</string>
+    <string name="error_shared_unsupported">Den typen delt innhold kan ikke sjekkes</string>
+</resources>

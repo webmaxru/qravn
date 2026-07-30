@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QR Safety</string>
+    <string name="share_target_label">Check with QR Safety</string>
+    <string name="tile_label">Check QR code</string>
+
+    <!-- Scan screen -->
+    <string name="scan_title">Point at a QR code</string>
+    <string name="scan_hint">Nothing is opened and nothing leaves your phone.</string>
+    <string name="scan_viewfinder_description">Camera viewfinder. A QR code is read automatically when it is in view.</string>
+    <string name="scan_again">Scan again</string>
+    <string name="scan_torch_on">Turn on flashlight</string>
+    <string name="scan_torch_off">Turn off flashlight</string>
+    <string name="scan_from_image">Check an image</string>
+    <string name="scan_from_clipboard">Check copied text</string>
+    <string name="scan_settings">Settings</string>
+    <string name="scan_analysing">Checking…</string>
+
+    <!-- Camera permission -->
+    <string name="permission_title">Camera access is needed to scan</string>
+    <string name="permission_body">The camera is used only while this screen is open. Images stay on your phone and are never uploaded.</string>
+    <string name="permission_grant">Allow camera</string>
+    <string name="permission_denied_title">Camera is unavailable</string>
+    <string name="permission_denied_body">You can still check a saved image or copied text.</string>
+    <string name="permission_open_settings">Open app settings</string>
+
+    <!-- Result -->
+    <string name="result_destination">Destination</string>
+    <string name="result_content">Content</string>
+    <string name="result_open_browser">Open in browser</string>
+    <string name="result_open_anyway">Open anyway</string>
+    <string name="result_open_blocked">Opening is blocked</string>
+    <string name="result_copy">Copy</string>
+    <string name="result_share">Share</string>
+    <string name="result_copied">Copied</string>
+    <string name="result_why">Why this result</string>
+    <string name="result_technical">Technical details</string>
+    <string name="result_limitations">What this check could not do</string>
+    <string name="result_no_browser">No browser is installed</string>
+    <string name="result_confirm_title">Open this address?</string>
+    <string name="result_confirm_body">You are about to leave QR Safety and open %1$s in your browser. This check found warning signs. A browser has its own protections, but they do not make a destination safe.</string>
+    <string name="result_confirm_open">Open</string>
+    <string name="result_cancel">Cancel</string>
+    <string name="result_no_evidence">No warning signs found</string>
+    <plurals name="result_evidence_count">
+        <item quantity="one">%1$d warning sign found</item>
+        <item quantity="other">%1$d warning signs found</item>
+    </plurals>
+    <string name="result_subject_final">Applies to the final destination</string>
+
+    <!-- URL breakdown labels -->
+    <string name="url_scheme">Protocol</string>
+    <string name="url_host">Host</string>
+    <string name="url_unicode_host">Displayed as</string>
+    <string name="url_registrable_domain">Registered domain</string>
+    <string name="url_port">Port</string>
+    <string name="url_path">Path</string>
+    <string name="url_query">Query</string>
+    <string name="url_fragment">Fragment</string>
+    <string name="url_credentials">Text before @</string>
+    <string name="url_subdomains">Subdomains</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_haptics">Vibrate on scan</string>
+    <string name="settings_haptics_description">A short buzz when a code is read.</string>
+    <string name="settings_technical">Always show technical details</string>
+    <string name="settings_technical_description">Expand the address breakdown automatically.</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_description">Choose the language for this app.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_engine_version">Analysis engine %1$s, rules %2$s</string>
+    <string name="settings_offline_notice">This version works entirely offline. It has no internet permission, so it cannot contact a scanned address or any server.</string>
+    <string name="settings_back">Back</string>
+
+    <!-- Errors -->
+    <string name="error_engine_title">The safety check cannot start</string>
+    <string name="error_engine_body">The analysis engine did not load, so no result can be shown. Reinstalling the app usually fixes this.</string>
+    <string name="error_no_qr_in_image">No QR code was found in that image</string>
+    <string name="error_image_too_large">That image is too large to check</string>
+    <string name="error_image_unreadable">That image could not be read</string>
+    <string name="error_camera_unavailable">The camera could not be started</string>
+    <string name="error_clipboard_empty">There is no text to check</string>
+    <string name="error_shared_unsupported">That kind of shared content cannot be checked</string>
+</resources>

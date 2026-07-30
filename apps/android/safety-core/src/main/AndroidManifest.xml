@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        This library holds the offline safety engine. It deliberately declares
+        no permissions at all: the engine has no I/O, no networking and no
+        clock. The host passes data in.
+    -->
+</manifest>

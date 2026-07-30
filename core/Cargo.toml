@@ -2,6 +2,7 @@
 members = [
     "crates/safety-core",
     "bindings/wasm",
+    "bindings/android",
 ]
 resolver = "2"
 
