@@ -31,7 +31,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [],
       manifest: {
-        name: 'qrrrgh QR Safety Checker',
+        name: 'qrrrgh – QR code safety',
         short_name: 'qrrrgh',
         description: 'Privacy-first QR code safety checker for Norway.',
         theme_color: '#fafaf8',
