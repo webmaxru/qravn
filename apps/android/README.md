@@ -262,6 +262,11 @@ days before production access — does not apply.
 
 ### Listing details
 
+Every field the Console asks for — both listings word for word, the Data safety
+answers, the content rating answers and the release notes — is in
+[`play-listing.md`](play-listing.md). Fill the form from that file rather than
+writing new copy, so the store, the app and the site keep saying the same thing.
+
 | Field | Value |
 |---|---|
 | Package name | `no.qrrrgh.android` |
@@ -284,6 +289,11 @@ sources, not drawn per-store:
 |---|---|
 | App icon, 512×512 | `brand/play/icon-512.png` |
 | Feature graphic, 1024×500 | `brand/play/feature-graphic.png` |
+| Phone screenshots, 1080×1920 | `brand/play/screenshots/{en-US,nb-NO}/` |
+
+Screenshots are captured from the signed release build on an emulator resized
+with `adb shell wm size 1080x1920`. The device's native 1080×2400 is a 2.22
+ratio and Play rejects anything longer than 2:1.
 
 Regenerate with `cd tools/brand-render && npm install && node render.mjs` after
 changing anything in `brand/`. The in-app launcher icon is separate — it lives
