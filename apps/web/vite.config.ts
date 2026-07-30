@@ -49,6 +49,11 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        // The privacy policy is a standalone document, not an SPA route. Without
+        // this the service worker would answer a navigation to /privacy with the
+        // app shell, and the policy would be unreachable for anyone who had
+        // already visited the site.
+        navigateFallbackDenylist: [/^\/privacy(\.html)?$/, /^\/personvern$/],
         globPatterns: ['**/*.{js,css,html,svg,png,wasm}'],
       },
     }),

@@ -1,9 +1,15 @@
 {
+  "routes": [
+    { "route": "/privacy", "rewrite": "/privacy.html" },
+    { "route": "/personvern", "rewrite": "/privacy.html" }
+  ],
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
       "/assets/*",
-      "/*.{css,js,map,json,txt,ico,png,jpg,jpeg,gif,svg,webp,wasm}"
+      "/privacy",
+      "/personvern",
+      "/*.{css,js,map,json,txt,ico,png,jpg,jpeg,gif,svg,webp,wasm,html}"
     ]
   },
   "mimeTypes": {

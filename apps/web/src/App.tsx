@@ -257,6 +257,9 @@ function App({ engineOverride, resolverOverride }: AppProps) {
       <section className="panel privacy" aria-labelledby="privacy-heading">
         <h2 id="privacy-heading">About / privacy</h2>
         <p>Everything in this prototype runs locally in the browser. There is no analytics, telemetry, tracking pixel, link preview, favicon lookup, or backend API call — unless offline mode is off and you explicitly ask us to expand a shortened link, which sends only that link to our own resolver so your device never contacts it. Offline mode disables that expansion option entirely.</p>
+        <p>
+          <a href="/privacy">Read the full privacy policy</a>
+        </p>
       </section>
     </main>
   );

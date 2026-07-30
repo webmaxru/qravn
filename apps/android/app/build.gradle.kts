@@ -92,6 +92,12 @@ android {
             "NewerVersionAvailable",
             "AndroidGradlePluginVersion",
             "ObsoleteLintCustomCheck",
+            // Same reasoning, and worse: OldTargetApi compares targetSdk against
+            // whatever platforms happen to be installed on the build machine, so
+            // it passes locally and fails on a CI runner with a newer SDK image.
+            // A machine-dependent gate cannot be a gate. Raising targetSdk is a
+            // deliberate act that follows testing against the new behaviours.
+            "OldTargetApi",
         )
     }
 }

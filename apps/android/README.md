@@ -260,6 +260,21 @@ account. Because the account predates 13 November 2023, the closed-test
 requirement for new personal accounts — 12 opted-in testers for 14 continuous
 days before production access — does not apply.
 
+### Listing details
+
+| Field | Value |
+|---|---|
+| Package name | `no.qrrrgh.android` |
+| Privacy policy | <https://qrrrgh.isainative.dev/privacy> |
+| Support email | `salnikov@gmail.com` |
+| Website | <https://qrrrgh.isainative.dev> |
+| Data collected | None. Declare "No data collected" in Data safety. |
+
+The privacy policy is a standalone document at `apps/web/public/privacy.html`,
+served through the rewrite in `apps/web/public/staticwebapp.config.json`. It is
+excluded from the service worker's navigation fallback, or the app shell would
+answer `/privacy` for anyone who had already visited the site.
+
 ### Store assets
 
 The listing icon and feature graphic are generated from the shared brand

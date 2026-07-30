@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Personvern · qrrrgh</title>
+    <meta
+      name="description"
+      content="Personvernerklæring for qrrrgh. Android-appen har ingen nettverkstillatelse og kan derfor ikke sende data ut av enheten. Privacy policy for qrrrgh, in Norwegian and English."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="index, follow" />
+    <style>
+      /*
+       * The palette of a document that has nothing to report.
+       *
+       * qrrrgh treats colour as a verdict: it enters only when something is
+       * wrong, and it gets louder as the news gets worse. There is no news
+       * here, so this page is ink on paper and nothing else. The restraint is
+       * the argument.
+       */
+      :root {
+        --bg: #f2f3f1;
+        --surface: #fafaf8;
+        --text: #111315;
+        --text-muted: #5b6165;
+        --border: #dcdfe0;
+        --border-strong: #5b6165;
+        --code-bg: #edeeec;
+        --focus: #111315;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+          "Liberation Mono", monospace;
+        color-scheme: light dark;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0e1012;
+          --surface: #121416;
+          --text: #e6e7e5;
+          --text-muted: #a8aeb1;
+          --border: #333739;
+          --border-strong: #a8aeb1;
+          --code-bg: #1e2123;
+          --focus: #e6e7e5;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        padding: 0 1.25rem 6rem;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .page {
+        max-width: 44rem;
+        margin: 0 auto;
+      }
+
+      /* The machine's voice: anything the operating system, the manifest or the
+         contract would say verbatim is set in mono, exactly as in the app. */
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      header.masthead {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 2.5rem 0 0;
+      }
+
+      header.masthead svg {
+        display: block;
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      .wordmark {
+        font-family: var(--mono);
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      h1 {
+        font-size: clamp(1.9rem, 6vw, 2.75rem);
+        line-height: 1.12;
+        letter-spacing: -0.022em;
+        margin: 2.5rem 0 0;
+        max-width: 20ch;
+      }
+
+      .standfirst {
+        font-size: 1.125rem;
+        color: var(--text-muted);
+        margin: 1rem 0 0;
+        max-width: 58ch;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        margin: 1.75rem 0 0;
+      }
+
+      .langbar {
+        margin: 0.5rem 0 0;
+        font-family: var(--mono);
+        font-size: 0.8125rem;
+      }
+
+      .langbar a {
+        color: var(--text);
+      }
+
+      /*
+       * The signature element: the permission ledger.
+       *
+       * Every privacy policy claims things. This one opens with the single
+       * fact anyone can verify for themselves by unzipping the APK, because
+       * the strongest privacy guarantee in this product is not a promise we
+       * make, it is a capability the app does not have.
+       */
+      .ledger {
+        margin: 2.75rem 0 0;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        padding: 1.5rem;
+      }
+
+      .ledger dl {
+        margin: 1rem 0 0;
+        font-family: var(--mono);
+        font-size: 0.875rem;
+      }
+
+      .ledger dt {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .ledger dd {
+        margin: 0.25rem 0 1.1rem;
+        color: var(--text);
+        overflow-wrap: anywhere;
+      }
+
+      .ledger dd:last-child {
+        margin-bottom: 0;
+      }
+
+      /* The absent permission. Stated as a line of its own because its absence
+         is the load-bearing fact of the whole document. */
+      .absent {
+        display: block;
+        margin-top: 0.35rem;
+        color: var(--text-muted);
+      }
+
+      .absent s {
+        text-decoration-thickness: 1px;
+      }
+
+      h2 {
+        font-size: 1.4rem;
+        line-height: 1.25;
+        letter-spacing: -0.012em;
+        margin: 3.5rem 0 0;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+      }
+
+      h3 {
+        font-size: 1.0625rem;
+        margin: 2rem 0 0;
+      }
+
+      p,
+      ul {
+        max-width: 64ch;
+      }
+
+      p {
+        margin: 0.9rem 0 0;
+      }
+
+      ul {
+        margin: 0.9rem 0 0;
+        padding-left: 1.1rem;
+      }
+
+      li {
+        margin: 0.4rem 0;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.875em;
+        background: var(--code-bg);
+        padding: 0.1em 0.35em;
+        overflow-wrap: anywhere;
+      }
+
+      a {
+        color: var(--text);
+        text-underline-offset: 0.2em;
+      }
+
+      a:focus-visible,
+      .skip:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+      }
+
+      hr.rule {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: 4.5rem 0 0;
+      }
+
+      footer {
+        margin-top: 3rem;
+        font-family: var(--mono);
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+      }
+
+      footer a {
+        color: var(--text-muted);
+      }
+
+      .skip {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .skip:focus {
+        position: static;
+        display: inline-block;
+        margin: 1rem 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <a class="skip" href="#nb">Til innholdet</a>
+
+      <header class="masthead">
+        <!-- Three finder patterns, fourth corner deliberately empty: the app
+             reports what it found, never that everything is fine. -->
+        <svg viewBox="0 0 100 100" role="img" aria-label="qrrrgh">
+          <g fill="currentColor">
+            <path
+              d="M4 4h32v32H4V4zm7 7v18h18V11H11zm4 4h10v10H15V15z"
+            />
+            <path
+              d="M64 4h32v32H64V4zm7 7v18h18V11H71zm4 4h10v10H75V15z"
+            />
+            <path
+              d="M4 64h32v32H4V64zm7 7v18h18V71H11zm4 4h10v10H15V75z"
+            />
+          </g>
+        </svg>
+        <a class="wordmark" href="/">qrrrgh</a>
+      </header>
+
+      <h1 id="nb">Personvern&shy;erklæring</h1>
+      <p class="standfirst">
+        qrrrgh sjekker QR-koder og lenker på enheten din. Android-appen har
+        ingen nettverkstillatelse og kan derfor ikke sende data ut av enheten.
+      </p>
+      <p class="meta">Sist oppdatert 30. juli 2026 · Versjon 1.0</p>
+      <p class="langbar"><a href="#en">Read this in English</a></p>
+
+      <section class="ledger" aria-labelledby="ledger-heading">
+        <p class="eyebrow" id="ledger-heading">
+          Tillatelser i Android-appen
+        </p>
+        <dl>
+          <dt>Ber om</dt>
+          <dd>
+            android.permission.CAMERA
+            <span class="absent"
+              >Brukes bare til å lese QR-koder i kamerabildet.</span
+            >
+          </dd>
+          <dt>Ber ikke om</dt>
+          <dd>
+            <s>android.permission.INTERNET</s>
+            <span class="absent"
+              >Uten denne tillatelsen er det Android selv, ikke vi, som hindrer
+              appen i å sende data. Du trenger ikke stole på oss for å tro på
+              det. Du kan pakke ut app-filen og lese manifestet.</span
+            >
+          </dd>
+        </dl>
+      </section>
+
+      <h2>Kort fortalt</h2>
+      <p>
+        Vi samler ikke inn personopplysninger gjennom qrrrgh-appen. Det finnes
+        ingen brukerkonto, ingen analyse, ingen annonser, ingen
+        krasjrapportering og ingen historikk over hva du har skannet. Alt du
+        skanner blir vurdert på enheten din og forsvinner når du lukker
+        resultatet.
+      </p>
+      <p>
+        qrrrgh åpner heller aldri en skannet lenke av seg selv. Enheten din
+        kontakter ikke nettstedet bak koden med mindre du selv velger å åpne
+        den.
+      </p>
+
+      <h2>Hvem er behandlingsansvarlig</h2>
+      <p>
+        Maxim Salnikov, Oslo, Norge. Kontakt:
+        <a href="mailto:salnikov@gmail.com">salnikov@gmail.com</a>.
+      </p>
+
+      <h2>Android-appen</h2>
+      <h3>Kamera</h3>
+      <p>
+        Appen bruker kameraet til å finne QR-koder. Bildene behandles i
+        arbeidsminnet mens søkeren er åpen. De lagres ikke, og de kan ikke
+        sendes ut av enheten, siden appen mangler nettverkstillatelse. Du kan
+        når som helst trekke tilbake kameratilgangen i Innstillinger → Apper →
+        qrrrgh → Tillatelser.
+      </p>
+      <h3>Bilder du velger selv</h3>
+      <p>
+        Velger du et bilde fra galleriet, leses det via Androids
+        bildevelger. Appen får bare det ene bildet du peker ut, den leser det i
+        minnet for å finne en QR-kode, og den beholder det ikke.
+      </p>
+      <h3>Innholdet i koden</h3>
+      <p>
+        Teksten eller nettadressen i koden vurderes av en analysemotor som
+        ligger i appen. Den slår ikke opp noe eksternt. Innholdet lagres ikke
+        mellom økter.
+      </p>
+      <h3>Google Play</h3>
+      <p>
+        Appen distribueres gjennom Google Play. Google samler inn opplysninger
+        om nedlasting og installasjon etter sine egne vilkår. Det er en
+        behandling vi verken styrer eller mottar data fra. Se
+        <a
+          href="https://policies.google.com/privacy"
+          rel="noreferrer noopener"
+          target="_blank"
+          >Googles personvernerklæring</a
+        >.
+      </p>
+
+      <h2>Nettstedet qrrrgh.isainative.dev</h2>
+      <p>
+        Nettversjonen gjør den samme vurderingen i nettleseren din. Vi bruker
+        ikke informasjonskapsler, og vi har ingen analyseverktøy. Leverandøren
+        som er vert for nettstedet, fører tekniske tjenerlogger, blant annet
+        IP-adresse og tidspunkt, for drift og sikkerhet.
+      </p>
+      <h3>Å utvide en forkortet lenke</h3>
+      <p>
+        En forkortet lenke skjuler hvor den fører. På nettstedet kan du velge,
+        for hver enkelt sjekk, å få den utvidet. Da sendes den skannede
+        adressen til vår egen tjeneste, som følger omdirigeringene på vegne av
+        deg og sender kjeden tilbake. Enheten din kontakter fortsatt aldri
+        nettstedet bak koden. Dette skjer bare når du trykker på knappen, aldri
+        automatisk, og funksjonen finnes ikke i Android-appen.
+      </p>
+
+      <h2>Barn</h2>
+      <p>
+        qrrrgh er ikke rettet mot barn, og vi samler ikke bevisst inn
+        opplysninger om barn. Appen samler ikke inn personopplysninger fra noen.
+      </p>
+
+      <h2>Rettighetene dine</h2>
+      <p>
+        Etter personvernforordningen (GDPR) har du rett til innsyn, retting,
+        sletting, begrensning, dataportabilitet og til å protestere. Fordi vi
+        ikke lagrer personopplysninger om deg, har vi normalt ingenting å gi
+        innsyn i eller slette. Du kan uansett kontakte oss på
+        <a href="mailto:salnikov@gmail.com">salnikov@gmail.com</a>. Mener du at
+        vi behandler opplysninger feil, kan du klage til
+        <a
+          href="https://www.datatilsynet.no/"
+          rel="noreferrer noopener"
+          target="_blank"
+          >Datatilsynet</a
+        >.
+      </p>
+
+      <h2>Endringer</h2>
+      <p>
+        Endrer vi denne erklæringen, oppdaterer vi datoen øverst. Endrer vi noe
+        vesentlig i hva appen gjør med data, sier vi fra i appens
+        oppdateringsnotat.
+      </p>
+
+      <h2>Kontakt</h2>
+      <p>
+        <a href="mailto:salnikov@gmail.com">salnikov@gmail.com</a>
+      </p>
+
+      <hr class="rule" />
+
+      <h1 id="en" lang="en">Privacy policy</h1>
+      <p class="standfirst" lang="en">
+        qrrrgh checks QR codes and links on your device. The Android app holds
+        no network permission, so it cannot send anything anywhere.
+      </p>
+      <p class="meta" lang="en">Last updated 30 July 2026 · Version 1.0</p>
+      <p class="langbar"><a href="#nb">Les dette på norsk</a></p>
+
+      <div lang="en">
+        <section class="ledger" aria-labelledby="ledger-heading-en">
+          <p class="eyebrow" id="ledger-heading-en">
+            Android app permissions
+          </p>
+          <dl>
+            <dt>Requested</dt>
+            <dd>
+              android.permission.CAMERA
+              <span class="absent"
+                >Used only to read QR codes in the camera image.</span
+              >
+            </dd>
+            <dt>Not requested</dt>
+            <dd>
+              <s>android.permission.INTERNET</s>
+              <span class="absent"
+                >Without it, Android itself stops the app from sending data. You
+                do not have to take our word for it. Unzip the app file and read
+                the manifest.</span
+              >
+            </dd>
+          </dl>
+        </section>
+
+        <h2>In short</h2>
+        <p>
+          We collect no personal data through the qrrrgh app. There is no
+          account, no analytics, no advertising, no crash reporting and no
+          history of what you scanned. Everything you scan is assessed on your
+          device and is gone when you close the result.
+        </p>
+        <p>
+          qrrrgh also never opens a scanned link by itself. Your device does not
+          contact the site behind the code unless you choose to open it.
+        </p>
+
+        <h2>Who is responsible</h2>
+        <p>
+          Maxim Salnikov, Oslo, Norway. Contact:
+          <a href="mailto:salnikov@gmail.com">salnikov@gmail.com</a>.
+        </p>
+
+        <h2>The Android app</h2>
+        <h3>Camera</h3>
+        <p>
+          The app uses the camera to find QR codes. Frames are processed in
+          memory while the viewfinder is open. They are not stored, and they
+          cannot be sent anywhere, because the app has no network permission.
+          You can withdraw camera access at any time in Settings → Apps → qrrrgh
+          → Permissions.
+        </p>
+        <h3>Images you pick yourself</h3>
+        <p>
+          If you choose an image from your gallery, it is read through Android's
+          photo picker. The app receives only the one image you point at, reads
+          it in memory to find a QR code, and does not keep it.
+        </p>
+        <h3>The contents of the code</h3>
+        <p>
+          The text or address inside the code is assessed by an engine bundled
+          inside the app. It looks nothing up externally. The contents are not
+          stored between sessions.
+        </p>
+        <h3>Google Play</h3>
+        <p>
+          The app is distributed through Google Play. Google collects
+          download and installation data under its own terms. That processing is
+          neither controlled by us nor shared with us. See
+          <a
+            href="https://policies.google.com/privacy"
+            rel="noreferrer noopener"
+            target="_blank"
+            >Google's privacy policy</a
+          >.
+        </p>
+
+        <h2>The qrrrgh.isainative.dev website</h2>
+        <p>
+          The web version makes the same assessment inside your browser. We use
+          no cookies and no analytics. The provider hosting the site keeps
+          technical server logs, including IP address and timestamp, for
+          operation and security.
+        </p>
+        <h3>Expanding a shortened link</h3>
+        <p>
+          A shortened link hides where it leads. On the website you can choose,
+          for each individual check, to have it expanded. The scanned address is
+          then sent to our own service, which follows the redirects on your
+          behalf and returns the chain. Your device still never contacts the
+          site behind the code. This happens only when you press the button,
+          never automatically, and the feature does not exist in the Android
+          app.
+        </p>
+
+        <h2>Children</h2>
+        <p>
+          qrrrgh is not directed at children, and we do not knowingly collect
+          data about children. The app collects no personal data from anyone.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          Under the GDPR you have the right of access, rectification, erasure,
+          restriction, portability and objection. Because we hold no personal
+          data about you, there is normally nothing for us to disclose or
+          delete. You can contact us regardless at
+          <a href="mailto:salnikov@gmail.com">salnikov@gmail.com</a>. If you
+          believe we are handling data wrongly, you can complain to the
+          Norwegian Data Protection Authority,
+          <a
+            href="https://www.datatilsynet.no/"
+            rel="noreferrer noopener"
+            target="_blank"
+            >Datatilsynet</a
+          >.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          If we change this policy we update the date at the top. If we change
+          anything material about what the app does with data, we say so in the
+          app's release notes.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          <a href="mailto:salnikov@gmail.com">salnikov@gmail.com</a>
+        </p>
+      </div>
+
+      <footer>
+        <p><a href="/">← qrrrgh</a></p>
+      </footer>
+    </div>
+  </body>
+</html>
