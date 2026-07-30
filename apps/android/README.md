@@ -118,13 +118,20 @@ node tools/check-contract-localization.js
 Instrumented tests need a device or emulator:
 
 ```bash
-./gradlew :app:connectedDebugAndroidTest
+./gradlew :safety-core:connectedDebugAndroidTest :app:connectedDebugAndroidTest
 ```
 
-`ResultPanelSafetyTest` is the one to keep green. It asserts the things that
-would be embarrassing to get wrong: that a blocked destination shows no open
-button, that opening always needs a second confirmation, and that the verdict is
-never announced as an unqualified "safe".
+Both suites are there to protect invariants rather than appearance.
+
+`NativeSafetyEngineInstrumentedTest` runs the real Rust core through JNI on the
+device. The JVM tests would not notice a library that fails to load, a drifted
+symbol name or catalogs missing from the packaged assets, and each of those
+reaches a user as an app that cannot judge anything.
+
+`ResultPanelSafetyTest` covers the things that would be embarrassing to get
+wrong: that a blocked destination shows no open button, that opening always
+needs a second confirmation, and that a verdict is never announced as an
+unqualified "safe".
 
 ---
 

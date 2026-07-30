@@ -90,17 +90,21 @@ impl SafetyEngine {
             payload_kind,
             PayloadKind::Text | PayloadKind::Empty | PayloadKind::Binary
         ) && !payload_analysis.url_candidate;
+        // Only an http(s) URL is something this app could hand to a browser.
+        // Wi-Fi credentials, phone numbers, deep links and plain text have no
+        // destination to open, so no open affordance is offered for them.
+        let openable = url
+            .as_ref()
+            .is_some_and(|breakdown| matches!(breakdown.scheme.as_str(), "http" | "https"));
         // Any http(s) URL can redirect, so the expansion option is offered
         // whenever a chain has not already been resolved. Gating it on a
         // shortener cue meant an unlisted redirector such as aka.ms was
         // reported as "no known threat found" with no way to see where it went.
-        let redirect_expandable = redirect.is_none()
-            && url
-                .as_ref()
-                .is_some_and(|breakdown| matches!(breakdown.scheme.as_str(), "http" | "https"));
+        let redirect_expandable = redirect.is_none() && openable;
         let verdict_result = verdict::decide(
             payload_unknown,
             &payload_analysis.findings,
+            openable,
             redirect_expandable,
         );
         let locale = input

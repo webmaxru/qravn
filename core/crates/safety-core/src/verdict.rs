@@ -10,6 +10,7 @@ pub struct VerdictResult {
 pub fn decide(
     payload_unknown: bool,
     findings: &[Finding],
+    openable: bool,
     redirect_expandable: bool,
 ) -> VerdictResult {
     let has_known_malicious = findings.iter().any(|f| f.code == "url.known_malicious");
@@ -40,7 +41,7 @@ pub fn decide(
         Verdict::InsufficientEvidence => 0.45,
         Verdict::NoKnownThreatFound => 0.72,
     };
-    let actions = recommended_actions(&verdict, redirect_expandable);
+    let actions = recommended_actions(&verdict, openable, redirect_expandable);
     VerdictResult {
         verdict,
         confidence,
@@ -103,14 +104,31 @@ fn is_insufficient_code(code: &str) -> bool {
 /// than only for hosts the bundled registry happens to know. Detection cues
 /// stay deliberately conservative because a false *warning* is noise, whereas
 /// an always-available *option* the user must choose costs nothing.
-fn recommended_actions(verdict: &Verdict, redirect_expandable: bool) -> Vec<RecommendedAction> {
+///
+/// `openable` is false for anything that is not an http(s) URL: Wi-Fi
+/// credentials, a phone number, a deep link, plain text. Those carry no
+/// destination this app is willing to hand to another application, so no open
+/// affordance is offered at all. Deciding that here rather than in each client
+/// keeps the rule in one place, as the contract requires. A hostile payload is
+/// still told apart from an unopenable one: a malicious or suspicious verdict
+/// keeps `OpenBlocked`, so the client shows the refusal rather than silently
+/// omitting the action.
+fn recommended_actions(
+    verdict: &Verdict,
+    openable: bool,
+    redirect_expandable: bool,
+) -> Vec<RecommendedAction> {
     let mut actions = Vec::new();
     match verdict {
         Verdict::KnownMalicious => actions.push(RecommendedAction::OpenBlocked),
-        Verdict::Suspicious => actions.push(RecommendedAction::OpenWithConfirmation),
-        Verdict::InsufficientEvidence | Verdict::NoKnownThreatFound => {
+        Verdict::Suspicious if openable => {
+            actions.push(RecommendedAction::OpenWithConfirmation);
+        }
+        Verdict::Suspicious => actions.push(RecommendedAction::OpenBlocked),
+        Verdict::InsufficientEvidence | Verdict::NoKnownThreatFound if openable => {
             actions.push(RecommendedAction::OpenAllowed);
         }
+        Verdict::InsufficientEvidence | Verdict::NoKnownThreatFound => {}
     }
     if redirect_expandable {
         actions.push(RecommendedAction::ExpandRedirectOnline);
@@ -121,4 +139,52 @@ fn recommended_actions(verdict: &Verdict, redirect_expandable: bool) -> Vec<Reco
         actions.push(RecommendedAction::Report);
     }
     actions
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn finding(code: &str) -> Finding {
+        Finding::new(code, Default::default())
+    }
+
+    #[test]
+    fn an_openable_clean_url_may_be_opened() {
+        let result = decide(false, &[], true, false);
+        assert_eq!(result.verdict, Verdict::NoKnownThreatFound);
+        assert!(result.actions.contains(&RecommendedAction::OpenAllowed));
+    }
+
+    #[test]
+    fn a_payload_with_nothing_to_open_offers_no_open_action() {
+        // Plain text, Wi-Fi credentials, a phone number: nothing to hand off.
+        let result = decide(true, &[], false, false);
+        assert_eq!(result.verdict, Verdict::InsufficientEvidence);
+        assert!(!result.actions.contains(&RecommendedAction::OpenAllowed));
+        assert!(!result
+            .actions
+            .contains(&RecommendedAction::OpenWithConfirmation));
+        assert!(!result.actions.contains(&RecommendedAction::OpenBlocked));
+        assert!(result.actions.contains(&RecommendedAction::Copy));
+    }
+
+    #[test]
+    fn a_hostile_payload_is_refused_even_when_it_is_not_openable() {
+        let findings = [finding("url.known_malicious")];
+        let result = decide(false, &findings, false, false);
+        assert_eq!(result.verdict, Verdict::KnownMalicious);
+        assert!(result.actions.contains(&RecommendedAction::OpenBlocked));
+    }
+
+    #[test]
+    fn a_suspicious_payload_that_cannot_be_opened_is_blocked_not_confirmed() {
+        let findings = [finding("payload.app_deep_link")];
+        let result = decide(false, &findings, false, false);
+        assert_eq!(result.verdict, Verdict::Suspicious);
+        assert!(result.actions.contains(&RecommendedAction::OpenBlocked));
+        assert!(!result
+            .actions
+            .contains(&RecommendedAction::OpenWithConfirmation));
+    }
 }
