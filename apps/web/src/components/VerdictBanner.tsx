@@ -1,11 +1,17 @@
 import type { Verdict } from '../contracts/assessment';
 import { verdictText, type Locale } from '../engine/catalog';
 
+/**
+ * "No known threat found" gets an empty ring rather than a tick, and matches
+ * the Android drawable ic_verdict_clear. A tick reads as "approved", which is
+ * a promise this app is never in a position to make: it can only report that
+ * it looked and found nothing. The emptiness is the message.
+ */
 const verdictIcons: Record<Verdict, string> = {
   known_malicious: '⛔',
   suspicious: '⚠️',
   insufficient_evidence: '？',
-  no_known_threat_found: '✓',
+  no_known_threat_found: '◯',
 };
 
 interface VerdictBannerProps {

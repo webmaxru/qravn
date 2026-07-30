@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    In dark mode the paper goes dark and the modules go light, the way a code
+    reads when it is inverted on a screen. ic_launcher_background is not
+    overridden: the launcher icon stays a light tile in either mode, because
+    that is what a printed code looks like.
+-->
+<resources>
+    <color name="splash_background">#121416</color>
+    <color name="mark_ink">#FAFAF8</color>
+</resources>

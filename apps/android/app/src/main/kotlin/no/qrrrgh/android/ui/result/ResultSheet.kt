@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
@@ -50,6 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import java.util.Locale
 import no.qrrrgh.android.R
 import no.qrrrgh.safety.Assessment
 import no.qrrrgh.safety.Finding
@@ -273,12 +276,11 @@ private fun VerdictBanner(assessment: Assessment, verdictDetail: String) {
 private fun DestinationBlock(assessment: Assessment) {
     val url = assessment.url
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
+        FieldLabel(
             text = stringResource(
                 if (url != null) R.string.result_destination else R.string.result_content,
             ),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (url != null) {
             Text(
@@ -489,10 +491,9 @@ private fun UrlBreakdownTable(url: UrlBreakdown) {
 @Composable
 private fun BreakdownRow(label: String, value: String) {
     Row(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text(
+        FieldLabel(
             text = label,
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(120.dp),
         )
         LtrText(
@@ -501,6 +502,33 @@ private fun BreakdownRow(label: String, value: String) {
             modifier = Modifier.weight(1f),
         )
     }
+}
+
+/**
+ * The machine's voice: monospace, tracked out and set in capitals, the same
+ * treatment the web surface gives its field labels. It marks the boundary
+ * between what the app is saying and what the payload claims.
+ *
+ * The capitals are visual only. The unmodified label is kept as the
+ * accessibility text so a screen reader announces a word rather than
+ * spelling it out.
+ */
+@Composable
+private fun FieldLabel(
+    text: String,
+    style: androidx.compose.ui.text.TextStyle,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text.uppercase(Locale.getDefault()),
+        style = style.copy(
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.1.em,
+        ),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.semantics { contentDescription = text },
+    )
 }
 
 @Composable

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500"
+     role="img" aria-label="qrrrgh, check a QR code before you trust it">
+  <title>qrrrgh</title>
+  <!--
+    Play Store feature graphic. Ink on paper and no colour anywhere, because
+    the listing should look like the app looks when it has nothing bad to
+    report. The lockup is centred so Play's own crops cannot clip it.
+  -->
+  <rect width="1024" height="500" fill="#FAFAF8" />
+  <g transform="translate(95 154) scale(12.8)" fill="#111315" fill-rule="evenodd">
+    <path d="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
+    <path d="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
+    <path d="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
+  </g>
+  <text x="383" y="240" fill="#111315"
+        font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
+        font-size="94" letter-spacing="-2">qrrrgh</text>
+  <text x="383" y="300" fill="#5B6165"
+        font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
+        font-size="26">check a QR code before you trust it</text>
+</svg>

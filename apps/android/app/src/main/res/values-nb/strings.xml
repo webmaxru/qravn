@@ -61,6 +61,8 @@
     <string name="settings_haptics_description">En kort vibrasjon når en kode er lest.</string>
     <string name="settings_technical">Vis alltid tekniske detaljer</string>
     <string name="settings_technical_description">Utvid adresseoppdelingen automatisk.</string>
+    <string name="settings_wallpaper_colors">Bruk fargene fra bakgrunnsbildet</string>
+    <string name="settings_wallpaper_colors_description">Gir appen fargene fra systempaletten. Varselfargene endres aldri.</string>
     <string name="settings_language">Språk</string>
     <string name="settings_language_description">Velg språk for denne appen.</string>
     <string name="settings_about">Om</string>

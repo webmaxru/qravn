@@ -22,6 +22,7 @@ import java.io.IOException
 data class UserSettings(
     val hapticsEnabled: Boolean = true,
     val alwaysShowTechnicalDetails: Boolean = false,
+    val matchWallpaperColors: Boolean = false,
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -36,6 +37,7 @@ class SettingsRepository(private val context: Context) {
             UserSettings(
                 hapticsEnabled = preferences[HAPTICS] ?: true,
                 alwaysShowTechnicalDetails = preferences[TECHNICAL] ?: false,
+                matchWallpaperColors = preferences[WALLPAPER_COLORS] ?: false,
             )
         }
 
@@ -47,8 +49,13 @@ class SettingsRepository(private val context: Context) {
         context.dataStore.edit { it[TECHNICAL] = enabled }
     }
 
+    suspend fun setMatchWallpaperColors(enabled: Boolean) {
+        context.dataStore.edit { it[WALLPAPER_COLORS] = enabled }
+    }
+
     private companion object {
         val HAPTICS = booleanPreferencesKey("haptics_enabled")
         val TECHNICAL = booleanPreferencesKey("always_show_technical")
+        val WALLPAPER_COLORS = booleanPreferencesKey("match_wallpaper_colors")
     }
 }

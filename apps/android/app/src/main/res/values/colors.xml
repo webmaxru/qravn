@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Brand neutrals. A QR code is only ever dark modules on a light ground, so
+    the identity is ink on paper and the launcher icon looks like a fragment of
+    a real code. Colour is reserved for verdicts; see ui/theme/Theme.kt.
+-->
 <resources>
-    <color name="ic_launcher_background">#0E1B2A</color>
-    <color name="splash_background">#0E1B2A</color>
+    <color name="ic_launcher_background">#FAFAF8</color>
+    <color name="splash_background">#FAFAF8</color>
+    <color name="mark_ink">#111315</color>
 </resources>

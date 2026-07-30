@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
+import { BrandMark } from './components/BrandMark';
 import { InputForm } from './components/InputForm';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { QrScanner } from './components/QrScanner';
@@ -184,7 +185,11 @@ function App({ engineOverride, resolverOverride }: AppProps) {
     <main className="app-shell">
       <header className="hero-header">
         <div>
-          <p className="eyebrow">qrrrgh for Norway</p>
+          <p className="brand-lockup">
+            <BrandMark />
+            <span className="brand-wordmark">qrrrgh</span>
+            <span className="brand-qualifier">for Norway</span>
+          </p>
           <h1>Check a QR link without opening it</h1>
           <p>Paste a suspicious link or QR payload. The check runs locally in your browser and explains the evidence before any external action.</p>
         </div>

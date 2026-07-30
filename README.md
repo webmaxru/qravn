@@ -81,12 +81,80 @@ core/            Rust workspace — the shared safety core
   bindings/android/  JNI wrapper loaded by the Android app
 apps/web/        Vite + TypeScript progressive web application
 apps/android/    Kotlin + Compose application — see apps/android/README.md
+brand/           Logo, app icons and store artwork — the visual source of truth
 contracts/       Versioned schemas shared by every surface
 localization/    nb, nn, en catalogs keyed by finding code
 test-vectors/    Golden corpora, including decoder conformance
 planning/        Market research, technical research, implementation plan
+tools/           Contract checks and the brand asset renderer
 .github/         CI and deployment workflows
 ```
+
+---
+
+## Brand
+
+The scams this product exists to catch work by impersonating institutions you
+trust. So the identity refuses the visual language of borrowed trust: no
+shields, no padlocks, no green ticks, no bank blue. It should read as an
+instrument that measures and reports, not an authority that blesses.
+
+**Colour is a verdict.** The base palette is QR black and white, the only two
+colours a QR code may have. Colour enters only when there is something to warn
+about, and it gets louder as the news gets worse:
+
+| Verdict | Voice | Light | Dark |
+|---|---|---|---|
+| `no_known_threat_found` | silence — no hue at all | `#F0F1EF` on `#111315` | `#1E2123` on `#E6E7E5` |
+| `insufficient_evidence` | a murmur | `#E2E2F4` on `#1E2050` | `#23264F` on `#D5D6F2` |
+| `suspicious` | a raised voice | `#FFEBC7` on `#4A2A02` | `#422703` on `#FFE0AE` |
+| `known_malicious` | a shout | `#FFE1DA` on `#5E1608` | `#4E150B` on `#FFD9D0` |
+
+A clean result is therefore monochrome. That is the point: it makes the system
+structurally incapable of rendering "safe", because safety here is an absence,
+not a finding. Every pair above is verified against WCAG AA, and colour is
+never the only signal — each verdict also carries its own icon and the written
+verdict text from the shared catalog.
+
+**The mark** is three QR finder patterns with the fourth corner left empty. The
+missing fourth finder is real QR anatomy, it is how a decoder works out which
+way up a code is, and it carries the same idea as the palette: the corner where
+a promise would go is left open. The clear verdict icon follows the rule — an
+empty ring, not a tick.
+
+**Type.** Human-facing prose uses the platform system face, because native feel
+matters more than a bundled display font and because Android downloadable fonts
+would need the network. Monospace is the machine's voice: the wordmark, field
+labels, payloads, hosts and codes. That is functional rather than stylistic —
+the app's central act is showing a URL precisely enough that you can tell `rn`
+from `m` or spot a Cyrillic `а`, and a proportional face hides exactly that.
+
+On Android this means Material You dynamic colour is **off by default**, since
+it would repaint the app in whatever hue the wallpaper happens to be. It stays
+available as a setting, and verdict colours sit outside the Material scheme
+regardless, so no wallpaper can tint a verdict either way.
+
+`brand/` holds the SVG sources. The PNGs used by the web manifest and the Play
+Console are committed and regenerated only when a source changes:
+
+```bash
+cd tools/brand-render && npm install && node render.mjs
+```
+
+| File | Use |
+|---|---|
+| `brand/mark.svg` | The mark on its own, at true QR Version 1 module density. Needs a 4-module quiet zone around it, like a real code |
+| `brand/icon.svg` | Coarser mark for small sizes, where the true density turns to mud |
+| `brand/lockup.svg` | Mark plus wordmark, for headers and documents |
+| `brand/app-icon.svg` | Rounded tile — favicon, PWA `any`, apple-touch, Play listing |
+| `brand/app-icon-maskable.svg` | Full-bleed square with the launcher safe zone honoured |
+| `brand/og.svg` | Open Graph and social card |
+| `brand/play/feature-graphic.svg` | Play Store feature graphic, 1024×500 |
+
+Android does not consume these files directly — a `VectorDrawable` cannot
+reference an SVG. The launcher, monochrome, splash and tile drawables in
+`apps/android/app/src/main/res/drawable/` are hand-written ports of the same
+geometry, sized so the mark survives every launcher mask.
 
 ---
 

@@ -41,6 +41,7 @@ import no.qrrrgh.android.ui.result.ResultSheet
 import no.qrrrgh.android.ui.scan.ScanScreen
 import no.qrrrgh.android.ui.settings.SettingsScreen
 import no.qrrrgh.android.ui.theme.QrSafetyTheme
+import no.qrrrgh.android.ui.theme.QrSafetyViewfinderTheme
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,7 +57,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            QrSafetyTheme {
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            QrSafetyTheme(dynamicColor = state.settings.matchWallpaperColors) {
                 QrSafetyApp(viewModel)
             }
         }
@@ -111,21 +113,24 @@ private fun QrSafetyApp(viewModel: MainViewModel) {
                 rulesVersion = state.rulesVersion,
                 onHapticsChanged = viewModel::setHapticsEnabled,
                 onTechnicalDetailsChanged = viewModel::setAlwaysShowTechnicalDetails,
+                onWallpaperColorsChanged = viewModel::setMatchWallpaperColors,
                 onBack = { showSettings = false },
             )
         } else {
-            ScanScreen(
-                state = state,
-                requestImagePick = state.pendingImagePick,
-                onImagePickHandled = viewModel::onImagePickHandled,
-                onPayloadDecoded = viewModel::onPayloadDecoded,
-                onImagePicked = viewModel::onImagePicked,
-                onClipboardRequested = { viewModel.onClipboardText(readClipboard(context)) },
-                onTorchToggled = viewModel::setTorchEnabled,
-                onCameraError = { viewModel.showMessage(R.string.error_camera_unavailable) },
-                onOpenSettings = { showSettings = true },
-                modifier = Modifier.fillMaxSize(),
-            )
+            QrSafetyViewfinderTheme {
+                ScanScreen(
+                    state = state,
+                    requestImagePick = state.pendingImagePick,
+                    onImagePickHandled = viewModel::onImagePickHandled,
+                    onPayloadDecoded = viewModel::onPayloadDecoded,
+                    onImagePicked = viewModel::onImagePicked,
+                    onClipboardRequested = { viewModel.onClipboardText(readClipboard(context)) },
+                    onTorchToggled = viewModel::setTorchEnabled,
+                    onCameraError = { viewModel.showMessage(R.string.error_camera_unavailable) },
+                    onOpenSettings = { showSettings = true },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
 
         SnackbarHost(

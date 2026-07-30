@@ -51,6 +51,7 @@ fun SettingsScreen(
     rulesVersion: String,
     onHapticsChanged: (Boolean) -> Unit,
     onTechnicalDetailsChanged: (Boolean) -> Unit,
+    onWallpaperColorsChanged: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -90,6 +91,15 @@ fun SettingsScreen(
                 onCheckedChange = onTechnicalDetailsChanged,
                 testTag = "technicalSwitch",
             )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                SwitchRow(
+                    title = stringResource(R.string.settings_wallpaper_colors),
+                    description = stringResource(R.string.settings_wallpaper_colors_description),
+                    checked = settings.matchWallpaperColors,
+                    onCheckedChange = onWallpaperColorsChanged,
+                    testTag = "wallpaperColorsSwitch",
+                )
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 HorizontalDivider()

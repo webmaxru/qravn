@@ -97,7 +97,7 @@
 
 .redirect-final-host__value {
   margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  font-family: var(--mono);
   font-size: 1.15rem;
   font-weight: 800;
   overflow-wrap: anywhere;

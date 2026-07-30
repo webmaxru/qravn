@@ -1,21 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The brand mark: three QR finder patterns, fourth corner deliberately empty.
+    See brand/icon.svg for the canonical geometry and the reasoning.
+
+    The 15 module field is drawn at 0..15 and mapped into the 108dp adaptive
+    icon viewport by the group transform. Android scales first, then
+    translates, so 0..15 becomes 31.5..76.5, centred on 54. The furthest
+    corner sits 31.8 units from the centre, inside the 33 unit radius that
+    every launcher mask is guaranteed to show, so no finder can be clipped.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- QR finder patterns with a shield notch: scan, then judge. -->
-    <group android:translateX="27" android:translateY="27">
+    <group
+        android:scaleX="3"
+        android:scaleY="3"
+        android:translateX="31.5"
+        android:translateY="31.5">
         <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M2,2h18v18h-18z M6,6v10h10v-10z" />
+            android:fillColor="#111315"
+            android:fillType="evenOdd"
+            android:pathData="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
         <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M34,2h18v18h-18z M38,6v10h10v-10z" />
+            android:fillColor="#111315"
+            android:fillType="evenOdd"
+            android:pathData="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
         <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M2,34h18v18h-18z M6,38v10h10v-10z" />
-        <path
-            android:fillColor="#5FD3A6"
-            android:pathData="M27,27h6v6h-6z M39,33h6v6h-6z M33,39h6v6h-6z M27,45h6v6h-6z M45,45h7v7h-7z" />
+            android:fillColor="#111315"
+            android:fillType="evenOdd"
+            android:pathData="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
     </group>
 </vector>

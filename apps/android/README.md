@@ -176,12 +176,35 @@ invariant revisited deliberately rather than by accident.
 | App shortcut | `res/xml/shortcuts.xml` |
 | Photo picker for existing images | `platform/ImageQrDecoder.kt` |
 | Torch control | `ui/scan/CameraViewfinder.kt` |
-| Dynamic colour, edge-to-edge, predictive back | `ui/theme/Theme.kt`, `MainActivity.kt` |
+| Dynamic colour (opt-in), edge-to-edge, predictive back | `ui/theme/Theme.kt`, `MainActivity.kt` |
 | Per-app language | `res/xml/locales_config.xml` |
 | Haptics on verdict | `MainActivity.kt` |
 
 Text arriving from a share sheet is treated exactly like a camera scan. There is
 no shortcut path that skips assessment.
+
+### Theming
+
+Two rules override the Material defaults, both in `ui/theme/Theme.kt`.
+
+**Dynamic colour is off by default.** Material You would repaint the app in
+whatever hue the wallpaper happens to be, and this product's entire visual
+argument is that colour means something is wrong. A lavender button that means
+nothing undermines the amber one that means something. It is still available as
+"Use my wallpaper colours" in settings, because it is a real platform feature
+some people want, and `VerdictColors` sits outside the Material scheme either
+way — so no wallpaper can tint a verdict, whichever way the switch is set.
+
+Both schemes fill in *every* colour role, including ones the app never names.
+An unset role keeps its baseline Material value, which is a purple, and it
+leaks out through components that pick their own container role: a bottom sheet
+reaches for `surfaceContainerLow` without being asked.
+
+**The viewfinder is always dark.** `QrSafetyViewfinderTheme` forces the dark
+scheme on the scan screen regardless of the system setting or the wallpaper
+switch, because that screen's background is the live camera image, or black
+before the camera opens. Under the light scheme its controls would be ink on
+black.
 
 ### Deliberate omissions
 
@@ -227,4 +250,22 @@ the bundled ML Kit model; per-device delivery removes most of that.
 ```
 
 See `planning/qr-safety-android-development-start-guide.md` for the Play Console
-path.
+path. The publisher is Play developer ID `6183318089496892599`, a personal
+account. Because the account predates 13 November 2023, the closed-test
+requirement for new personal accounts — 12 opted-in testers for 14 continuous
+days before production access — does not apply.
+
+### Store assets
+
+The listing icon and feature graphic are generated from the shared brand
+sources, not drawn per-store:
+
+| Play asset | File |
+|---|---|
+| App icon, 512×512 | `brand/play/icon-512.png` |
+| Feature graphic, 1024×500 | `brand/play/feature-graphic.png` |
+
+Regenerate with `cd tools/brand-render && npm install && node render.mjs` after
+changing anything in `brand/`. The in-app launcher icon is separate — it lives
+in `app/src/main/res/` as vector drawables, so it can react to dark mode and
+supply a monochrome layer for themed icons.

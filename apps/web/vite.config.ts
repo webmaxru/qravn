@@ -34,22 +34,22 @@ export default defineConfig({
         name: 'qrrrgh QR Safety Checker',
         short_name: 'qrrrgh',
         description: 'Privacy-first QR code safety checker for Norway.',
-        theme_color: '#0b5d55',
-        background_color: '#f7f3ea',
+        theme_color: '#fafaf8',
+        background_color: '#fafaf8',
         display: 'standalone',
         start_url: '/',
         icons: [
-          {
-            src: '/pwa-192.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
-          },
+          { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          // Kept separate from the "any" icons: a maskable icon needs its own
+          // safe-zone padding, and reusing one file for both crops the mark.
+          { src: '/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
       workbox: {
         navigateFallback: '/index.html',
-        globPatterns: ['**/*.{js,css,html,svg,wasm}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,wasm}'],
       },
     }),
   ],

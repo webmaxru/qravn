@@ -176,6 +176,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { settingsRepository.setAlwaysShowTechnicalDetails(enabled) }
     }
 
+    fun setMatchWallpaperColors(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.setMatchWallpaperColors(enabled) }
+    }
+
     private fun currentLocale(): String {
         val application = getApplication<Application>()
         val locales = androidx.core.os.ConfigurationCompat.getLocales(

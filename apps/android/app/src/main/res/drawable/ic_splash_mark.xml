@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Themed icon silhouette. The system supplies the background and tints these
-    paths, so the mark is drawn as bare geometry with no colour of its own.
+    Splash mark. Same geometry as the launcher foreground, but the fill follows
+    the day/night colour so the mark stays legible on either splash background.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -14,15 +14,15 @@
         android:translateX="31.5"
         android:translateY="31.5">
         <path
-            android:fillColor="@android:color/white"
+            android:fillColor="@color/mark_ink"
             android:fillType="evenOdd"
             android:pathData="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
         <path
-            android:fillColor="@android:color/white"
+            android:fillColor="@color/mark_ink"
             android:fillType="evenOdd"
             android:pathData="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
         <path
-            android:fillColor="@android:color/white"
+            android:fillColor="@color/mark_ink"
             android:fillType="evenOdd"
             android:pathData="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
     </group>

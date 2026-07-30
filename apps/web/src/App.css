@@ -27,12 +27,47 @@
   gap: 0.75rem;
 }
 
+/* Field labels are the machine's voice, so they are set in the utility
+   monospace: "verdict", "destination", "redirect path" name data, they are not
+   prose. */
 .eyebrow {
   margin: 0;
   color: var(--text-muted);
+  font-family: var(--mono);
   font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Masthead. The wordmark is live text rather than an image so it scales with
+   the reader's font size and stays selectable. */
+.brand-lockup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.brand-mark {
+  display: block;
+  flex: none;
+  color: var(--text);
+}
+
+.brand-wordmark {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+}
+
+.brand-qualifier {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -285,7 +320,7 @@ pre,
 code {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  font-family: var(--mono);
 }
 
 pre {

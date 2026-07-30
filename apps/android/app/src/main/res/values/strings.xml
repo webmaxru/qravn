@@ -66,6 +66,8 @@
     <string name="settings_haptics_description">A short buzz when a code is read.</string>
     <string name="settings_technical">Always show technical details</string>
     <string name="settings_technical_description">Expand the address breakdown automatically.</string>
+    <string name="settings_wallpaper_colors">Use my wallpaper colours</string>
+    <string name="settings_wallpaper_colors_description">Tint the app to match the system palette. Warning colours never change.</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_description">Choose the language for this app.</string>
     <string name="settings_about">About</string>
