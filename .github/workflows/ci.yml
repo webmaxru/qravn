@@ -214,6 +214,131 @@ jobs:
           path: apps/web/playwright-report/
           retention-days: 7
 
+  android:
+    name: Android app
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Detect Android app
+        id: android
+        shell: bash
+        run: |
+          if [ -f apps/android/settings.gradle.kts ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::apps/android/settings.gradle.kts is not present yet; skipping Android checks."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up JDK
+        if: steps.android.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Set up Gradle
+        if: steps.android.outputs.present == 'true'
+        uses: gradle/actions/setup-gradle@v6
+
+      # The Rust core is the single source of every verdict and the Android
+      # client is not allowed to re-derive one, so CI builds the real JNI
+      # binding rather than passing -Pqrrrgh.skipNativeBuild. x86_64 is in the
+      # list because the emulator below needs it.
+      - name: Install Rust stable with Android targets
+        if: steps.android.outputs.present == 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+
+      - name: Cache cargo
+        if: steps.android.outputs.present == 'true'
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            core/target/
+          key: ${{ runner.os }}-cargo-android-${{ hashFiles('core/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-android-
+
+      - name: Install cargo-ndk
+        if: steps.android.outputs.present == 'true'
+        run: |
+          if ! command -v cargo-ndk >/dev/null; then
+            cargo install cargo-ndk --version 4.1.2 --locked
+          fi
+
+      - name: Install Android NDK
+        if: steps.android.outputs.present == 'true'
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install \
+            "platforms;android-36" "ndk;28.2.13676358"
+
+      - name: Run unit tests
+        if: steps.android.outputs.present == 'true'
+        working-directory: apps/android
+        run: ./gradlew :app:testDebugUnitTest :safety-core:testDebugUnitTest
+
+      # lint runs with warningsAsErrors, so this also catches unused resources,
+      # missing translations and accessibility problems in the Compose tree.
+      - name: Lint
+        if: steps.android.outputs.present == 'true'
+        working-directory: apps/android
+        run: ./gradlew :app:lintDebug
+
+      # assemble and bundle both depend on verify{Variant}OfflineManifest, which
+      # fails the build if any permission beyond CAMERA reaches the merged
+      # manifest. That is the offline invariant, enforced rather than documented.
+      - name: Build release artifacts
+        if: steps.android.outputs.present == 'true'
+        working-directory: apps/android
+        run: ./gradlew :app:assembleRelease :app:bundleRelease
+
+      # Hardware acceleration is off by default on the runners, and without it
+      # the emulator is too slow to finish inside any sane timeout.
+      - name: Enable KVM
+        if: steps.android.outputs.present == 'true'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # These guard product invariants, not styling: that a refused verdict
+      # offers no way to open the link, that a result never appears without its
+      # destination, and — in the safety-core suite — that the real Rust core
+      # actually loads through JNI with its catalogs packaged. A JVM test would
+      # not notice a library that fails to load or a drifted symbol name.
+      - name: Run instrumented tests
+        if: steps.android.outputs.present == 'true'
+        uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          working-directory: apps/android
+          disable-animations: true
+          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
+          script: ./gradlew :safety-core:connectedDebugAndroidTest :app:connectedDebugAndroidTest
+
+      - name: Upload reports on failure
+        if: failure() && steps.android.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-reports
+          path: |
+            apps/android/app/build/reports/
+            apps/android/safety-core/build/reports/
+          retention-days: 7
+
   contract:
     name: Contract and localization
     runs-on: ubuntu-latest

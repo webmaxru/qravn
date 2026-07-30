@@ -178,6 +178,11 @@ The Android application additionally needs the Android SDK, the NDK and
 cd apps/android && ./gradlew assembleDebug
 ```
 
+CI (`.github/workflows/ci.yml`) gates every push and pull request on five jobs:
+the Rust core including the `wasm32` build, the web app, browser tests across
+Chromium, Firefox and WebKit, the Android app including instrumented tests on an
+emulator, and the shared contract.
+
 ---
 
 ## Documentation

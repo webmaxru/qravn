@@ -123,6 +123,11 @@ Instrumented tests need a device or emulator:
 
 Both suites are there to protect invariants rather than appearance.
 
+CI runs all of the above in the `Android app` job of `.github/workflows/ci.yml`,
+including the instrumented suites on an API 36 emulator. It builds the real JNI
+binding rather than passing `-Pqrrrgh.skipNativeBuild`, because a green build
+against a stubbed core would prove nothing.
+
 `NativeSafetyEngineInstrumentedTest` runs the real Rust core through JNI on the
 device. The JVM tests would not notice a library that fails to load, a drifted
 symbol name or catalogs missing from the packaged assets, and each of those
