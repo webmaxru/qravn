@@ -321,12 +321,23 @@ jobs:
         if: steps.android.outputs.present == 'true'
         uses: reactivecircus/android-emulator-runner@v2.38.0
         with:
-          api-level: 36
+          # API 35 rather than the compileSdk. The hosted runner's API 36
+          # google_apis image never finished booting inside the action's
+          # ten-minute window, and these tests assert product behaviour that is
+          # not version-specific. minSdk is 26, so testing one release below
+          # target is closer to what users actually run.
+          api-level: 35
           target: google_apis
           arch: x86_64
           working-directory: apps/android
           disable-animations: true
-          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
+          emulator-boot-timeout: 1200
+          # No camera device: the emulated webcam is boot work this suite never
+          # needs. These tests exercise the result panel's Compose tree and the
+          # JNI core directly; neither opens the viewfinder.
+          emulator-options: >-
+            -no-window -no-snapshot -noaudio -no-boot-anim -no-metrics
+            -camera-back none -camera-front none -gpu swiftshader_indirect
           script: ./gradlew :safety-core:connectedDebugAndroidTest :app:connectedDebugAndroidTest
 
       - name: Upload reports on failure
