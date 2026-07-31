@@ -190,8 +190,8 @@ function App({ engineOverride, resolverOverride }: AppProps) {
             <span className="brand-wordmark">qrrrgh</span>
             <span className="brand-qualifier">for Norway</span>
           </p>
-          <h1>Security professionals never scan QR codes</h1>
-          <p>A QR code is the only link you cannot read before you follow it. Paste one below and see where it really goes — the check runs in your browser, and nothing opens until you decide.</p>
+          <h1>Never open a link you haven’t read</h1>
+          <p>That is the one rule every official guide agrees on, and the one thing a camera app will not let you do: it gives you a cut-off preview and a button. Paste a QR link below to read the whole address first — the check runs in your browser, and nothing opens until you decide.</p>
         </div>
         <div className="hero-controls">
           <LanguageSwitcher locale={locale} onChange={changeLocale} />

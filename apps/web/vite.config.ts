@@ -34,7 +34,7 @@ export default defineConfig({
         name: 'qrrrgh – QR code safety',
         short_name: 'qrrrgh',
         description:
-          'Security professionals never scan QR codes. See where one really leads before you open it, checked on your own device.',
+          "Security professionals don't scan QR codes with the camera app. Read the whole address first, checked on your own device.",
         theme_color: '#fafaf8',
         background_color: '#fafaf8',
         display: 'standalone',

@@ -4,11 +4,25 @@ Default language: **Norwegian (Norway) — nb-NO**. Second listing: **English (U
 
 Package name: `no.qrrrgh.android` · Version 1.0.0 (versionCode 1)
 
-The copy leads with the risk, not the mechanic. "Check a QR code" describes what
-the app does; it does not tell anyone why they should care. Every claim about
-fraud below is sourced — see [Sources](#sources) — because Play rejects
-unsubstantiated claims, and because a security app that exaggerates has already
-lost the argument.
+## The claim, and why it is worded this way
+
+The hook is that **security professionals do not scan QR codes with the camera
+app**. It is worded against the *camera app* and not against scanning, because
+the broader version is not true and would not survive being checked:
+
+- Official guidance says to **read the web address before opening it, and not to
+  proceed if you cannot see it**. That rule is the product.
+- A camera app is built to *open* the link. It offers a shortened preview and a
+  button, and the preview is exactly where a lookalike domain or a shortener
+  hides.
+- The same official guidance **warns against third-party QR scanner apps**,
+  because most of them are advertising businesses. The listing meets that
+  objection head on rather than ducking it: qrrrgh has no INTERNET permission at
+  all, so Android refuses to let it phone home regardless of what we claim.
+
+Every factual claim is sourced — see [Sources](#sources). A security app that
+exaggerates has already lost the argument, so the listing promises no detection
+rate, no prevention figure, and never says "safe".
 
 ---
 
@@ -24,25 +38,36 @@ qrrrgh – sjekk QR mot svindel
 ### Short description (80 max)
 
 ```
-Sikkerhetsfolk skanner aldri QR-koder. Nå kan du se hvor koden fører først.
+Sikkerhetsfolk skanner ikke QR-koder med kameraappen. Les lenken først.
 ```
-75 characters.
+71 characters.
 
 ### Full description (4000 max)
 
 ```
-SIKKERHETSFOLK SKANNER ALDRI QR-KODER
+SIKKERHETSFOLK SKANNER IKKE QR-KODER MED KAMERAAPPEN
 
-Spør noen som jobber med datasikkerhet om de skanner QR-koden på en
-parkeringsautomat. Det gjør de ikke. Ikke fordi de vet noe hemmelig, men på
-grunn av noe helt enkelt:
+Alle offentlige råd om QR-koder sier det samme: les nettadressen før du åpner
+den. Ser du ikke adressen, skal du la være.
 
-En QR-kode er den eneste lenken du ikke kan lese før du følger den.
+Se så på hva kameraappen faktisk gir deg. En avkortet forhåndsvisning, klippet
+av etter noen få tegn, og en knapp. Ett trykk, og du er på siden.
 
-Den er en svart-hvit firkant. Den kan si hva som helst. Du oppdager først hvor
-den fører etter at siden har åpnet seg – og da er du allerede der.
+Det er ingen feil ved telefonen din. Kameraappen er laget for å åpne lenken. Å
+kontrollere lenken er en annen jobb.
 
-Svindlerne skjønte dette lenge før resten av oss.
+
+DETTE FORSVINNER I DE FÅ TEGNENE
+
+En forhåndsvisning som stopper etter tjue tegn kan ikke vise deg:
+
+• at det ekte domenet står til slutt, ikke først. bankid.no.verify-login.example
+  er ikke BankID
+• at én bokstav er byttet ut med en fra et annet alfabet, så navnet bare ser
+  riktig ut
+• at hele lenken er forkortet, og at målet ikke vises i det hele tatt
+
+Du blir bedt om å vurdere en adresse du ikke har fått lov til å lese.
 
 
 DETTE SKJER ALLEREDE I NORGE
@@ -51,33 +76,34 @@ I Kristiansand ble det funnet over 20 falske QR-klistremerker på
 parkeringsautomater. De var limt rett over de ekte, med navnet til et
 parkeringsselskap folk stoler på.
 
-På bruktmarkedet får kjøpere tilsendt en QR-kode de skal «betale med». Kortet
+På bruktmarkedet får kjøpere tilsendt en QR-kode de skal «betale med», og kortet
 blir belastet langt mer enn prisen. Én person tapte 90 000 kroner. Politiet og
 bankene har advart mot begge deler.
 
-Et klistremerke koster svindleren nesten ingenting å lage. Det er derfor det
-blir flere av dem.
+Et klistremerke koster svindleren nesten ingenting å trykke.
 
 
-qrrrgh LESER KODEN FØR DU STOLER PÅ DEN
+qrrrgh LESER KODEN I STEDET FOR Å ÅPNE DEN
 
-Rett kameraet mot koden. Før noe som helst åpnes, ser du selve adressen,
-hvilket domene den faktisk peker på, og hva som eventuelt ser galt ut.
+Rett kameraet mot koden. Ingenting åpnes. Du får hele adressen, hvilket domene
+den faktisk peker på, og hva som eventuelt ser galt ut.
 
-Så bestemmer du.
-
-qrrrgh åpner aldri en lenke for deg. Telefonen din kontakter ikke nettstedet bak
-koden mens koden blir vurdert. Det koster deg ingenting å sjekke.
+Så bestemmer du – med det du skulle hatt hele tiden: lenken, i sin helhet, før
+du binder deg til den.
 
 
-ALT SKJER PÅ TELEFONEN
+«ER IKKE QR-SKANNERAPPER SELVE PROBLEMET?»
 
-Appen ber ikke om nettilgang. Den har ingen INTERNET-tillatelse i det hele tatt,
-så det er Android selv, ikke et løfte fra oss, som hindrer den i å sende data ut
-av enheten.
+Som regel er de det, og advarslene er berettiget. De fleste av dem er
+annonsevirksomheter, og det du skanner er varen.
 
-Ingen konto. Ingen analyse. Ingen annonser. Ingen historikk over hva du har
-skannet. Den virker i flymodus.
+qrrrgh har ingen INTERNET-tillatelse i det hele tatt. Ikke «vi lover å la være»
+– tillatelsen finnes rett og slett ikke, så det er Android selv som nekter
+appen å kontakte nettet. Den kan ikke laste opp det du skannet, fordi den ikke
+kan laste opp noe som helst.
+
+Ingen konto. Ingen analyse. Ingen annonser. Ingen skannehistorikk. Den virker i
+flymodus.
 
 
 DET DEN SIER, OG DET DEN IKKE SIER
@@ -114,7 +140,7 @@ Vi samler ikke inn personopplysninger. Vi kan ikke: appen har ingen mulighet til
 https://qrrrgh.isainative.dev/privacy
 
 
-Les koden. Så bestemmer du.
+Les lenken. Så bestemmer du.
 
 qrrrgh er laget i Norge, for folk i Norge.
 ```
@@ -138,25 +164,36 @@ qrrrgh – QR code scam check
 ### Short description (80 max)
 
 ```
-Security pros never scan QR codes. Now you can see where one leads first.
+Security pros don't scan QR codes with the camera app. Read the link first.
 ```
-73 characters.
+75 characters.
 
 ### Full description (4000 max)
 
 ```
-SECURITY PROFESSIONALS NEVER SCAN QR CODES
+SECURITY PROFESSIONALS DON'T SCAN QR CODES WITH THE CAMERA APP
 
-Ask someone who works in security whether they scan the QR code on a parking
-meter. They don't. Not because they know a secret, but because of something very
-simple:
+Every official guide on QR codes gives the same advice: read the web address
+before you open it. If you cannot see the address, do not proceed.
 
-A QR code is the only link you cannot read before you follow it.
+Now look at what a camera app actually gives you. A shortened preview, cut off
+after a few characters, and a button. One tap, and you are on the page.
 
-It is a black and white square. It can say anything at all. You find out where
-it leads after the page has opened — and by then you are already there.
+That is not a fault in your phone. A camera app is built to open the link.
+Checking the link is a different job.
 
-Scammers worked this out long before the rest of us did.
+
+WHAT DISAPPEARS INTO THOSE FEW CHARACTERS
+
+A preview that stops after twenty characters cannot show you:
+
+• that the real domain is at the end, not the start.
+  bankid.no.verify-login.example is not BankID
+• that one letter has been swapped for one from another alphabet, so the name
+  only looks right
+• that the whole link is a shortener, and the destination is not shown at all
+
+You are being asked to judge an address you have not been allowed to read.
 
 
 THIS IS ALREADY HAPPENING
@@ -165,33 +202,33 @@ In Kristiansand, Norway, more than 20 fake QR stickers were found on parking
 meters. They were stuck straight over the real ones, carrying the name of a
 parking company people trust.
 
-In second-hand marketplaces, buyers are sent a QR code to "pay with". The card
-is then charged far more than the asking price. One person lost 90,000 kroner.
+In second-hand marketplaces, buyers are sent a QR code to "pay with", and the
+card is charged far more than the asking price. One person lost 90,000 kroner.
 Police and banks have warned about both.
 
-A sticker costs a scammer almost nothing to make. That is why there are more of
-them every month.
+A sticker costs a scammer almost nothing to print.
 
 
-qrrrgh READS THE CODE BEFORE YOU TRUST IT
+qrrrgh READS THE CODE INSTEAD OF OPENING IT
 
-Point the camera at the code. Before anything opens, you see the actual address,
-the domain it really points to, and anything about it that looks wrong.
+Point the camera at the code. Nothing opens. You get the whole address, the
+domain it really points to, and anything about it that looks wrong.
 
-Then you decide.
-
-qrrrgh never opens a link for you. Your phone does not contact the site behind
-the code while the code is being checked. Checking costs you nothing.
+Then you decide, holding the thing you should have had all along: the link, in
+full, before you commit to it.
 
 
-IT ALL HAPPENS ON YOUR PHONE
+"AREN'T QR SCANNER APPS THE PROBLEM?"
 
-The app does not ask for network access. It holds no INTERNET permission at all,
-so it is Android itself, not a promise from us, that stops it sending data off
-your device.
+Usually they are, and the warnings are fair. Most of them are advertising
+businesses, and what you scan is the product.
 
-No account. No analytics. No ads. No history of what you scanned. It works in
-airplane mode.
+qrrrgh holds no INTERNET permission at all. Not "we promise not to" — the
+permission simply is not there, so it is Android itself that refuses to let the
+app reach the network. It cannot upload what you scanned, because it cannot
+upload anything.
+
+No account. No analytics. No ads. No scan history. It works in airplane mode.
 
 
 WHAT IT SAYS, AND WHAT IT WILL NOT SAY
@@ -223,11 +260,11 @@ BUILT FOR ANDROID
 
 PRIVACY
 
-We collect no personal data. We cannot: the app has no way to send anything. The
-full privacy policy is at https://qrrrgh.isainative.dev/privacy
+We collect no personal data. We cannot: the app has no way to send anything.
+Full policy: https://qrrrgh.isainative.dev/privacy
 
 
-Read the code. Then decide.
+Read the link. Then decide.
 
 qrrrgh is made in Norway, for people in Norway.
 ```
@@ -236,20 +273,22 @@ qrrrgh is made in Norway, for people in Norway.
 
 ## Sources
 
-The fraud claims in both listings are drawn from Norwegian reporting, so they
-can be defended if Play review or a user challenges them. Keep this list current
-if the copy changes.
+Keep this list current if the copy changes. It exists so the claims can be
+defended to Play review, to a journalist, or to a user who checks.
 
 | Claim | Source |
 |---|---|
+| Official advice is to preview the web address before opening, and not to proceed if it is not shown | NCSC (UK), "QR Codes — what's the real risk?"; NCSC Ireland, "Quick Guide: QR Code Phishing & Scams" |
+| Camera-app previews are truncated, hiding lookalike domains and shorteners | Apple Support Communities thread on QR URL previews; Samsung Community report that link preview was removed from Camera and Gallery on some devices |
+| Guidance warns against third-party QR scanner apps | NCSC (UK), same blog post — the reason qrrrgh ships with no INTERNET permission |
 | 20+ fake QR stickers on parking meters in Kristiansand, using a trusted parking brand | NRK Sørlandet, "Advarer mot parkeringssvindel med QR-kode" |
 | Second-hand marketplace QR payment fraud; card charged far above the agreed price | TV 2, "Politiet og bank advarer: Flere lurt av ny svindelmetode" |
 | A single victim losing NOK 90,000 | TV 2 / Sol, same case |
 | Police and banks warning about both | NRK, "Politiet advarer mot svindel via QR-kode" |
 
-Deliberately **not** claimed: any figure for how much fraud qrrrgh prevents, any
-detection rate, and any suggestion that a clear result means a destination is
-safe. The app never says "safe", and neither does the listing.
+Deliberately **not** claimed: that scanning is always unsafe, that the built-in
+camera app is malicious, any detection rate, any figure for fraud prevented, and
+any suggestion that a clear result means a destination is safe.
 
 ## Store settings
 
@@ -330,8 +369,8 @@ Expected result: **PEGI 3 / ESRB Everyone / IARC 3+**.
 ```
 Første versjon.
 
-Falske QR-koder dukker opp på parkeringsautomater, fakturaer og i bruktannonser.
-qrrrgh leser koden og viser deg hvor den fører – før du åpner den. Alt skjer på
+Kameraappen er laget for å åpne QR-lenken, ikke for å kontrollere den. qrrrgh
+leser koden og viser deg hele adressen først – uten å åpne noe. Alt skjer på
 telefonen, og appen har ingen nettilgang.
 ```
 
@@ -340,9 +379,9 @@ telefonen, og appen har ingen nettilgang.
 ```
 First release.
 
-Fake QR codes are turning up on parking meters, invoices and second-hand
-listings. qrrrgh reads the code and shows you where it leads — before you open
-it. Everything runs on your phone, and the app has no network access.
+A camera app is built to open a QR link, not to check it. qrrrgh reads the code
+and shows you the whole address first, without opening anything. Everything runs
+on your phone, and the app has no network access.
 ```
 
 ## Signing

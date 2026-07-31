@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500"
+     role="img" aria-label="qrrrgh, read the link before your camera app opens it">
+  <title>qrrrgh</title>
+  <rect width="1024" height="500" fill="#0B1E29" />
+  <g transform="translate(95 154) scale(12.8)" fill="#E8F6F7" fill-rule="evenodd">
+    <path d="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
+    <path d="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
+    <path d="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
+  </g>
+  <g transform="translate(95 154) scale(12.8)">
+    <rect x="8.4" y="8.4" width="6.2" height="6.2" fill="none" stroke="#7A5CFF"
+        stroke-width="0.82" stroke-dasharray="1.45 1.13" />
+  </g>
+  <text x="383" y="232" fill="#E8F6F7" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace" font-size="94" letter-spacing="-2">qrrrgh</text>
+  <text x="383" y="286" fill="#7FA6AE" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace" font-size="25">a camera app is built to open the link</text>
+  <text x="386" y="322" fill="#7A5CFF" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace" font-size="25">this one reads it to you first</text>
+</svg>

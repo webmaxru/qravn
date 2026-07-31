@@ -361,6 +361,11 @@ jobs:
       - name: Check contract registry and localization catalogs
         run: node tools/check-contract-localization.js
 
+      # Play truncates nothing: an over-length name or short description is
+      # rejected at upload, after every other form has been filled in.
+      - name: Check Play listing field lengths
+        run: node tools/check-play-listing.mjs
+
       # Stronger than the registry check: asserts every {placeholder} used in a
       # localized string is actually declared for that code in the registry.
       # A message referencing an undeclared param renders literally to the user.
