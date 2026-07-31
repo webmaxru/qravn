@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - "services/resolver/**"
+      - "infra/**"
       - ".github/workflows/ci-resolver.yml"
   pull_request:
     paths:
       - "services/resolver/**"
+      - "infra/**"
       - ".github/workflows/ci-resolver.yml"
 
 permissions:
@@ -52,3 +54,18 @@ jobs:
       # Ensure the production build emits cleanly (this is what the Docker image ships).
       - name: Build
         run: npm run build
+
+  infra:
+    name: Infrastructure template
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Compile the template on every change. Without this, a malformed template
+      # is only discovered by Deploy Resolver after it has already reached main,
+      # which is how a bad find-and-replace once shipped a file that could not
+      # compile at all.
+      - name: Build Bicep
+        run: az bicep build --file infra/resolver.bicep --stdout > /dev/null
