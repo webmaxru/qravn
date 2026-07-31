@@ -214,7 +214,11 @@ jobs:
           # line. GitHub also masks registered secrets in logs. registryPassword
           # is a @secure() Bicep param, so it never appears in deployment history.
           GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qravn' }}
+          # rg-qrrrgh is the live resource group, provisioned before the QRavn
+          # rename. Azure cannot rename a resource group, so this deliberately
+          # does not follow the brand. Set the AZURE_RESOURCE_GROUP variable if
+          # the resources are ever recreated under a new name.
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qrrrgh' }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           WEB_CUSTOM_HOSTNAME: ${{ vars.WEB_CUSTOM_HOSTNAME }}
           RESOLVER_CUSTOM_HOSTNAME: ${{ vars.RESOLVER_CUSTOM_HOSTNAME }}

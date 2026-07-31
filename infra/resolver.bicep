@@ -32,11 +32,11 @@ targetScope = 'resourceGroup'
 @description('Location for all resources. Matches the existing Static Web App region.')
 param location string = 'westeurope'
 
-@description('Name of the Container Apps environment (Consumption-only, serverless).')
-param environmentName string = 'qravn-resolver-env'
+@description('Name of the Container Apps environment (Consumption-only, serverless). Named before the QRavn rename; Azure cannot rename an existing environment, so this keeps the deployed name.')
+param environmentName string = 'qrrrgh-resolver-env'
 
-@description('Name of the resolver container app.')
-param containerAppName string = 'qravn-resolver'
+@description('Name of the resolver container app. Named before the QRavn rename; changing it would create a second app rather than update the running one.')
+param containerAppName string = 'qrrrgh-resolver'
 
 @description('Fully qualified container image. Use an immutable tag such as the Git SHA, for example ghcr.io/webmaxru/qravn/resolver:<sha>.')
 param containerImage string = 'ghcr.io/webmaxru/qravn/resolver:latest'
