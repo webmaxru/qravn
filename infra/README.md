@@ -7,38 +7,12 @@ the existing Static Web App.
 | --- | --- |
 | `resolver.bicep` | Azure Container Apps environment + resolver app (Consumption, scale to zero). |
 | `provision-resolver.ps1` | One-off bootstrap: registers the provider, creates the resource group, deploys `resolver.bicep`. |
-| `provision-swa.ps1` | Existing bootstrap for the Azure Static Web App (`qrrrgh-web`). |
+| `provision-swa.ps1` | Existing bootstrap for the Azure Static Web App (`qravn-web`). |
 
 The GitHub workflow `.github/workflows/deploy-resolver.yml` builds the image,
 pushes it to GitHub Container Registry, and deploys it on every push to `main`
 that touches `services/resolver/**` or `infra/**` - but only once you opt in by
 setting the `AZURE_ACA_ENABLED` repository variable to `true`.
-
-### Why the Azure resource names still say `qrrrgh`
-
-The product was renamed to QRavn after this infrastructure was provisioned.
-Azure cannot rename a resource group, a Container Apps managed environment, a
-container app or a static web app in place, so the deployed resources keep
-their original names and the code deliberately keeps pointing at them:
-
-| kind | name | can it be renamed? |
-| --- | --- | --- |
-| Resource group | `rg-qrrrgh` | No. A new group means recreating everything in it. |
-| Container Apps environment | `qrrrgh-resolver-env` | No. |
-| Container app | `qrrrgh-resolver` | No. Its `azurecontainerapps.io` FQDN is derived from it. |
-| Static Web App | `qrrrgh-web` | No. Its `azurestaticapps.net` hostname is derived from it. |
-| Entra app registration | `qrrrgh-github-deploy` | Yes, but the client id is what the workflow uses. |
-
-Changing these strings in this repository would not rename anything. It would
-point the deployment at resources that do not exist, which is exactly what
-happened once - the rename briefly set the resource group to `rg-qravn` and
-deployment failed with `AuthorizationFailed`, because the service principal is
-scoped to the group that actually exists.
-
-Everything users see - the domain, the tags, the container image path - does
-follow the brand. `AZURE_RESOURCE_GROUP` overrides the group name if these
-resources are ever recreated under QRavn names, which is a migration (new
-resources, re-bound custom domains, re-issued certificates), not a rename.
 
 ---
 
@@ -176,17 +150,17 @@ the resource group contains only the Container Apps environment and the app -
 no Azure Container Registry, no Log Analytics workspace:
 
 ```powershell
-az resource list --resource-group rg-qrrrgh `
+az resource list --resource-group rg-qravn `
   --query "[].{name:name, type:type}" -o table
 ```
 
-Expected: `qrrrgh-web` (the Static Web App, Free tier),
-`qrrrgh-resolver-env` (Microsoft.App/managedEnvironments), and
-`qrrrgh-resolver` (Microsoft.App/containerApps). If you ever see a
+Expected: `qravn-web` (the Static Web App, Free tier),
+`qravn-resolver-env` (Microsoft.App/managedEnvironments), and
+`qravn-resolver` (Microsoft.App/containerApps). If you ever see a
 `Microsoft.ContainerRegistry/registries` or `Microsoft.OperationalInsights/workspaces`
 here, something has been added that can bill at idle.
 
-**2. Azure portal - actual cost.** Open the `rg-qrrrgh` resource group ->
+**2. Azure portal - actual cost.** Open the `rg-qravn` resource group ->
 **Cost Management** -> **Cost analysis** -> set the period to the current month
 and group by **Resource**. An idle month shows nothing for the Container Apps
 resources. See
@@ -195,7 +169,7 @@ Both resources are tagged `project=qravn` and `component=redirect-resolver`, so
 you can also group or filter by the `project` or `component` tag.
 
 **3. Set a safety net.** Create a **Budget** with an alert at a low threshold
-(for example USD 1) on `rg-qrrrgh` so any unexpected charge emails you
+(for example USD 1) on `rg-qravn` so any unexpected charge emails you
 immediately.
 
 **4. (Optional) Cost figure from the CLI.** The `az costmanagement query`
@@ -207,7 +181,7 @@ subscription types:
 az costmanagement query `
   --type ActualCost `
   --timeframe MonthToDate `
-  --scope "/subscriptions/<SUB_ID>/resourceGroups/rg-qrrrgh"
+  --scope "/subscriptions/<SUB_ID>/resourceGroups/rg-qravn"
 ```
 
 An idle month returns zero rows (or zero cost) for the Container Apps resources.
@@ -262,8 +236,8 @@ managed certificate renewal.
 
 | Type | Name | Value / target | TTL | Proxy status |
 | --- | --- | --- | --- | --- |
-| CNAME | `qravn` | `brave-bay-0ecf82e03.7.azurestaticapps.net` | Auto | DNS-only (grey cloud) |
-| CNAME | `qravn-api` | `qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
+| CNAME | `qravn` | `gentle-mushroom-007600b03.7.azurestaticapps.net` | Auto | DNS-only (grey cloud) |
+| CNAME | `qravn-api` | `qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
 | TXT | `asuid.qravn-api` | `5BFCC063D1C3C26567C5CE072026BB5CE03258385AE700DF177521A0BEF0DA62` | Auto | DNS-only (TXT is never proxied) |
 | CAA | `@` | `0 issue "digicert.com"` | Auto | DNS-only (only needed if restrictive CAA records do not already allow DigiCert) |
 
@@ -313,8 +287,8 @@ Then bind the web domain:
 
 ```powershell
 az staticwebapp hostname set `
-  --name qrrrgh-web `
-  --resource-group rg-qrrrgh `
+  --name qravn-web `
+  --resource-group rg-qravn `
   --hostname qravn.isainative.dev `
   --validation-method cname-delegation
 ```
@@ -324,14 +298,14 @@ certificate:
 
 ```powershell
 az containerapp hostname add `
-  --name qrrrgh-resolver `
-  --resource-group rg-qrrrgh `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
   --hostname qravn-api.isainative.dev
 
 az containerapp hostname bind `
-  --name qrrrgh-resolver `
-  --resource-group rg-qrrrgh `
-  --environment qrrrgh-resolver-env `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
+  --environment qravn-resolver-env `
   --hostname qravn-api.isainative.dev `
   --validation-method CNAME
 ```
@@ -343,20 +317,20 @@ The idempotent scripts can do the same when DNS is ready:
 ./infra/provision-resolver.ps1 `
   -WebCustomHostname qravn.isainative.dev `
   -ResolverCustomHostname qravn-api.isainative.dev `
-  -ResolverCorsAllowedOrigins "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+  -ResolverCorsAllowedOrigins "https://gentle-mushroom-007600b03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
 ```
 
 Verify:
 
 ```powershell
 az staticwebapp hostname show `
-  --name qrrrgh-web `
-  --resource-group rg-qrrrgh `
+  --name qravn-web `
+  --resource-group rg-qravn `
   --hostname qravn.isainative.dev
 
 az containerapp hostname list `
-  --name qrrrgh-resolver `
-  --resource-group rg-qrrrgh `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
   -o table
 
 Invoke-WebRequest https://qravn.isainative.dev
@@ -375,7 +349,7 @@ Keep both the old and new origins working during the transition.
    ```powershell
    gh variable set RESOLVER_CORS_ALLOWED_ORIGINS `
      --repo webmaxru/qravn `
-     --body "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+     --body "https://gentle-mushroom-007600b03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
    ```
 
    The live Container App can be updated immediately without widening to a
@@ -383,9 +357,9 @@ Keep both the old and new origins working during the transition.
 
    ```powershell
    az containerapp update `
-     --name qrrrgh-resolver `
-     --resource-group rg-qrrrgh `
-     --set-env-vars CORS_ALLOWED_ORIGINS="https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+     --name qravn-resolver `
+     --resource-group rg-qravn `
+     --set-env-vars CORS_ALLOWED_ORIGINS="https://gentle-mushroom-007600b03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
    ```
 
 4. Bind `qravn.isainative.dev` in Azure Static Web Apps and verify the site.
@@ -428,17 +402,17 @@ opt in explicitly.
 secrets are set, so only step 3 remains.
 
 1. ~~**Create an Azure AD app + federated credential for OIDC**~~ - **done.**
-   App `qrrrgh-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
+   App `qravn-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
    has a service principal and federated credentials for this repository on
    `main`, issuer `https://token.actions.githubusercontent.com`, audience
-   `api://AzureADTokenExchange`. It holds **Contributor scoped to `rg-qrrrgh`
+   `api://AzureADTokenExchange`. It holds **Contributor scoped to `rg-qravn`
    only** - not subscription-wide. See
    [Connect from Azure with OpenID Connect](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect).
    There is no client secret to rotate or leak; the workflow exchanges a
    short-lived GitHub OIDC token at run time.
 
-   > **Trap worth knowing.** GitHub presented the subject
-   > `repo:webmaxru@1560278/qrrrgh@1312680270:ref:refs/heads/main` - with
+   > **Trap worth knowing.** GitHub presents the subject
+   > `repo:webmaxru@1560278/qravn@1312680270:ref:refs/heads/main` - with
    > **numeric owner and repository ids**, not the documented
    > `repo:OWNER/NAME:ref:refs/heads/main` form. A credential registered with
    > only the documented form fails with `AADSTS700213: No matching federated
@@ -446,12 +420,6 @@ secrets are set, so only step 3 remains.
    > registered here (`github-main` and `github-main-immutable`), so either
    > format works. If you ever see AADSTS700213, read the exact subject out of
    > the error and register that verbatim rather than assuming the docs' shape.
-   >
-   > This is also what makes renaming the repository safe: the numeric ids in
-   > `github-main-immutable` do not change, so OIDC keeps working the moment
-   > the repository becomes `qravn`. The name-based `github-main` credential
-   > will no longer match and should be updated to
-   > `repo:webmaxru/qravn:ref:refs/heads/main` after the rename.
 2. ~~**Set repository secrets**~~ - **done for the OIDC trio.**
    `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` are set.
    These are identifiers rather than credentials; they are stored as secrets by
@@ -490,7 +458,7 @@ secrets are set, so only step 3 remains.
 
    Then set repository variable `AZURE_ACA_ENABLED` to `true` (mirrors how
    `deploy-web.yml` is gated on `AZURE_SWA_ENABLED`). Optionally set
-   `AZURE_RESOURCE_GROUP` to override the default `rg-qrrrgh`.
+   `AZURE_RESOURCE_GROUP` to override the default `rg-qravn`.
 
    Leaving `AZURE_ACA_ENABLED` unset is deliberate and safe: the resolver
    revision cannot start until the image can be pulled, so nothing runs and
@@ -526,7 +494,7 @@ secrets are set, so only step 3 remains.
    including the health probe. The service answers at:
 
    ```
-   https://qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io
+   https://qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io
    ```
 
    Verified against the running service rather than the test doubles: the hop
@@ -538,7 +506,7 @@ secrets are set, so only step 3 remains.
    no allow header at all for an unknown one.
 
    This confirms the cost design against reality rather than only on paper:
-   `rg-qrrrgh` contains the static site, the managed environment and the
+   `rg-qravn` contains the static site, the managed environment and the
    container app, **and no Log Analytics workspace and no container registry**.
    The app reports `minReplicas: 0`, `maxReplicas: 3`, matching the template.
    With zero replicas running there is no compute charge.
@@ -554,7 +522,7 @@ scratch or point the deployment at a different subscription.
 ### Option B - one-off from this machine
 
 ```powershell
-# Registers Microsoft.App, creates rg-qrrrgh if needed, and deploys resolver.bicep.
+# Registers Microsoft.App, creates rg-qravn if needed, and deploys resolver.bicep.
 # Prompts securely for the ghcr.io read:packages token.
 # Preview first:
 ./infra/provision-resolver.ps1 -WhatIf

@@ -1,10 +1,8 @@
-# $ResourceGroupName and $Name keep the pre-rebrand string. They identify
-# resources that already exist in Azure, which cannot be renamed in place.
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [string]$ResourceGroupName = "rg-qrrrgh",
+    [string]$ResourceGroupName = "rg-qravn",
     [string]$Location = "westeurope",
-    [string]$Name = "qrrrgh-web",
+    [string]$Name = "qravn-web",
     [string]$Repo = "webmaxru/qravn",
     [string]$CustomHostname = ""
 )

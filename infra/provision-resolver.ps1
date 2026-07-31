@@ -1,13 +1,9 @@
-# Resource names below keep the pre-rebrand string. They identify resources that
-# already exist in Azure, and Azure cannot rename a resource group, a managed
-# environment or a container app. Changing them here would not rename anything -
-# it would provision a second, empty copy. See infra/README.md.
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [string]$ResourceGroupName = "rg-qrrrgh",
+    [string]$ResourceGroupName = "rg-qravn",
     [string]$Location = "westeurope",
-    [string]$EnvironmentName = "qrrrgh-resolver-env",
-    [string]$ContainerAppName = "qrrrgh-resolver",
+    [string]$EnvironmentName = "qravn-resolver-env",
+    [string]$ContainerAppName = "qravn-resolver",
     [string]$ContainerImage = "ghcr.io/webmaxru/qravn/resolver:latest",
     [string]$RegistryServer = "ghcr.io",
     [string]$RegistryUsername = "webmaxru",

@@ -64,8 +64,6 @@ jobs:
         uses: actions/checkout@v7
 
       # Compile the template on every change. Without this, a malformed template
-      # is only discovered by Deploy Resolver after it has already reached main,
-      # which is how a bad find-and-replace once shipped a file that could not
-      # compile at all.
+      # is only discovered by Deploy Resolver after it has already reached main.
       - name: Build Bicep
         run: az bicep build --file infra/resolver.bicep --stdout > /dev/null
