@@ -237,7 +237,7 @@ managed certificate renewal.
 | Type | Name | Value / target | TTL | Proxy status |
 | --- | --- | --- | --- | --- |
 | CNAME | `qravn` | `gentle-mushroom-007600b03.7.azurestaticapps.net` | Auto | DNS-only (grey cloud) |
-| CNAME | `qravn-api` | `qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
+| CNAME | `qravn-api` | `qravn-resolver.victoriouscoast-8a38643f.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
 | TXT | `asuid.qravn-api` | `5BFCC063D1C3C26567C5CE072026BB5CE03258385AE700DF177521A0BEF0DA62` | Auto | DNS-only (TXT is never proxied) |
 | CAA | `@` | `0 issue "digicert.com"` | Auto | DNS-only (only needed if restrictive CAA records do not already allow DigiCert) |
 
@@ -494,7 +494,7 @@ secrets are set, so only step 3 remains.
    including the health probe. The service answers at:
 
    ```
-   https://qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io
+   https://qravn-resolver.victoriouscoast-8a38643f.westeurope.azurecontainerapps.io
    ```
 
    Verified against the running service rather than the test doubles: the hop
