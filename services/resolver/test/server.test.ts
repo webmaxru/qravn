@@ -57,7 +57,7 @@ const resolvedStub = (outcome: RedirectResolution["outcome"]): ResolveFn => {
     outcome,
     ...(outcome === "resolved" ? { finalUrl: "http://example.com/" } : {}),
     elapsedMs: 1,
-    resolver: "qrrrgh-resolver/1.0.0",
+    resolver: "qravn-resolver/1.0.0",
   });
 };
 
@@ -226,7 +226,7 @@ describe("server: production safety is enforced (not merely documented)", () => 
         outcome: "resolved",
         finalUrl: "http://example.com/",
         elapsedMs: 1,
-        resolver: "qrrrgh-resolver/1.0.0",
+        resolver: "qravn-resolver/1.0.0",
       };
     };
     return { fn, last: () => captured };

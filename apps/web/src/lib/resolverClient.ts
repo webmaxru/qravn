@@ -98,7 +98,7 @@ export function isOnlineModeAvailable(): boolean {
 function synthesizeFailure(url: string, outcome: RedirectOutcome): RedirectResolution {
   // A single-hop chain (the scanned URL only) with a failure outcome. The core
   // reads this and emits a limitation; it never reads as a clean destination.
-  return { chain: [{ url }], outcome, resolver: 'qrrrgh-web-client-fallback' };
+  return { chain: [{ url }], outcome, resolver: 'qravn-web-client-fallback' };
 }
 
 /** Validate an untrusted body actually matches the RedirectResolution shape. */

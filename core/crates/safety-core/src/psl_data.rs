@@ -2,7 +2,7 @@
 // Source: https://publicsuffix.org/list/public_suffix_list.dat
 //
 // Deliberately includes only the ICANN section. PRIVATE PSL rules such as github.io
-// are excluded because qrrrgh uses registrable domains for brand comparison, not
+// are excluded because QRavn uses registrable domains for brand comparison, not
 // browser cookie scoping; including PRIVATE rules would fragment shared providers.
 // The default PSL rule (*) is implemented in psl.rs, so this table keeps only
 // multi-label rules, wildcard rules, exception rules, and all .no ICANN rules.

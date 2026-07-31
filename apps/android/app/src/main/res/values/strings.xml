@@ -2,8 +2,8 @@
 <resources>
     <!-- The wordmark, not a description. It is the same on every surface: the
          launcher, the share sheet, the web app and the Play listing. -->
-    <string name="app_name" translatable="false">qrrrgh</string>
-    <string name="share_target_label">Check with qrrrgh</string>
+    <string name="app_name" translatable="false">QRavn</string>
+    <string name="share_target_label">Check with QRavn</string>
     <string name="tile_label">Check QR code</string>
 
     <!-- Scan screen -->
@@ -40,7 +40,7 @@
     <string name="result_limitations">What this check could not do</string>
     <string name="result_no_browser">No browser is installed</string>
     <string name="result_confirm_title">Open this address?</string>
-    <string name="result_confirm_body">You are about to leave qrrrgh and open %1$s in your browser. This check found warning signs. A browser has its own protections, but they do not make a destination safe.</string>
+    <string name="result_confirm_body">You are about to leave QRavn and open %1$s in your browser. This check found warning signs. A browser has its own protections, but they do not make a destination safe.</string>
     <string name="result_confirm_open">Open</string>
     <string name="result_cancel">Cancel</string>
     <string name="result_no_evidence">No warning signs found</string>

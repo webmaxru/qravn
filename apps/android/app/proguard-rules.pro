@@ -1,5 +1,5 @@
 # The frozen v1 contract classes are decoded from JSON produced by the Rust core.
--keepclassmembers class no.qrrrgh.safety.** {
+-keepclassmembers class no.qravn.safety.** {
     <fields>;
 }
 

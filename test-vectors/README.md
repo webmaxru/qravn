@@ -2,7 +2,7 @@
 
 This corpus is the most important asset in the repo: it is the single source of truth for what every platform agrees is dangerous. The **same** vectors are executed twice — once through the pure Rust core (`core/crates/safety-core/tests/conformance.rs`) and once through the compiled WebAssembly in a real browser (`apps/web/src/engine/wasmGoldenConformance.test.ts`) — so the web surface (and the future iOS and Android surfaces) can never silently disagree. The web runner deliberately parses `FIXED_NOW_MS` out of the Rust source so the two clocks cannot drift, and both runners assert a **minimum vector count** (currently `>= 118`) so a corpus that silently shrinks fails the build. A vector added here is a promise every future platform must keep, so precision matters more than volume.
 
-The files in `test-vectors/golden/` are the stable corpus for the qrrrgh safety engine. Each JSON file is an array of vectors:
+The files in `test-vectors/golden/` are the stable corpus for the QRavn safety engine. Each JSON file is an array of vectors:
 
 ```json
 {
@@ -36,7 +36,7 @@ Valid verdicts are `known_malicious`, `suspicious`, `insufficient_evidence`, and
     "finalUrl": "https://dnb.no@evil.example/login",
     "outcome": "resolved",
     "elapsedMs": 34,
-    "resolver": "qrrrgh-resolver/1"
+    "resolver": "qravn-resolver/1"
   }
 }
 ```

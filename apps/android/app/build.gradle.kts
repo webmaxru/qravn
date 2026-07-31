@@ -17,11 +17,11 @@ val keystoreProperties = Properties().apply {
 }
 
 android {
-    namespace = "no.qrrrgh.android"
+    namespace = "no.qravn.android"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "no.qrrrgh.android"
+        applicationId = "no.qravn.android"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

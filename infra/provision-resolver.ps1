@@ -1,14 +1,14 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [string]$ResourceGroupName = "rg-qrrrgh",
+    [string]$ResourceGroupName = "rg-qravn",
     [string]$Location = "westeurope",
-    [string]$EnvironmentName = "qrrrgh-resolver-env",
-    [string]$ContainerAppName = "qrrrgh-resolver",
-    [string]$ContainerImage = "ghcr.io/webmaxru/qrrrgh/resolver:latest",
+    [string]$EnvironmentName = "qravn-resolver-env",
+    [string]$ContainerAppName = "qravn-resolver",
+    [string]$ContainerImage = "ghcr.io/webmaxru/qravn/resolver:latest",
     [string]$RegistryServer = "ghcr.io",
     [string]$RegistryUsername = "webmaxru",
     [securestring]$RegistryToken,
-    [string]$Repo = "webmaxru/qrrrgh",
+    [string]$Repo = "webmaxru/qravn",
     [string]$WebCustomHostname = "",
     [string]$ResolverCustomHostname = "",
     [string]$ResolverCorsAllowedOrigins = ""

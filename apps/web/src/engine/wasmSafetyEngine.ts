@@ -1,4 +1,4 @@
-import initWasm, { SafetyEngine as WasmSafetyEngineClass } from 'qrrrgh-safety-wasm';
+import initWasm, { SafetyEngine as WasmSafetyEngineClass } from 'qravn-safety-wasm';
 import type { Assessment, AssessInput, EngineConfig, SafetyEngineWasm } from '../contracts/assessment';
 import type { SafetyEngine } from './types';
 

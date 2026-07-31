@@ -1,21 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500"
-     role="img" aria-label="qrrrgh, check a QR code before you trust it">
-  <title>qrrrgh</title>
+     role="img" aria-label="QRavn - du apner den ikke alene">
+  <title>QRavn</title>
   <!--
-    Play Store feature graphic. Ink on paper and no colour anywhere, because
-    the listing should look like the app looks when it has nothing bad to
-    report. The lockup is centred so Play's own crops cannot clip it.
+    Play Store feature graphic. The lockup is held well inside the frame so
+    Play's own crops cannot clip it.
+
+    Norwegian, because the default listing language is Norwegian (Norway) and
+    this graphic sits directly above that copy.
+
+    No shield, no tick, no gradient: those are the three things every other
+    result on this search carries, and all three promise protection this app
+    does not offer. It reads a code and tells you what is in it.
   -->
-  <rect width="1024" height="500" fill="#FAFAF8" />
-  <g transform="translate(95 154) scale(12.8)" fill="#111315" fill-rule="evenodd">
-    <path d="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
-    <path d="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
-    <path d="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
-  </g>
-  <text x="383" y="240" fill="#111315"
+  <rect width="1024" height="500" fill="#0C1519" />
+  <path transform="translate(196 155) scale(27)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+  <text x="484" y="250" fill="#F1EDE6"
         font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
-        font-size="94" letter-spacing="-2">qrrrgh</text>
-  <text x="383" y="300" fill="#5B6165"
+        font-size="94" letter-spacing="-2">QRavn</text>
+  <text x="484" y="310" fill="#86B2C0"
         font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
-        font-size="26">check a QR code before you trust it</text>
+        font-size="26">Du åpner den ikke alene.</text>
 </svg>

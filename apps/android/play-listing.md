@@ -1,8 +1,8 @@
-# qrrrgh — Google Play store listing
+# QRavn — Google Play store listing
 
 Default language: **Norwegian (Norway) — nb-NO**. Second listing: **English (United States) — en-US**.
 
-Package name: `no.qrrrgh.android` · Version 1.0.0 (versionCode 1)
+Package name: `no.qravn.android` · Version 1.0.0 (versionCode 1)
 
 ## The claim, and why it is worded this way
 
@@ -17,7 +17,7 @@ the broader version is not true and would not survive being checked:
   hides.
 - The same official guidance **warns against third-party QR scanner apps**,
   because most of them are advertising businesses. The listing meets that
-  objection head on rather than ducking it: qrrrgh has no INTERNET permission at
+  objection head on rather than ducking it: QRavn has no INTERNET permission at
   all, so Android refuses to let it phone home regardless of what we claim.
 
 Every factual claim is sourced — see [Sources](#sources). A security app that
@@ -31,9 +31,9 @@ rate, no prevention figure, and never says "safe".
 ### App name (30 max)
 
 ```
-qrrrgh – sjekk QR mot svindel
+QRavn – sjekk QR mot svindel
 ```
-29 characters.
+28 characters.
 
 ### Short description (80 max)
 
@@ -83,7 +83,7 @@ bankene har advart mot begge deler.
 Et klistremerke koster svindleren nesten ingenting å trykke.
 
 
-qrrrgh LESER KODEN I STEDET FOR Å ÅPNE DEN
+QRavn LESER KODEN I STEDET FOR Å ÅPNE DEN
 
 Rett kameraet mot koden. Ingenting åpnes. Du får hele adressen, hvilket domene
 den faktisk peker på, og hva som eventuelt ser galt ut.
@@ -97,7 +97,7 @@ du binder deg til den.
 Som regel er de det, og advarslene er berettiget. De fleste av dem er
 annonsevirksomheter, og det du skanner er varen.
 
-qrrrgh har ingen INTERNET-tillatelse i det hele tatt. Ikke «vi lover å la være»
+QRavn har ingen INTERNET-tillatelse i det hele tatt. Ikke «vi lover å la være»
 – tillatelsen finnes rett og slett ikke, så det er Android selv som nekter
 appen å kontakte nettet. Den kan ikke laste opp det du skannet, fordi den ikke
 kan laste opp noe som helst.
@@ -108,7 +108,7 @@ flymodus.
 
 DET DEN SIER, OG DET DEN IKKE SIER
 
-qrrrgh sier aldri at en lenke er trygg. Ingen app kan love det, uansett hvor
+QRavn sier aldri at en lenke er trygg. Ingen app kan love det, uansett hvor
 skråsikkert det er formulert. Den forteller deg hva den fant, og hva den ikke
 kunne avgjøre:
 
@@ -124,7 +124,7 @@ Finner den ingenting, sier den nettopp det: «fant ingen kjent trussel», ikke
 
 BYGD FOR ANDROID
 
-• Del en lenke til qrrrgh fra hvilken som helst app
+• Del en lenke til QRavn fra hvilken som helst app
 • Hurtiginnstillinger: legg skanneren i menyen du drar ned ovenfra
 • Snarvei: hold inne appikonet og gå rett til skanning
 • Velg et bilde fra galleriet i stedet for å skanne
@@ -137,12 +137,14 @@ PERSONVERN
 
 Vi samler ikke inn personopplysninger. Vi kan ikke: appen har ingen mulighet til
 å sende noe. Hele personvernerklæringen ligger på
-https://qrrrgh.isainative.dev/privacy
+https://qravn.isainative.dev/privacy
 
 
 Les lenken. Så bestemmer du.
 
-qrrrgh er laget i Norge, for folk i Norge.
+QRavn er laget i Norge, for folk i Norge.
+
+Du åpner den ikke alene.
 ```
 
 ### Notes for the listing form
@@ -157,9 +159,9 @@ qrrrgh er laget i Norge, for folk i Norge.
 ### App name (30 max)
 
 ```
-qrrrgh – QR code scam check
+QRavn – QR code scam check
 ```
-27 characters.
+26 characters.
 
 ### Short description (80 max)
 
@@ -209,7 +211,7 @@ Police and banks have warned about both.
 A sticker costs a scammer almost nothing to print.
 
 
-qrrrgh READS THE CODE INSTEAD OF OPENING IT
+QRavn READS THE CODE INSTEAD OF OPENING IT
 
 Point the camera at the code. Nothing opens. You get the whole address, the
 domain it really points to, and anything about it that looks wrong.
@@ -223,7 +225,7 @@ full, before you commit to it.
 Usually they are, and the warnings are fair. Most of them are advertising
 businesses, and what you scan is the product.
 
-qrrrgh holds no INTERNET permission at all. Not "we promise not to" — the
+QRavn holds no INTERNET permission at all. Not "we promise not to" — the
 permission simply is not there, so it is Android itself that refuses to let the
 app reach the network. It cannot upload what you scanned, because it cannot
 upload anything.
@@ -233,7 +235,7 @@ No account. No analytics. No ads. No scan history. It works in airplane mode.
 
 WHAT IT SAYS, AND WHAT IT WILL NOT SAY
 
-qrrrgh never tells you a link is safe. No app can promise that, however
+QRavn never tells you a link is safe. No app can promise that, however
 confidently it is phrased. It tells you what it found, and what it could not
 determine:
 
@@ -249,7 +251,7 @@ not "safe". That difference is the whole point of the app.
 
 BUILT FOR ANDROID
 
-• Share a link to qrrrgh from any app
+• Share a link to QRavn from any app
 • Quick Settings tile: put the scanner in the panel you pull down
 • Shortcut: long-press the icon and go straight to scanning
 • Pick an image from your gallery instead of scanning
@@ -261,12 +263,14 @@ BUILT FOR ANDROID
 PRIVACY
 
 We collect no personal data. We cannot: the app has no way to send anything.
-Full policy: https://qrrrgh.isainative.dev/privacy
+Full policy: https://qravn.isainative.dev/privacy
 
 
 Read the link. Then decide.
 
-qrrrgh is made in Norway, for people in Norway.
+QRavn is made in Norway, for people in Norway.
+
+You don't open it alone.
 ```
 
 ---
@@ -280,7 +284,7 @@ defended to Play review, to a journalist, or to a user who checks.
 |---|---|
 | Official advice is to preview the web address before opening, and not to proceed if it is not shown | NCSC (UK), "QR Codes — what's the real risk?"; NCSC Ireland, "Quick Guide: QR Code Phishing & Scams" |
 | Camera-app previews are truncated, hiding lookalike domains and shorteners | Apple Support Communities thread on QR URL previews; Samsung Community report that link preview was removed from Camera and Gallery on some devices |
-| Guidance warns against third-party QR scanner apps | NCSC (UK), same blog post — the reason qrrrgh ships with no INTERNET permission |
+| Guidance warns against third-party QR scanner apps | NCSC (UK), same blog post — the reason QRavn ships with no INTERNET permission |
 | 20+ fake QR stickers on parking meters in Kristiansand, using a trusted parking brand | NRK Sørlandet, "Advarer mot parkeringssvindel med QR-kode" |
 | Second-hand marketplace QR payment fraud; card charged far above the agreed price | TV 2, "Politiet og bank advarer: Flere lurt av ny svindelmetode" |
 | A single victim losing NOK 90,000 | TV 2 / Sol, same case |
@@ -298,8 +302,8 @@ any suggestion that a clear result means a destination is safe.
 | Free or paid | Free |
 | Category | Tools |
 | Email | salnikov@gmail.com |
-| Website | https://qrrrgh.isainative.dev |
-| Privacy policy | https://qrrrgh.isainative.dev/privacy |
+| Website | https://qravn.isainative.dev |
+| Privacy policy | https://qravn.isainative.dev/privacy |
 | Contains ads | No |
 | In-app purchases | No |
 
@@ -334,7 +338,7 @@ Expected result: **PEGI 3 / ESRB Everyone / IARC 3+**.
 
 | Question | Answer |
 |---|---|
-| Privacy policy | https://qrrrgh.isainative.dev/privacy |
+| Privacy policy | https://qravn.isainative.dev/privacy |
 | Ads | No ads |
 | App access | All functionality available without special access. No login. |
 | Content rating | Utility; all No |
@@ -369,7 +373,7 @@ Expected result: **PEGI 3 / ESRB Everyone / IARC 3+**.
 ```
 Første versjon.
 
-Kameraappen er laget for å åpne QR-lenken, ikke for å kontrollere den. qrrrgh
+Kameraappen er laget for å åpne QR-lenken, ikke for å kontrollere den. QRavn
 leser koden og viser deg hele adressen først – uten å åpne noe. Alt skjer på
 telefonen, og appen har ingen nettilgang.
 ```
@@ -379,7 +383,7 @@ telefonen, og appen har ingen nettilgang.
 ```
 First release.
 
-A camera app is built to open a QR link, not to check it. qrrrgh reads the code
+A camera app is built to open a QR link, not to check it. QRavn reads the code
 and shows you the whole address first, without opening anything. Everything runs
 on your phone, and the app has no network access.
 ```

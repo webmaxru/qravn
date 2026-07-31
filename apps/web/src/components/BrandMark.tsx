@@ -1,29 +1,30 @@
 /**
- * The qrrrgh mark: three QR finder patterns with the fourth corner left empty.
+ * The QRavn mark: one QR finder pattern with the ring left open.
  *
- * That absence is real QR anatomy, a decoder works out the orientation of a
- * code from the missing fourth finder, and it is also the product's position:
- * this app reports what it found, never that something is safe. The corner
- * where a promise would go is left open.
+ * The 7x7 ring, 1-module gap and 3x3 core give the 1:1:3:1:1 run of modules a
+ * decoder hunts for along any scan line, so this is not a shape inspired by a
+ * QR code, it is what "QR code" means to a machine. Cutting the bottom-right
+ * corner leaves the ring unclosed, which is the product's position: this app
+ * reports what it found and never closes the loop by calling something safe.
  *
- * Geometry is the same 15 module field as brand/icon.svg. It inherits
- * currentColor so it works on paper and on inverted paper without a variant.
+ * Geometry matches brand/mark.svg. It inherits currentColor so it works on
+ * either ground without a variant.
  */
 export function BrandMark({ size = 20 }: { size?: number }) {
   return (
     <svg
       className="brand-mark"
-      viewBox="0 0 15 15"
+      viewBox="0 0 7 7"
       width={size}
       height={size}
       aria-hidden="true"
       focusable="false"
     >
-      <g fill="currentColor" fillRule="evenodd">
-        <path d="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
-        <path d="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
-        <path d="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
-      </g>
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z"
+      />
     </svg>
   );
 }

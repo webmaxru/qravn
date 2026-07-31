@@ -9,7 +9,7 @@ resolver = "2"
 [workspace.package]
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/webmaxru/qrrrgh"
+repository = "https://github.com/webmaxru/qravn"
 
 [workspace.dependencies]
 idna = "1"

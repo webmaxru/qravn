@@ -77,7 +77,7 @@ The plan must match the real repository, not only the planning documents.
 | Web resolver | `apps/web/src/lib/resolverClient.ts` talks only to the configured first-party resolver URL, has a 30s timeout for Azure Container Apps cold start, validates the untrusted response shape, and synthesizes non-reassuring failure outcomes. |
 | Web UI | `RedirectPanel.tsx` shows the per-check opt-in, final destination, traversed domains, hop list, and destination findings. `neutralizeForDisplay()` escapes control and bidi/invisible characters before displaying hostile URLs. |
 | Web privacy chrome | `App.tsx` says there is no analytics, tracking pixel, link preview, favicon lookup, or backend API call unless offline mode is off *and* the user explicitly asks for expansion, and states that offline mode disables expansion entirely. |
-| Web offline mode | `App.tsx` holds a persisted `qrrrgh.offlineMode` switch, default OFF, that swaps in an effective resolver with `available: false` and a throwing `resolve()`. `ResultPanel.tsx` renders `ui.possible_redirect_warning` in both modes via `hasRedirectCue()`. |
+| Web offline mode | `App.tsx` holds a persisted `qravn.offlineMode` switch, default OFF, that swaps in an effective resolver with `available: false` and a throwing `resolve()`. `ResultPanel.tsx` renders `ui.possible_redirect_warning` in both modes via `hasRedirectCue()`. |
 
 One planning/documentation mismatch remains an intentional input to the work ahead:
 
@@ -254,7 +254,7 @@ The web surface still needs the global offline mode toggle described here. Today
 
 Persistence:
 
-- Store the canonical value in `localStorage` under a versioned key such as `qrrrgh.offlineMode.v1`.
+- Store the canonical value in `localStorage` under a versioned key such as `qravn.offlineMode.v1`.
 - Mirror the value into IndexedDB if a service worker, Web Share Target, background sync, or richer PWA shell needs to read it outside the current React tree.
 - Treat storage absence, parse errors, private-browsing failures, and eviction as OFF only if no network call is made automatically. Since OFF still requires per-check consent, this fail-open-for-availability state does not contact a destination or first-party service by itself.
 - If persistent storage is unavailable, show a non-blocking settings limitation and keep the current in-memory value for the session.
@@ -303,7 +303,7 @@ Use App Group storage as the canonical source, not ordinary app-only `UserDefaul
 
 Recommended shape:
 
-- App Group suite: `UserDefaults(suiteName: "group.<bundle>.qrrrgh")`.
+- App Group suite: `UserDefaults(suiteName: "group.<bundle>.qravn")`.
 - Key: `offlineMode.v1` with a boolean value.
 - Main app writes changes and posts local notifications for in-process UI updates.
 - Share extension reads synchronously on launch before deciding whether to offer **Open full report** or any expansion handoff.
@@ -488,7 +488,7 @@ Already done:
 
 Still to do:
 
-- [x] Add persisted offline mode toggle, default OFF (`qrrrgh.offlineMode` in `localStorage`).
+- [x] Add persisted offline mode toggle, default OFF (`qravn.offlineMode` in `localStorage`).
 - [x] Add shared localization keys for offline mode copy in `nb`, `nn`, and `en`.
 - [x] Gate resolver UI and all resolver calls on the persisted setting.
 - [x] Add tests for offline mode ON: no resolver call, limitation visible, warning in both modes.

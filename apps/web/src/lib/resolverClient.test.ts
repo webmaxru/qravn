@@ -45,7 +45,7 @@ function resolvedBody(finalUrl: string): RedirectResolution {
     chain: [{ url: SCANNED, status: 301, via: 'http_status' }, { url: finalUrl, status: 200 }],
     finalUrl,
     outcome: 'resolved',
-    resolver: 'qrrrgh-resolver-test',
+    resolver: 'qravn-resolver-test',
   };
 }
 

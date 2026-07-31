@@ -1473,7 +1473,7 @@ Implementation began on 26 July 2026 with the web surface and the shared core, a
 
 | Item | Value |
 |---|---|
-| Repository | `webmaxru/qrrrgh`, private |
+| Repository | `webmaxru/qravn`, private |
 | Default branch | `main` |
 | Layout | as specified in "Proposed repository layout" |
 
@@ -1542,7 +1542,7 @@ CI runs on Linux and is unaffected, which is itself a reason to treat CI rather 
 | Item | Value |
 |---|---|
 | Service | Azure Static Web Apps, Free tier |
-| Resource group | `rg-qrrrgh` |
+| Resource group | `rg-qravn` |
 | Region | West Europe |
 | Default hostname | `brave-bay-0ecf82e03.7.azurestaticapps.net` |
 | Deployment | GitHub Actions, using a deployment token stored as a repository secret |
@@ -1603,5 +1603,5 @@ The resolver fetches arbitrary attacker-chosen URLs from server infrastructure, 
   - `qr-safety-market-research-norway.md`
 - Completed research remains the design rationale; this plan supersedes the earlier research-only milestone list as the implementation source of truth.
 - The unified-core research of 26 July 2026 revised two earlier decisions: the core must be WebAssembly-clean from the first commit, and classifier inference moves into the Rust core instead of Core ML and LiteRT exports.
-- Project root is `C:\Users\masalnik\Downloads\projects\qrrrgh`. All planning documents live in its `planning/` folder; `planning/README.md` is the index.
+- Project root is `C:\Users\masalnik\Downloads\projects\QRavn`. All planning documents live in its `planning/` folder; `planning/README.md` is the index.
 - Implementation started on 26 July 2026; see "Implementation status" above for what is verified.

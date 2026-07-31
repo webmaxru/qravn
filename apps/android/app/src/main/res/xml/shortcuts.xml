@@ -7,9 +7,9 @@
         android:shortcutLongLabel="@string/scan_title"
         android:shortcutShortLabel="@string/tile_label">
         <intent
-            android:action="no.qrrrgh.android.action.SCAN"
-            android:targetClass="no.qrrrgh.android.MainActivity"
-            android:targetPackage="no.qrrrgh.android" />
+            android:action="no.qravn.android.action.SCAN"
+            android:targetClass="no.qravn.android.MainActivity"
+            android:targetPackage="no.qravn.android" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
 
@@ -20,8 +20,8 @@
         android:shortcutLongLabel="@string/scan_from_image"
         android:shortcutShortLabel="@string/scan_from_image">
         <intent
-            android:action="no.qrrrgh.android.action.CHECK_IMAGE"
-            android:targetClass="no.qrrrgh.android.MainActivity"
-            android:targetPackage="no.qrrrgh.android" />
+            android:action="no.qravn.android.action.CHECK_IMAGE"
+            android:targetClass="no.qravn.android.MainActivity"
+            android:targetPackage="no.qravn.android" />
     </shortcut>
 </shortcuts>

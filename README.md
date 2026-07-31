@@ -1,4 +1,4 @@
-# qrrrgh
+# QRavn
 
 A free, privacy-first QR code safety application for Norway.
 
@@ -8,7 +8,7 @@ Scan a QR code, see exactly what is inside it, and get an evidence-based safety 
 >
 > **Web app:** <https://brave-bay-0ecf82e03.7.azurestaticapps.net>
 >
-> **Resolver:** <https://qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io> — used only when you explicitly ask to expand a shortened link. It scales to zero, so it costs nothing while idle.
+> **Resolver:** <https://qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io> — used only when you explicitly ask to expand a shortened link. It scales to zero, so it costs nothing while idle.
 
 ---
 
@@ -116,11 +116,22 @@ not a finding. Every pair above is verified against WCAG AA, and colour is
 never the only signal — each verdict also carries its own icon and the written
 verdict text from the shared catalog.
 
-**The mark** is three QR finder patterns with the fourth corner left empty. The
-missing fourth finder is real QR anatomy, it is how a decoder works out which
-way up a code is, and it carries the same idea as the palette: the corner where
-a promise would go is left open. The clear verdict icon follows the rule — an
-empty ring, not a tick.
+**The mark** is a single QR finder pattern with the ring left open at one
+corner. The 7×7 ring, 1-module gap and 3×3 core give the 1:1:3:1:1 run of
+modules a decoder hunts for along any scan line, and both centre lines still
+read that way, so this is not a shape inspired by a QR code — it is what "QR
+code" means to a machine. Cutting the corner leaves the ring unclosed, which
+carries the same idea as the palette: the app reports what it found and never
+closes the loop by calling something safe. It also kills the rotational
+symmetry, the job a real code gives its missing fourth finder. The clear
+verdict icon follows the rule — an empty ring, not a tick.
+
+**Ground.** Icons and store surfaces are bone `#F1EDE6` on night petrol
+`#0C1519`, the inverse of a printed code: every other QR utility is ink on
+paper behind a shield, and the moment this app is for happens in a car park or
+a stairwell. `frost #86B2C0` is the one accent the brand owns and it appears
+only on marketing surfaces, never in the interface, where a colour is a
+verdict. The product UI keeps its own ink-on-paper palette for that reason.
 
 **Type.** Human-facing prose uses the platform system face, because native feel
 matters more than a bundled display font and because Android downloadable fonts
@@ -143,8 +154,7 @@ cd tools/brand-render && npm install && node render.mjs
 
 | File | Use |
 |---|---|
-| `brand/mark.svg` | The mark on its own, at true QR Version 1 module density. Needs a 4-module quiet zone around it, like a real code |
-| `brand/icon.svg` | Coarser mark for small sizes, where the true density turns to mud |
+| `brand/mark.svg` | The mark on its own, on a 7-module field. Needs a 1-module quiet zone at minimum, 2 is better |
 | `brand/lockup.svg` | Mark plus wordmark, for headers and documents |
 | `brand/app-icon.svg` | Rounded tile — favicon, PWA `any`, apple-touch, Play listing |
 | `brand/app-icon-maskable.svg` | Full-bleed square with the launcher safe zone honoured |

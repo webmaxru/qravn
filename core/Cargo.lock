@@ -268,7 +268,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "qrrrgh-safety-jni"
+name = "qravn-safety-jni"
 version = "0.1.0"
 dependencies = [
  "jni",
@@ -277,7 +277,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "qrrrgh-safety-wasm"
+name = "qravn-safety-wasm"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="share_target_label">Sjekk med qrrrgh</string>
+    <string name="share_target_label">Sjekk med QRavn</string>
     <string name="tile_label">Sjekk QR-kode</string>
 
     <string name="scan_title">Rett kameraet mot en QR-kode</string>
@@ -34,7 +34,7 @@
     <string name="result_limitations">Dette kunne ikke sjekkes</string>
     <string name="result_no_browser">Ingen nettleser er installert</string>
     <string name="result_confirm_title">Åpne denne adressen?</string>
-    <string name="result_confirm_body">Du er i ferd med å forlate qrrrgh og åpne %1$s i nettleseren. Denne sjekken fant faresignaler. En nettleser har egen beskyttelse, men den gjør ikke målet trygt.</string>
+    <string name="result_confirm_body">Du er i ferd med å forlate QRavn og åpne %1$s i nettleseren. Denne sjekken fant faresignaler. En nettleser har egen beskyttelse, men den gjør ikke målet trygt.</string>
     <string name="result_confirm_open">Åpne</string>
     <string name="result_cancel">Avbryt</string>
     <string name="result_no_evidence">Ingen faresignaler funnet</string>

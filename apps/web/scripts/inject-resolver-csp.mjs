@@ -1,7 +1,7 @@
 /**
  * Build-time generation of the deployed Static Web Apps config.
  *
- * qrrrgh's central promise is that the user's device only ever talks to our own
+ * QRavn's central promise is that the user's device only ever talks to our own
  * origins, so the shipped Content-Security-Policy pins `connect-src` to `'self'`.
  * Explicit online mode calls our ISOLATED resolver service, whose origin is a
  * build-time variable (`VITE_RESOLVER_URL`) and is not even known yet. This

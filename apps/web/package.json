@@ -13,7 +13,7 @@
     "test:prod": "node scripts/prod-smoke.mjs"
   },
   "dependencies": {
-    "qrrrgh-safety-wasm": "file:../../core/bindings/wasm/pkg",
+    "qravn-safety-wasm": "file:../../core/bindings/wasm/pkg",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "zxing-wasm": "^3.1.2"

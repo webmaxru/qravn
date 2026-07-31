@@ -1,11 +1,11 @@
 [package]
-name = "qrrrgh-safety-jni"
+name = "qravn-safety-jni"
 version = "0.1.0"
 edition.workspace = true
 license.workspace = true
 
 [lib]
-name = "qrrrgh_safety_jni"
+name = "qravn_safety_jni"
 crate-type = ["cdylib"]
 
 [dependencies]

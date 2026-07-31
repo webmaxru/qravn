@@ -14,7 +14,7 @@ import { isOnlineModeAvailable, resolveRedirect } from './lib/resolverClient';
 
 declare global {
   interface Window {
-    __QRRRGH_TEST_NOW_MS__?: number;
+    __QRAVN_TEST_NOW_MS__?: number;
   }
 }
 
@@ -29,7 +29,7 @@ interface AppProps {
   resolverOverride?: AppResolver;
 }
 
-const OFFLINE_MODE_STORAGE_KEY = 'qrrrgh.offlineMode';
+const OFFLINE_MODE_STORAGE_KEY = 'qravn.offlineMode';
 
 function readStoredOfflineMode(): boolean {
   try {
@@ -109,7 +109,7 @@ function App({ engineOverride, resolverOverride }: AppProps) {
     try {
       const next = engineInstance.engine.assess({
         payload,
-        nowMs: window.__QRRRGH_TEST_NOW_MS__ ?? Date.now(),
+        nowMs: window.__QRAVN_TEST_NOW_MS__ ?? Date.now(),
         locale: nextLocale,
         ...(resolution ? { redirectResolution: resolution } : {}),
       });
@@ -187,7 +187,7 @@ function App({ engineOverride, resolverOverride }: AppProps) {
         <div>
           <p className="brand-lockup">
             <BrandMark />
-            <span className="brand-wordmark">qrrrgh</span>
+            <span className="brand-wordmark">QRavn</span>
             <span className="brand-qualifier">for Norway</span>
           </p>
           <h1>Never open a link you haven’t read</h1>

@@ -1,5 +1,5 @@
 /**
- * Shared constants for the qrrrgh redirect resolver.
+ * Shared constants for the QRavn redirect resolver.
  *
  * MAX_REDIRECTS is the load-bearing hop budget from the product requirement:
  *   "Track until 5 consecutive redirects. If there is more - stop and resolve
@@ -17,7 +17,7 @@
 export const MAX_REDIRECTS = 5;
 
 /** Name+version string stamped onto every RedirectResolution for provenance. */
-export const RESOLVER_NAME = "qrrrgh-resolver";
+export const RESOLVER_NAME = "qravn-resolver";
 export const RESOLVER_VERSION = "1.0.0";
 export const RESOLVER_ID = `${RESOLVER_NAME}/${RESOLVER_VERSION}`;
 
@@ -25,7 +25,7 @@ export const RESOLVER_ID = `${RESOLVER_NAME}/${RESOLVER_VERSION}`;
  * Neutral, honest User-Agent so destination site owners can attribute the
  * traffic. It carries no cookies, referer, or credentials of any kind.
  */
-export const USER_AGENT = `${RESOLVER_ID} (+https://github.com/webmaxru/qrrrgh; QR redirect expander; stores no page content)`;
+export const USER_AGENT = `${RESOLVER_ID} (+https://github.com/webmaxru/qravn; QR redirect expander; stores no page content)`;
 
 /** Only these schemes may ever be requested. */
 export const ALLOWED_SCHEMES: ReadonlySet<string> = new Set(["http:", "https:"]);

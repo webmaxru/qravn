@@ -11,11 +11,11 @@ const fixedNowMs = 1_784_332_800_000;
 
 // The compiled analyser is fetched as this wasm binary; gating it lets a test
 // hold the UI in its "still loading" state (controls disabled).
-const isAnalyserWasm = (url: URL): boolean => url.pathname.includes('qrrrgh_safety_wasm_bg');
+const isAnalyserWasm = (url: URL): boolean => url.pathname.includes('qravn_safety_wasm_bg');
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((nowMs) => {
-    window.__QRRRGH_TEST_NOW_MS__ = nowMs;
+    window.__QRAVN_TEST_NOW_MS__ = nowMs;
     Date.now = () => nowMs;
   }, fixedNowMs);
 });
@@ -118,7 +118,7 @@ test.describe('axe-core static scans across every meaningful UI state', () => {
     // Making the injected clock throw reproduces the exact markup a genuine
     // WebAssembly failure produces, without needing a production build.
     await page.addInitScript(() => {
-      Object.defineProperty(window, '__QRRRGH_TEST_NOW_MS__', {
+      Object.defineProperty(window, '__QRAVN_TEST_NOW_MS__', {
         configurable: true,
         get() {
           throw new Error('forced analyser failure for a11y coverage');

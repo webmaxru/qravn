@@ -10,10 +10,10 @@ val rustWorkspace = File(repoRoot, "core")
 val localizationDir = File(repoRoot, "localization")
 
 val abiTargets = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
-val skipNativeBuild = providers.gradleProperty("qrrrgh.skipNativeBuild").orNull == "true"
+val skipNativeBuild = providers.gradleProperty("qravn.skipNativeBuild").orNull == "true"
 
 android {
-    namespace = "no.qrrrgh.safety"
+    namespace = "no.qravn.safety"
     compileSdk = 36
     ndkVersion = "28.2.13676358"
 
@@ -80,7 +80,7 @@ val buildRustJni by tasks.registering(Exec::class) {
             add("build")
             add("--release")
             add("-p")
-            add("qrrrgh-safety-jni")
+            add("qravn-safety-jni")
         },
     )
 

@@ -1,9 +1,9 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-    [string]$ResourceGroupName = "rg-qrrrgh",
+    [string]$ResourceGroupName = "rg-qravn",
     [string]$Location = "westeurope",
-    [string]$Name = "qrrrgh-web",
-    [string]$Repo = "webmaxru/qrrrgh",
+    [string]$Name = "qravn-web",
+    [string]$Repo = "webmaxru/qravn",
     [string]$CustomHostname = ""
 )
 

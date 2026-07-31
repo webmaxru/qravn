@@ -1,15 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"
-     role="img" aria-label="qrrrgh">
-  <title>qrrrgh</title>
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
   <!--
-    App icon. The mark on a paper tile, because a QR code is dark modules on a
-    light ground and the icon should look like a fragment of a real one.
-    Mark is 320 wide on a 512 field, inset 96.
+    App icon. Bone on night petrol, the inverse of a printed code.
+
+    Two reasons for the inversion. Every other QR utility on the store draws
+    ink on paper inside a rounded tile, usually with a shield or a tick over
+    it; costing nothing, flipping the value makes this one unmistakable at
+    launcher size. And the moment this app is for happens in a car park, a
+    stairwell, a restaurant at night - the ground should look like that.
+
+    Mark is 322 wide on a 512 field, inset 95. See brand/mark.svg.
   -->
-  <rect width="512" height="512" rx="112" fill="#FAFAF8" />
-  <g transform="translate(96 96) scale(21.3333)" fill="#111315" fill-rule="evenodd">
-    <path d="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
-    <path d="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
-    <path d="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
-  </g>
+  <rect width="512" height="512" rx="112" fill="#0C1519" />
+  <path transform="translate(95 95) scale(46)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
 </svg>

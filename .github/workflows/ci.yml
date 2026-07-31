@@ -246,7 +246,7 @@ jobs:
 
       # The Rust core is the single source of every verdict and the Android
       # client is not allowed to re-derive one, so CI builds the real JNI
-      # binding rather than passing -Pqrrrgh.skipNativeBuild. x86_64 is in the
+      # binding rather than passing -Pqravn.skipNativeBuild. x86_64 is in the
       # list because the emulator below needs it.
       - name: Install Rust stable with Android targets
         if: steps.android.outputs.present == 'true'

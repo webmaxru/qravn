@@ -14,7 +14,7 @@
       "finalUrl": "https://s5.example/",
       "outcome": "resolved",
       "elapsedMs": 48,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "no_known_threat_found",
     "expectedFindings": ["redirect.multiple_hops"],
@@ -37,7 +37,7 @@
       "finalUrl": "https://s6.example/",
       "outcome": "resolved",
       "elapsedMs": 61,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": ["redirect.excessive_hops"],
@@ -58,7 +58,7 @@
       ],
       "outcome": "max_hops",
       "elapsedMs": 73,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": ["redirect.excessive_hops", "limitation.redirect_partial"],
@@ -76,7 +76,7 @@
       "finalUrl": "https://ekte-nettbutikk.example/produkt",
       "outcome": "resolved",
       "elapsedMs": 22,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "insufficient_evidence",
     "expectedFindings": ["url.shortener"],
@@ -100,7 +100,7 @@
       "finalUrl": "https://dnb.no@evil.example/login",
       "outcome": "resolved",
       "elapsedMs": 34,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": ["url.shortener", "url.credentials_in_authority"],
@@ -118,7 +118,7 @@
       "finalUrl": "https://dnb.no.sikker-innlogging.example/",
       "outcome": "resolved",
       "elapsedMs": 39,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": ["url.shortener", "url.brand_in_subdomain"],
@@ -136,7 +136,7 @@
       "finalUrl": "http://198.51.100.24/login",
       "outcome": "resolved",
       "elapsedMs": 55,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": [
@@ -159,7 +159,7 @@
       "finalUrl": "http://innlogging.example/",
       "outcome": "resolved",
       "elapsedMs": 27,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": ["redirect.downgrade_to_http", "url.insecure_scheme"],
@@ -178,7 +178,7 @@
       "finalUrl": "https://landing.example/",
       "outcome": "resolved",
       "elapsedMs": 44,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "suspicious",
     "expectedFindings": ["url.shortener", "redirect.chained_shorteners"],
@@ -197,7 +197,7 @@
       ],
       "outcome": "loop",
       "elapsedMs": 66,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "insufficient_evidence",
     "expectedFindings": ["url.shortener", "redirect.loop", "limitation.redirect_partial"],
@@ -213,7 +213,7 @@
       ],
       "outcome": "timeout",
       "elapsedMs": 5000,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "insufficient_evidence",
     "expectedFindings": ["url.shortener", "limitation.redirect_resolution_failed"],
@@ -229,7 +229,7 @@
       ],
       "outcome": "network_error",
       "elapsedMs": 812,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "insufficient_evidence",
     "expectedFindings": ["url.shortener", "limitation.redirect_resolution_failed"],
@@ -246,7 +246,7 @@
       ],
       "outcome": "blocked",
       "elapsedMs": 18,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "insufficient_evidence",
     "expectedFindings": ["url.shortener", "limitation.redirect_resolution_failed"],
@@ -264,7 +264,7 @@
       "finalUrl": "https://start.example/velkommen",
       "outcome": "resolved",
       "elapsedMs": 31,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "no_known_threat_found",
     "expectedFindings": ["redirect.meta_refresh"],
@@ -282,7 +282,7 @@
       "finalUrl": "https://sporing.example/",
       "outcome": "resolved",
       "elapsedMs": 29,
-      "resolver": "qrrrgh-resolver/1"
+      "resolver": "qravn-resolver/1"
     },
     "expectedVerdict": "no_known_threat_found",
     "expectedFindings": ["redirect.cross_domain"],

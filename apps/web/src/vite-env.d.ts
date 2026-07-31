@@ -10,5 +10,5 @@ interface ImportMetaEnv {
 }
 
 interface Window {
-  __QRRRGH_TEST_NOW_MS__?: number;
+  __QRAVN_TEST_NOW_MS__?: number;
 }

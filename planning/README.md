@@ -2,7 +2,7 @@
 
 **Consolidated:** 26 July 2026
 **Last updated:** 27 July 2026 — added the offline-mode and redirect-expansion cross-platform plan
-**Location:** `qrrrgh/planning/`
+**Location:** `qravn/planning/`
 **Status:** Research complete. Web implementation in progress. Native implementations planned.
 
 This folder is the single source of truth for the product's market research, technical research, platform start guides, and the implementation plan.

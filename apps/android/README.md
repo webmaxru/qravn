@@ -1,4 +1,4 @@
-# qrrrgh for Android
+# QRavn for Android
 
 Native Android surface. Scan a QR code, read the verdict, and decide for yourself
 whether to open the destination.
@@ -28,7 +28,7 @@ rather than only in review comments.
 must never re-derive a verdict*. This app honours that literally. There is no
 Kotlin re-implementation of the rules and no local heuristic fallback.
 
-`app` → `SafetyEngine` (Kotlin) → JNI → `qrrrgh-safety-jni` (Rust) → `safety-core`
+`app` → `SafetyEngine` (Kotlin) → JNI → `qravn-safety-jni` (Rust) → `safety-core`
 (Rust). The boundary is a JSON string matching the frozen v1 contract.
 
 If the native library cannot load, the app says so and refuses to scan. A QR
@@ -89,7 +89,7 @@ If you are only touching Kotlin and already have the `.so` files, skip the nativ
 step entirely:
 
 ```bash
-./gradlew assembleDebug -Pqrrrgh.skipNativeBuild=true
+./gradlew assembleDebug -Pqravn.skipNativeBuild=true
 ```
 
 ---
@@ -125,7 +125,7 @@ Both suites are there to protect invariants rather than appearance.
 
 CI runs all of the above in the `Android app` job of `.github/workflows/ci.yml`,
 including the instrumented suites on an API 36 emulator. It builds the real JNI
-binding rather than passing `-Pqrrrgh.skipNativeBuild`, because a green build
+binding rather than passing `-Pqravn.skipNativeBuild`, because a green build
 against a stubbed core would prove nothing.
 
 `NativeSafetyEngineInstrumentedTest` runs the real Rust core through JNI on the
@@ -269,10 +269,10 @@ writing new copy, so the store, the app and the site keep saying the same thing.
 
 | Field | Value |
 |---|---|
-| Package name | `no.qrrrgh.android` |
-| Privacy policy | <https://qrrrgh.isainative.dev/privacy> |
+| Package name | `no.qravn.android` |
+| Privacy policy | <https://qravn.isainative.dev/privacy> |
 | Support email | `salnikov@gmail.com` |
-| Website | <https://qrrrgh.isainative.dev> |
+| Website | <https://qravn.isainative.dev> |
 | Data collected | None. Declare "No data collected" in Data safety. |
 
 The privacy policy is a standalone document at `apps/web/public/privacy.html`,

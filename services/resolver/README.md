@@ -1,6 +1,6 @@
-# qrrrgh-resolver
+# qravn-resolver
 
-SSRF-hardened **redirect resolver** for [qrrrgh](../../), a QR-code safety checker.
+SSRF-hardened **redirect resolver** for [QRavn](../../), a QR-code safety checker.
 
 The product promise is that checking a hostile QR code never tells the destination
 that anyone looked at it. The user's device therefore never fetches a scanned URL.
@@ -34,7 +34,7 @@ GET /healthz -> 200 { "ok": true }   (never touches the network; used by the pla
 - Hop 0 is the scanned URL itself, so `hopCount === chain.length - 1`.
 - `finalUrl` is present **only** when `outcome === "resolved"`.
 - `via` on each hop is `http_status`, `html_meta_refresh`, or `unknown`.
-- `resolver` is a name+version provenance string, `qrrrgh-resolver/1.0.0`.
+- `resolver` is a name+version provenance string, `qravn-resolver/1.0.0`.
 
 The wire types are mirrored locally in [`src/contract.ts`](src/contract.ts) from the
 frozen contract in `contracts/v1/assessment.d.ts`. The Rust core parses the same
@@ -95,7 +95,7 @@ is a brand-new attacker-chosen URL):
    (~10 s). A slowloris server cannot pin a worker.
 10. **Nothing identifying is sent** — no cookies, no `Referer`, no auth headers. A
     neutral, honest `User-Agent`
-    (`qrrrgh-resolver/1.0.0 (+https://github.com/webmaxru/qrrrgh; QR redirect expander; stores no page content)`)
+    (`qravn-resolver/1.0.0 (+https://github.com/webmaxru/qravn; QR redirect expander; stores no page content)`)
     lets site owners attribute the traffic.
 11. **Loop detection** — visited URLs are tracked; a repeat returns `outcome: "loop"`.
 12. **Rate limiting** per client IP + a request body-size cap. This endpoint costs
@@ -238,7 +238,7 @@ boots the built resolver with the dev loopback toggle, calls `/healthz`, then PO
   ],
   "outcome": "resolved",
   "elapsedMs": 32,
-  "resolver": "qrrrgh-resolver/1.0.0",
+  "resolver": "qravn-resolver/1.0.0",
   "finalUrl": "http://127.0.0.1:PORT/final"
 }
 ```
@@ -254,8 +254,8 @@ Multi-stage [`Dockerfile`](Dockerfile):
   [`dist/healthcheck.js`](src/healthcheck.ts) (a loopback `GET /healthz`).
 
 ```powershell
-docker build -t qrrrgh-resolver:local services/resolver
-docker run --rm -p 8080:8080 qrrrgh-resolver:local
+docker build -t qravn-resolver:local services/resolver
+docker run --rm -p 8080:8080 qravn-resolver:local
 ```
 
 ## Deliberate omissions

@@ -22,7 +22,7 @@ export default defineConfig({
     preserveSymlinks: true,
   },
   optimizeDeps: {
-    exclude: ['qrrrgh-safety-wasm'],
+    exclude: ['qravn-safety-wasm'],
   },
   plugins: [
     stripZxingCdnDefault(),
@@ -31,8 +31,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [],
       manifest: {
-        name: 'qrrrgh – QR code safety',
-        short_name: 'qrrrgh',
+        name: 'QRavn – QR code safety',
+        short_name: 'QRavn',
         description:
           "Security professionals don't scan QR codes with the camera app. Read the whole address first, checked on your own device.",
         theme_color: '#fafaf8',

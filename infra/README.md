@@ -1,13 +1,13 @@
-# qrrrgh infrastructure
+# QRavn infrastructure
 
-Infrastructure as code for hosting the qrrrgh redirect resolver, and notes on
+Infrastructure as code for hosting the QRavn redirect resolver, and notes on
 the existing Static Web App.
 
 | File | Purpose |
 | --- | --- |
 | `resolver.bicep` | Azure Container Apps environment + resolver app (Consumption, scale to zero). |
 | `provision-resolver.ps1` | One-off bootstrap: registers the provider, creates the resource group, deploys `resolver.bicep`. |
-| `provision-swa.ps1` | Existing bootstrap for the Azure Static Web App (`qrrrgh-web`). |
+| `provision-swa.ps1` | Existing bootstrap for the Azure Static Web App (`qravn-web`). |
 
 The GitHub workflow `.github/workflows/deploy-resolver.yml` builds the image,
 pushes it to GitHub Container Registry, and deploys it on every push to `main`
@@ -18,7 +18,7 @@ setting the `AZURE_ACA_ENABLED` repository variable to `true`.
 
 ## The point of this design: zero cost at idle
 
-qrrrgh is promised to users as free. The web app already runs on Azure Static
+QRavn is promised to users as free. The web app already runs on Azure Static
 Web Apps Free tier at 0 NOK. The redirect resolver must not change that. The
 hard requirement, verbatim:
 
@@ -150,26 +150,26 @@ the resource group contains only the Container Apps environment and the app -
 no Azure Container Registry, no Log Analytics workspace:
 
 ```powershell
-az resource list --resource-group rg-qrrrgh `
+az resource list --resource-group rg-qravn `
   --query "[].{name:name, type:type}" -o table
 ```
 
-Expected: `qrrrgh-web` (the Static Web App, Free tier),
-`qrrrgh-resolver-env` (Microsoft.App/managedEnvironments), and
-`qrrrgh-resolver` (Microsoft.App/containerApps). If you ever see a
+Expected: `qravn-web` (the Static Web App, Free tier),
+`qravn-resolver-env` (Microsoft.App/managedEnvironments), and
+`qravn-resolver` (Microsoft.App/containerApps). If you ever see a
 `Microsoft.ContainerRegistry/registries` or `Microsoft.OperationalInsights/workspaces`
 here, something has been added that can bill at idle.
 
-**2. Azure portal - actual cost.** Open the `rg-qrrrgh` resource group ->
+**2. Azure portal - actual cost.** Open the `rg-qravn` resource group ->
 **Cost Management** -> **Cost analysis** -> set the period to the current month
 and group by **Resource**. An idle month shows nothing for the Container Apps
 resources. See
 [Start analyzing costs](https://learn.microsoft.com/azure/cost-management-billing/costs/quick-acm-cost-analysis).
-Both resources are tagged `project=qrrrgh` and `component=redirect-resolver`, so
+Both resources are tagged `project=qravn` and `component=redirect-resolver`, so
 you can also group or filter by the `project` or `component` tag.
 
 **3. Set a safety net.** Create a **Budget** with an alert at a low threshold
-(for example USD 1) on `rg-qrrrgh` so any unexpected charge emails you
+(for example USD 1) on `rg-qravn` so any unexpected charge emails you
 immediately.
 
 **4. (Optional) Cost figure from the CLI.** The `az costmanagement query`
@@ -181,7 +181,7 @@ subscription types:
 az costmanagement query `
   --type ActualCost `
   --timeframe MonthToDate `
-  --scope "/subscriptions/<SUB_ID>/resourceGroups/rg-qrrrgh"
+  --scope "/subscriptions/<SUB_ID>/resourceGroups/rg-qravn"
 ```
 
 An idle month returns zero rows (or zero cost) for the Container Apps resources.
@@ -215,8 +215,8 @@ Keep these in mind; each one turns "free at idle" into "billed at idle":
 
 Target hostnames:
 
-- Web frontend: `https://qrrrgh.isainative.dev`
-- Resolver API: `https://qrrrgh-api.isainative.dev`
+- Web frontend: `https://qravn.isainative.dev`
+- Resolver API: `https://qravn-api.isainative.dev`
 
 The hostnames are configurable. Leave the parameters and repository variables
 empty for a deployment with no custom domain.
@@ -236,14 +236,14 @@ managed certificate renewal.
 
 | Type | Name | Value / target | TTL | Proxy status |
 | --- | --- | --- | --- | --- |
-| CNAME | `qrrrgh` | `brave-bay-0ecf82e03.7.azurestaticapps.net` | Auto | DNS-only (grey cloud) |
-| CNAME | `qrrrgh-api` | `qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
-| TXT | `asuid.qrrrgh-api` | `5BFCC063D1C3C26567C5CE072026BB5CE03258385AE700DF177521A0BEF0DA62` | Auto | DNS-only (TXT is never proxied) |
+| CNAME | `qravn` | `brave-bay-0ecf82e03.7.azurestaticapps.net` | Auto | DNS-only (grey cloud) |
+| CNAME | `qravn-api` | `qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io` | Auto | DNS-only (grey cloud) |
+| TXT | `asuid.qravn-api` | `5BFCC063D1C3C26567C5CE072026BB5CE03258385AE700DF177521A0BEF0DA62` | Auto | DNS-only (TXT is never proxied) |
 | CAA | `@` | `0 issue "digicert.com"` | Auto | DNS-only (only needed if restrictive CAA records do not already allow DigiCert) |
 
 Current check on 27 July 2026: no DNS records were observed for
-`qrrrgh.isainative.dev`, `qrrrgh-api.isainative.dev`,
-`asuid.qrrrgh-api.isainative.dev`, or `_dnsauth.qrrrgh.isainative.dev`. CAA
+`qravn.isainative.dev`, `qravn-api.isainative.dev`,
+`asuid.qravn-api.isainative.dev`, or `_dnsauth.qravn.isainative.dev`. CAA
 records were observed on `isainative.dev`, including `digicert.com`, so Azure
 Container Apps managed certificate issuance is not blocked by CAA right now.
 
@@ -270,26 +270,26 @@ Cloudflare documents Flexible as HTTPS from visitor to Cloudflare but HTTP from
 Cloudflare to the origin, which removes end-to-end TLS and is wrong for Azure
 origins that already serve valid HTTPS certificates. Cloudflare Universal SSL
 covers the root domain and first-level subdomains on a full setup, so it covers
-`qrrrgh.isainative.dev` and `qrrrgh-api.isainative.dev`. It does not cover
-deeper names such as `x.qrrrgh.isainative.dev`, which are not used here.
+`qravn.isainative.dev` and `qravn-api.isainative.dev`. It does not cover
+deeper names such as `x.qravn.isainative.dev`, which are not used here.
 
 ### Azure commands after Cloudflare DNS exists
 
 First verify DNS from a terminal:
 
 ```powershell
-Resolve-DnsName qrrrgh.isainative.dev -Type CNAME
-Resolve-DnsName qrrrgh-api.isainative.dev -Type CNAME
-Resolve-DnsName asuid.qrrrgh-api.isainative.dev -Type TXT
+Resolve-DnsName qravn.isainative.dev -Type CNAME
+Resolve-DnsName qravn-api.isainative.dev -Type CNAME
+Resolve-DnsName asuid.qravn-api.isainative.dev -Type TXT
 ```
 
 Then bind the web domain:
 
 ```powershell
 az staticwebapp hostname set `
-  --name qrrrgh-web `
-  --resource-group rg-qrrrgh `
-  --hostname qrrrgh.isainative.dev `
+  --name qravn-web `
+  --resource-group rg-qravn `
+  --hostname qravn.isainative.dev `
   --validation-method cname-delegation
 ```
 
@@ -298,43 +298,43 @@ certificate:
 
 ```powershell
 az containerapp hostname add `
-  --name qrrrgh-resolver `
-  --resource-group rg-qrrrgh `
-  --hostname qrrrgh-api.isainative.dev
+  --name qravn-resolver `
+  --resource-group rg-qravn `
+  --hostname qravn-api.isainative.dev
 
 az containerapp hostname bind `
-  --name qrrrgh-resolver `
-  --resource-group rg-qrrrgh `
-  --environment qrrrgh-resolver-env `
-  --hostname qrrrgh-api.isainative.dev `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
+  --environment qravn-resolver-env `
+  --hostname qravn-api.isainative.dev `
   --validation-method CNAME
 ```
 
 The idempotent scripts can do the same when DNS is ready:
 
 ```powershell
-./infra/provision-swa.ps1 -CustomHostname qrrrgh.isainative.dev
+./infra/provision-swa.ps1 -CustomHostname qravn.isainative.dev
 ./infra/provision-resolver.ps1 `
-  -WebCustomHostname qrrrgh.isainative.dev `
-  -ResolverCustomHostname qrrrgh-api.isainative.dev `
-  -ResolverCorsAllowedOrigins "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qrrrgh.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+  -WebCustomHostname qravn.isainative.dev `
+  -ResolverCustomHostname qravn-api.isainative.dev `
+  -ResolverCorsAllowedOrigins "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
 ```
 
 Verify:
 
 ```powershell
 az staticwebapp hostname show `
-  --name qrrrgh-web `
-  --resource-group rg-qrrrgh `
-  --hostname qrrrgh.isainative.dev
+  --name qravn-web `
+  --resource-group rg-qravn `
+  --hostname qravn.isainative.dev
 
 az containerapp hostname list `
-  --name qrrrgh-resolver `
-  --resource-group rg-qrrrgh `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
   -o table
 
-Invoke-WebRequest https://qrrrgh.isainative.dev
-Invoke-WebRequest https://qrrrgh-api.isainative.dev/healthz
+Invoke-WebRequest https://qravn.isainative.dev
+Invoke-WebRequest https://qravn-api.isainative.dev/healthz
 ```
 
 ### Safe cutover order for CORS and CSP
@@ -342,14 +342,14 @@ Invoke-WebRequest https://qrrrgh-api.isainative.dev/healthz
 Keep both the old and new origins working during the transition.
 
 1. Add the Cloudflare DNS records above with grey-cloud DNS-only status.
-2. Bind `qrrrgh-api.isainative.dev` in Azure Container Apps and verify
-   `https://qrrrgh-api.isainative.dev/healthz`.
+2. Bind `qravn-api.isainative.dev` in Azure Container Apps and verify
+   `https://qravn-api.isainative.dev/healthz`.
 3. Configure resolver CORS to allow both web origins:
 
    ```powershell
    gh variable set RESOLVER_CORS_ALLOWED_ORIGINS `
-     --repo webmaxru/qrrrgh `
-     --body "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qrrrgh.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+     --repo webmaxru/qravn `
+     --body "https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
    ```
 
    The live Container App can be updated immediately without widening to a
@@ -357,18 +357,18 @@ Keep both the old and new origins working during the transition.
 
    ```powershell
    az containerapp update `
-     --name qrrrgh-resolver `
-     --resource-group rg-qrrrgh `
-     --set-env-vars CORS_ALLOWED_ORIGINS="https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qrrrgh.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
+     --name qravn-resolver `
+     --resource-group rg-qravn `
+     --set-env-vars CORS_ALLOWED_ORIGINS="https://brave-bay-0ecf82e03.7.azurestaticapps.net,https://qravn.isainative.dev,http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
    ```
 
-4. Bind `qrrrgh.isainative.dev` in Azure Static Web Apps and verify the site.
+4. Bind `qravn.isainative.dev` in Azure Static Web Apps and verify the site.
 5. Only after the API custom domain works over HTTPS, move the web build to it:
 
    ```powershell
    gh variable set VITE_RESOLVER_URL `
-     --repo webmaxru/qrrrgh `
-     --body "https://qrrrgh-api.isainative.dev"
+     --repo webmaxru/qravn `
+     --body "https://qravn-api.isainative.dev"
    ```
 
 6. Run the **Deploy Web** workflow or push a normal web change. The build runs
@@ -402,17 +402,17 @@ opt in explicitly.
 secrets are set, so only step 3 remains.
 
 1. ~~**Create an Azure AD app + federated credential for OIDC**~~ - **done.**
-   App `qrrrgh-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
+   App `qravn-github-deploy` (client id `bbf5937e-3daf-49f3-a3ce-c64d5706a07f`)
    has a service principal and federated credentials for this repository on
    `main`, issuer `https://token.actions.githubusercontent.com`, audience
-   `api://AzureADTokenExchange`. It holds **Contributor scoped to `rg-qrrrgh`
+   `api://AzureADTokenExchange`. It holds **Contributor scoped to `rg-qravn`
    only** - not subscription-wide. See
    [Connect from Azure with OpenID Connect](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect).
    There is no client secret to rotate or leak; the workflow exchanges a
    short-lived GitHub OIDC token at run time.
 
    > **Trap worth knowing.** GitHub presented the subject
-   > `repo:webmaxru@1560278/qrrrgh@1312680270:ref:refs/heads/main` - with
+   > `repo:webmaxru@1560278/qravn@1312680270:ref:refs/heads/main` - with
    > **numeric owner and repository ids**, not the documented
    > `repo:OWNER/NAME:ref:refs/heads/main` form. A credential registered with
    > only the documented form fails with `AADSTS700213: No matching federated
@@ -458,7 +458,7 @@ secrets are set, so only step 3 remains.
 
    Then set repository variable `AZURE_ACA_ENABLED` to `true` (mirrors how
    `deploy-web.yml` is gated on `AZURE_SWA_ENABLED`). Optionally set
-   `AZURE_RESOURCE_GROUP` to override the default `rg-qrrrgh`.
+   `AZURE_RESOURCE_GROUP` to override the default `rg-qravn`.
 
    Leaving `AZURE_ACA_ENABLED` unset is deliberate and safe: the resolver
    revision cannot start until the image can be pulled, so nothing runs and
@@ -469,10 +469,10 @@ secrets are set, so only step 3 remains.
    from any machine:
 
    ```bash
-   t=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:webmaxru/qrrrgh/resolver:pull" | jq -r .token)
+   t=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:webmaxru/qravn/resolver:pull" | jq -r .token)
    curl -s -o /dev/null -w '%{http_code}\n' -H "Authorization: Bearer $t" \
      -H 'Accept: application/vnd.oci.image.index.v1+json' \
-     https://ghcr.io/v2/webmaxru/qrrrgh/resolver/manifests/<sha>
+     https://ghcr.io/v2/webmaxru/qravn/resolver/manifests/<sha>
    # 200 => public, 401 => private
    ```
 
@@ -494,7 +494,7 @@ secrets are set, so only step 3 remains.
    including the health probe. The service answers at:
 
    ```
-   https://qrrrgh-resolver.graydune-945363ee.westeurope.azurecontainerapps.io
+   https://qravn-resolver.graydune-945363ee.westeurope.azurecontainerapps.io
    ```
 
    Verified against the running service rather than the test doubles: the hop
@@ -506,13 +506,13 @@ secrets are set, so only step 3 remains.
    no allow header at all for an unknown one.
 
    This confirms the cost design against reality rather than only on paper:
-   `rg-qrrrgh` contains the static site, the managed environment and the
+   `rg-qravn` contains the static site, the managed environment and the
    container app, **and no Log Analytics workspace and no container registry**.
    The app reports `minReplicas: 0`, `maxReplicas: 3`, matching the template.
    With zero replicas running there is no compute charge.
 4. Push a change under `services/resolver/**` or `infra/**`, or run the **Deploy
    Resolver** workflow via **workflow_dispatch**. It builds the image, pushes it
-   to `ghcr.io/<owner>/qrrrgh/resolver:<sha>`, and runs
+   to `ghcr.io/<owner>/qravn/resolver:<sha>`, and runs
    `az deployment group create` against `resolver.bicep`.
 
 `provision-resolver.ps1` prints the exact `gh secret set` / `gh variable set`
@@ -522,7 +522,7 @@ scratch or point the deployment at a different subscription.
 ### Option B - one-off from this machine
 
 ```powershell
-# Registers Microsoft.App, creates rg-qrrrgh if needed, and deploys resolver.bicep.
+# Registers Microsoft.App, creates rg-qravn if needed, and deploys resolver.bicep.
 # Prompts securely for the ghcr.io read:packages token.
 # Preview first:
 ./infra/provision-resolver.ps1 -WhatIf

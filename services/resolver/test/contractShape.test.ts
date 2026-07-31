@@ -74,7 +74,7 @@ describe("contract: RedirectResolution shape", () => {
       expect(r.outcome).toBe("resolved");
       expect(r.chain).toHaveLength(2);
       expect(r.finalUrl).toBe(`${s.origin}/end`);
-      expect(r.resolver).toBe("qrrrgh-resolver/1.0.0");
+      expect(r.resolver).toBe("qravn-resolver/1.0.0");
     } finally {
       await s.close();
     }

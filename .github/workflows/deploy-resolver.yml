@@ -214,7 +214,7 @@ jobs:
           # line. GitHub also masks registered secrets in logs. registryPassword
           # is a @secure() Bicep param, so it never appears in deployment history.
           GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qrrrgh' }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP || 'rg-qravn' }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           WEB_CUSTOM_HOSTNAME: ${{ vars.WEB_CUSTOM_HOSTNAME }}
           RESOLVER_CUSTOM_HOSTNAME: ${{ vars.RESOLVER_CUSTOM_HOSTNAME }}

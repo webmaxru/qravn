@@ -4,7 +4,7 @@ const fixedNowMs = 1_784_332_800_000;
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((nowMs) => {
-    window.__QRRRGH_TEST_NOW_MS__ = nowMs;
+    window.__QRAVN_TEST_NOW_MS__ = nowMs;
     Date.now = () => nowMs;
   }, fixedNowMs);
 });

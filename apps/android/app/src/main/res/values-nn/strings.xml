@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="share_target_label">Sjekk med qrrrgh</string>
+    <string name="share_target_label">Sjekk med QRavn</string>
     <string name="tile_label">Sjekk QR-kode</string>
 
     <string name="scan_title">Rett kameraet mot ein QR-kode</string>
@@ -34,7 +34,7 @@
     <string name="result_limitations">Dette kunne ikkje sjekkast</string>
     <string name="result_no_browser">Ingen nettlesar er installert</string>
     <string name="result_confirm_title">Opne denne adressa?</string>
-    <string name="result_confirm_body">Du er i ferd med å forlate qrrrgh og opne %1$s i nettlesaren. Denne sjekken fann faresignal. Ein nettlesar har eige vern, men det gjer ikkje målet trygt.</string>
+    <string name="result_confirm_body">Du er i ferd med å forlate QRavn og opne %1$s i nettlesaren. Denne sjekken fann faresignal. Ein nettlesar har eige vern, men det gjer ikkje målet trygt.</string>
     <string name="result_confirm_open">Opne</string>
     <string name="result_cancel">Avbryt</string>
     <string name="result_no_evidence">Ingen faresignal funne</string>

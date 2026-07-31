@@ -9,21 +9,13 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="3"
-        android:scaleY="3"
-        android:translateX="31.5"
-        android:translateY="31.5">
+        android:scaleX="6.4"
+        android:scaleY="6.4"
+        android:translateX="31.6"
+        android:translateY="31.6">
         <path
             android:fillColor="@color/mark_ink"
             android:fillType="evenOdd"
-            android:pathData="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
-        <path
-            android:fillColor="@color/mark_ink"
-            android:fillType="evenOdd"
-            android:pathData="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
-        <path
-            android:fillColor="@color/mark_ink"
-            android:fillType="evenOdd"
-            android:pathData="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
+            android:pathData="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
     </group>
 </vector>

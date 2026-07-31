@@ -20,7 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "qrrrgh-android"
+rootProject.name = "qravn-android"
 
 include(":app")
 include(":safety-core")

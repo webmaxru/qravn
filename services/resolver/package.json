@@ -1,9 +1,9 @@
 {
-  "name": "qrrrgh-resolver",
+  "name": "qravn-resolver",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "SSRF-hardened redirect resolver for qrrrgh. Expands a scanned URL's redirect chain in isolation and returns only the chain, never page content.",
+  "description": "SSRF-hardened redirect resolver for qravn. Expands a scanned URL's redirect chain in isolation and returns only the chain, never page content.",
   "engines": {
     "node": ">=22"
   },

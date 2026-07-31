@@ -1,5 +1,5 @@
 /**
- * qrrrgh shared assessment contract, version 1.
+ * QRavn shared assessment contract, version 1.
  *
  * This file is the FROZEN seam between the Rust safety core and every client
  * surface (web, iOS, Android, backend). The Rust core serializes exactly these

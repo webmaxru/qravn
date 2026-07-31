@@ -59,7 +59,7 @@ describe("resolveChain: hop budget", () => {
     expect(r.chain[5]?.status).toBe(200);
     expect(r.chain[5]?.via).toBeUndefined();
     expect(r.finalUrl).toBe(`${s.origin}/r/5`);
-    expect(r.resolver).toBe("qrrrgh-resolver/1.0.0");
+    expect(r.resolver).toBe("qravn-resolver/1.0.0");
   });
 
   it("stops at a 6th redirect with outcome max_hops and a 6-entry chain", async () => {

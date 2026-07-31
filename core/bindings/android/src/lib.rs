@@ -48,7 +48,7 @@ fn engine(handle: jlong) -> Option<Arc<SafetyEngine>> {
 /// opaque handle. Kotlin must call `nativeDestroy` exactly once.
 #[allow(unsafe_code, reason = "JNI requires an unmangled symbol name")]
 #[no_mangle]
-pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeCreate(
+pub extern "system" fn Java_no_qravn_safety_NativeSafetyEngine_nativeCreate(
     mut env: JNIEnv,
     _class: JClass,
     config_json: JString,
@@ -67,7 +67,7 @@ pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeCreate(
 
 #[allow(unsafe_code, reason = "JNI requires an unmangled symbol name")]
 #[no_mangle]
-pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeDestroy(
+pub extern "system" fn Java_no_qravn_safety_NativeSafetyEngine_nativeDestroy(
     _env: JNIEnv,
     _class: JClass,
     handle: jlong,
@@ -80,7 +80,7 @@ pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeDestroy(
 /// Takes an `AssessInput` JSON document, returns an `Assessment` JSON document.
 #[allow(unsafe_code, reason = "JNI requires an unmangled symbol name")]
 #[no_mangle]
-pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeAssess(
+pub extern "system" fn Java_no_qravn_safety_NativeSafetyEngine_nativeAssess(
     mut env: JNIEnv,
     _class: JClass,
     handle: jlong,
@@ -97,7 +97,7 @@ pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeAssess(
 
 #[allow(unsafe_code, reason = "JNI requires an unmangled symbol name")]
 #[no_mangle]
-pub extern "system" fn Java_no_qrrrgh_safety_NativeSafetyEngine_nativeVersion(
+pub extern "system" fn Java_no_qravn_safety_NativeSafetyEngine_nativeVersion(
     mut env: JNIEnv,
     _class: JClass,
 ) -> jstring {

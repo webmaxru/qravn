@@ -1,21 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630"
-     role="img" aria-label="qrrrgh, check a QR code before you trust it">
-  <title>qrrrgh</title>
+     role="img" aria-label="QRavn - you don't open it alone">
+  <title>QRavn</title>
   <!--
-    Link preview card. Centred stack so nothing depends on measuring text
-    width, and no colour at all, because a preview of this product should look
-    like the product looks when it has nothing bad to report.
+    Link preview card. A centred stack, so nothing depends on measuring text
+    width.
+
+    Frost is the only colour the brand owns, and it appears here and on the
+    Play feature graphic and nowhere inside the app. In the app a colour is a
+    verdict - see apps/web/src/index.css and the Android Theme.kt - so a brand
+    accent loose in the interface would be making a claim. Its hue sits clear
+    of all four verdict hues on purpose.
   -->
-  <rect width="1200" height="630" fill="#FAFAF8" />
-  <g transform="translate(480 150) scale(16)" fill="#111315" fill-rule="evenodd">
-    <path d="M0,0 H7 V7 H0 Z M1,1 H6 V6 H1 Z M2,2 H5 V5 H2 Z" />
-    <path d="M8,0 H15 V7 H8 Z M9,1 H14 V6 H9 Z M10,2 H13 V5 H10 Z" />
-    <path d="M0,8 H7 V15 H0 Z M1,9 H6 V14 H1 Z M2,10 H5 V13 H2 Z" />
-  </g>
-  <text x="600" y="490" fill="#111315" text-anchor="middle"
+  <rect width="1200" height="630" fill="#0C1519" />
+  <path transform="translate(488 116) scale(32)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+  <text x="600" y="448" fill="#F1EDE6" text-anchor="middle"
         font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
-        font-size="96" letter-spacing="-2">qrrrgh</text>
-  <text x="600" y="548" fill="#5B6165" text-anchor="middle"
+        font-size="100" letter-spacing="-2">QRavn</text>
+  <text x="600" y="508" fill="#86B2C0" text-anchor="middle"
         font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
-        font-size="28">check a QR code before you trust it</text>
+        font-size="30">You don't open it alone.</text>
 </svg>
