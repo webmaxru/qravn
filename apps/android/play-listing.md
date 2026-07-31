@@ -4,6 +4,12 @@ Default language: **Norwegian (Norway) — nb-NO**. Second listing: **English (U
 
 Package name: `no.qrrrgh.android` · Version 1.0.0 (versionCode 1)
 
+The copy leads with the risk, not the mechanic. "Check a QR code" describes what
+the app does; it does not tell anyone why they should care. Every claim about
+fraud below is sourced — see [Sources](#sources) — because Play rejects
+unsubstantiated claims, and because a security app that exaggerates has already
+lost the argument.
+
 ---
 
 ## nb-NO (default)
@@ -11,34 +17,57 @@ Package name: `no.qrrrgh.android` · Version 1.0.0 (versionCode 1)
 ### App name (30 max)
 
 ```
-qrrrgh – sjekk QR-koder
+qrrrgh – sjekk QR mot svindel
 ```
-23 characters.
+29 characters.
 
 ### Short description (80 max)
 
 ```
-Sjekk hvor en QR-kode fører før du åpner den. Alt skjer på telefonen.
+Sikkerhetsfolk skanner aldri QR-koder. Nå kan du se hvor koden fører først.
 ```
-68 characters.
+75 characters.
 
 ### Full description (4000 max)
 
 ```
-QR-koder er blitt en enkel måte å lure folk på. En klistrelapp over koden på en
-parkeringsautomat. Et brev som ser ut til å komme fra Posten. En faktura med feil
-betalingsside. Du ser ikke hvor koden fører før du allerede er der.
+SIKKERHETSFOLK SKANNER ALDRI QR-KODER
 
-qrrrgh leser koden og viser deg hva som står i den, før du bestemmer deg.
+Spør noen som jobber med datasikkerhet om de skanner QR-koden på en
+parkeringsautomat. Det gjør de ikke. Ikke fordi de vet noe hemmelig, men på
+grunn av noe helt enkelt:
+
+En QR-kode er den eneste lenken du ikke kan lese før du følger den.
+
+Den er en svart-hvit firkant. Den kan si hva som helst. Du oppdager først hvor
+den fører etter at siden har åpnet seg – og da er du allerede der.
+
+Svindlerne skjønte dette lenge før resten av oss.
 
 
-SLIK VIRKER DET
+DETTE SKJER ALLEREDE I NORGE
 
-Rett kameraet mot koden. Du får se selve adressen, hvilket domene den faktisk
-peker på, og hva som eventuelt ser galt ut. Så velger du selv om du vil åpne den.
+I Kristiansand ble det funnet over 20 falske QR-klistremerker på
+parkeringsautomater. De var limt rett over de ekte, med navnet til et
+parkeringsselskap folk stoler på.
+
+På bruktmarkedet får kjøpere tilsendt en QR-kode de skal «betale med». Kortet
+blir belastet langt mer enn prisen. Én person tapte 90 000 kroner. Politiet og
+bankene har advart mot begge deler.
+
+Et klistremerke koster svindleren nesten ingenting å lage. Det er derfor det
+blir flere av dem.
+
+
+qrrrgh LESER KODEN FØR DU STOLER PÅ DEN
+
+Rett kameraet mot koden. Før noe som helst åpnes, ser du selve adressen,
+hvilket domene den faktisk peker på, og hva som eventuelt ser galt ut.
+
+Så bestemmer du.
 
 qrrrgh åpner aldri en lenke for deg. Telefonen din kontakter ikke nettstedet bak
-koden mens koden blir vurdert.
+koden mens koden blir vurdert. Det koster deg ingenting å sjekke.
 
 
 ALT SKJER PÅ TELEFONEN
@@ -53,8 +82,9 @@ skannet. Den virker i flymodus.
 
 DET DEN SIER, OG DET DEN IKKE SIER
 
-qrrrgh sier aldri at en lenke er trygg. Det er ingen app i stand til å love. Den
-forteller deg hva den fant, og hva den ikke kunne avgjøre:
+qrrrgh sier aldri at en lenke er trygg. Ingen app kan love det, uansett hvor
+skråsikkert det er formulert. Den forteller deg hva den fant, og hva den ikke
+kunne avgjøre:
 
 • at adressen etterligner et kjent navn
 • at det er blandet inn tegn fra et annet alfabet, så bokstaver ser like ut
@@ -84,6 +114,8 @@ Vi samler ikke inn personopplysninger. Vi kan ikke: appen har ingen mulighet til
 https://qrrrgh.isainative.dev/privacy
 
 
+Les koden. Så bestemmer du.
+
 qrrrgh er laget i Norge, for folk i Norge.
 ```
 
@@ -99,35 +131,57 @@ qrrrgh er laget i Norge, for folk i Norge.
 ### App name (30 max)
 
 ```
-qrrrgh – QR code safety
+qrrrgh – QR code scam check
 ```
-23 characters.
+27 characters.
 
 ### Short description (80 max)
 
 ```
-See where a QR code leads before you open it. Everything runs on your phone.
+Security pros never scan QR codes. Now you can see where one leads first.
 ```
-75 characters.
+73 characters.
 
 ### Full description (4000 max)
 
 ```
-QR codes have become an easy way to trick people. A sticker placed over the code
-on a parking meter. A letter that looks like it came from the post office. An
-invoice pointing at the wrong payment page. You cannot see where a code leads
-until you are already there.
+SECURITY PROFESSIONALS NEVER SCAN QR CODES
 
-qrrrgh reads the code and shows you what is inside it, before you decide.
+Ask someone who works in security whether they scan the QR code on a parking
+meter. They don't. Not because they know a secret, but because of something very
+simple:
+
+A QR code is the only link you cannot read before you follow it.
+
+It is a black and white square. It can say anything at all. You find out where
+it leads after the page has opened — and by then you are already there.
+
+Scammers worked this out long before the rest of us did.
 
 
-HOW IT WORKS
+THIS IS ALREADY HAPPENING
 
-Point the camera at the code. You see the address itself, the domain it actually
-points to, and anything that looks wrong. Then you choose whether to open it.
+In Kristiansand, Norway, more than 20 fake QR stickers were found on parking
+meters. They were stuck straight over the real ones, carrying the name of a
+parking company people trust.
+
+In second-hand marketplaces, buyers are sent a QR code to "pay with". The card
+is then charged far more than the asking price. One person lost 90,000 kroner.
+Police and banks have warned about both.
+
+A sticker costs a scammer almost nothing to make. That is why there are more of
+them every month.
+
+
+qrrrgh READS THE CODE BEFORE YOU TRUST IT
+
+Point the camera at the code. Before anything opens, you see the actual address,
+the domain it really points to, and anything about it that looks wrong.
+
+Then you decide.
 
 qrrrgh never opens a link for you. Your phone does not contact the site behind
-the code while the code is being assessed.
+the code while the code is being checked. Checking costs you nothing.
 
 
 IT ALL HAPPENS ON YOUR PHONE
@@ -142,8 +196,9 @@ airplane mode.
 
 WHAT IT SAYS, AND WHAT IT WILL NOT SAY
 
-qrrrgh never tells you a link is safe. No app is in a position to promise that.
-It tells you what it found, and what it could not determine:
+qrrrgh never tells you a link is safe. No app can promise that, however
+confidently it is phrased. It tells you what it found, and what it could not
+determine:
 
 • the address imitates a name you know
 • characters from another alphabet are mixed in, so letters look alike
@@ -172,10 +227,29 @@ We collect no personal data. We cannot: the app has no way to send anything. The
 full privacy policy is at https://qrrrgh.isainative.dev/privacy
 
 
+Read the code. Then decide.
+
 qrrrgh is made in Norway, for people in Norway.
 ```
 
 ---
+
+## Sources
+
+The fraud claims in both listings are drawn from Norwegian reporting, so they
+can be defended if Play review or a user challenges them. Keep this list current
+if the copy changes.
+
+| Claim | Source |
+|---|---|
+| 20+ fake QR stickers on parking meters in Kristiansand, using a trusted parking brand | NRK Sørlandet, "Advarer mot parkeringssvindel med QR-kode" |
+| Second-hand marketplace QR payment fraud; card charged far above the agreed price | TV 2, "Politiet og bank advarer: Flere lurt av ny svindelmetode" |
+| A single victim losing NOK 90,000 | TV 2 / Sol, same case |
+| Police and banks warning about both | NRK, "Politiet advarer mot svindel via QR-kode" |
+
+Deliberately **not** claimed: any figure for how much fraud qrrrgh prevents, any
+detection rate, and any suggestion that a clear result means a destination is
+safe. The app never says "safe", and neither does the listing.
 
 ## Store settings
 
@@ -256,8 +330,9 @@ Expected result: **PEGI 3 / ESRB Everyone / IARC 3+**.
 ```
 Første versjon.
 
-Skann en QR-kode og se hvor den fører, før du åpner den. Alt skjer på telefonen,
-og appen har ingen nettilgang.
+Falske QR-koder dukker opp på parkeringsautomater, fakturaer og i bruktannonser.
+qrrrgh leser koden og viser deg hvor den fører – før du åpner den. Alt skjer på
+telefonen, og appen har ingen nettilgang.
 ```
 
 ### Release notes (en-US)
@@ -265,8 +340,9 @@ og appen har ingen nettilgang.
 ```
 First release.
 
-Scan a QR code and see where it leads, before you open it. Everything runs on
-your phone, and the app has no network access.
+Fake QR codes are turning up on parking meters, invoices and second-hand
+listings. qrrrgh reads the code and shows you where it leads — before you open
+it. Everything runs on your phone, and the app has no network access.
 ```
 
 ## Signing
