@@ -294,9 +294,15 @@ az staticwebapp hostname set `
 ```
 
 Bind the resolver API domain and let Container Apps create the free managed
-certificate:
+certificate. **Allow plain HTTP first, and turn it back off afterwards** - see
+the warning below:
 
 ```powershell
+az containerapp ingress update `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
+  --allow-insecure
+
 az containerapp hostname add `
   --name qravn-resolver `
   --resource-group rg-qravn `
@@ -307,8 +313,30 @@ az containerapp hostname bind `
   --resource-group rg-qravn `
   --environment qravn-resolver-env `
   --hostname qravn-api.isainative.dev `
-  --validation-method CNAME
+  --validation-method HTTP
+
+az containerapp ingress update `
+  --name qravn-resolver `
+  --resource-group rg-qravn `
+  --allow-insecure false
 ```
+
+> **A managed certificate cannot be issued while the ingress is HTTPS-only.**
+> Container Apps validates with an ACME HTTP-01 challenge, and `allowInsecure:
+> false` makes the ingress answer *every* plain-HTTP request with a 301 -
+> including the challenge. Issuance then sits in `Pending` for half an hour and
+> `hostname bind` finally reports `CertificateProvisioningError: Certificate is
+> not in succeeded provisioning state`. Nothing in the error mentions HTTP.
+>
+> Allow insecure traffic for the length of the binding and turn it off again
+> immediately after; the certificate stays valid, and renewals are handled by
+> the platform without reopening HTTP. `--validation-method CNAME` does not
+> avoid this - the CNAME proves ownership, but the certificate itself is still
+> issued over HTTP-01.
+>
+> Azure Static Web Apps needs no equivalent workaround: `cname-delegation`
+> validates off the CNAME alone. Its first `hostname set` can still report
+> `Failed`; delete the hostname and add it again, and it validates.
 
 The idempotent scripts can do the same when DNS is ready:
 

@@ -6,9 +6,9 @@ Scan a QR code, see exactly what is inside it, and get an evidence-based safety 
 
 > **Status:** early implementation. The shared core, the web surface and the redirect resolver are live. The Android application is implemented against the same core and is not yet published; iOS has not started.
 >
-> **Web app:** <https://gentle-mushroom-007600b03.7.azurestaticapps.net>
+> **Web app:** <https://qravn.isainative.dev>
 >
-> **Resolver:** <https://qravn-resolver.victoriouscoast-8a38643f.westeurope.azurecontainerapps.io> — used only when you explicitly ask to expand a shortened link. It scales to zero, so it costs nothing while idle.
+> **Resolver:** <https://qravn-api.isainative.dev> — used only when you explicitly ask to expand a shortened link. It scales to zero, so it costs nothing while idle.
 
 ---
 
