@@ -101,7 +101,7 @@ is a brand-new attacker-chosen URL):
 12. **Rate limiting** per client IP + a request body-size cap. This endpoint costs
     money and makes outbound requests; it must not be a free proxy or amplifier.
 13. **CORS** — only the web app origin
-    (`https://brave-bay-0ecf82e03.7.azurestaticapps.net`) plus localhost dev origins,
+    (`https://gentle-mushroom-007600b03.7.azurestaticapps.net`) plus localhost dev origins,
     configurable via `CORS_ALLOWED_ORIGINS`. Never `*`.
 14. **URLs are never logged at info level** (they can carry tokens) — only hostnames
     and outcomes ([`src/logger.ts`](src/logger.ts) `safeHost`).

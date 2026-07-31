@@ -1544,7 +1544,7 @@ CI runs on Linux and is unaffected, which is itself a reason to treat CI rather 
 | Service | Azure Static Web Apps, Free tier |
 | Resource group | `rg-qravn` |
 | Region | West Europe |
-| Default hostname | `brave-bay-0ecf82e03.7.azurestaticapps.net` |
+| Default hostname | `gentle-mushroom-007600b03.7.azurestaticapps.net` |
 | Deployment | GitHub Actions, using a deployment token stored as a repository secret |
 
 The free tier provides 100 GB of bandwidth per month, managed TLS, custom domains, and staging environments for pull requests. It has no cost, which matters because the product promise is that the service is free and therefore must not develop an operating cost that pressures that promise.

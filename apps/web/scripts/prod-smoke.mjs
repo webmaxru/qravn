@@ -1,6 +1,6 @@
 import { chromium, webkit } from '@playwright/test';
 
-const BASE = process.env.PROD_URL ?? 'https://brave-bay-0ecf82e03.7.azurestaticapps.net';
+const BASE = process.env.PROD_URL ?? 'https://gentle-mushroom-007600b03.7.azurestaticapps.net';
 const results = [];
 let failed = 0;
 
