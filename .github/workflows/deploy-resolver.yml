@@ -218,6 +218,9 @@ jobs:
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           WEB_CUSTOM_HOSTNAME: ${{ vars.WEB_CUSTOM_HOSTNAME }}
           RESOLVER_CUSTOM_HOSTNAME: ${{ vars.RESOLVER_CUSTOM_HOSTNAME }}
+          # Must match the environmentName default in infra/resolver.bicep. Only
+          # used to find the managed certificate before deploying.
+          ENVIRONMENT_NAME: ${{ vars.AZURE_RESOLVER_ENVIRONMENT || 'qravn-resolver-env' }}
           RESOLVER_CORS_ALLOWED_ORIGINS: ${{ vars.RESOLVER_CORS_ALLOWED_ORIGINS }}
           # Deliberately github.repository_owner, NOT github.actor. The stored
           # credential is a PAT belonging to the repository owner, so the username
@@ -227,6 +230,23 @@ jobs:
           # long after the deploy reported success.
           REGISTRY_USER: ${{ github.repository_owner }}
         run: |
+          # The custom domain binding lives in the template, so the certificate
+          # id has to be supplied on every deployment. Look it up by subject
+          # rather than by name: Azure generates the managed certificate name
+          # with a random suffix. An empty result is normal before the
+          # certificate has been issued, and leaves the domain unbound.
+          cert_id=""
+          if [ -n "$RESOLVER_CUSTOM_HOSTNAME" ]; then
+            cert_id="$(az containerapp env certificate list \
+              --name "$ENVIRONMENT_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              --query "[?properties.subjectName=='$RESOLVER_CUSTOM_HOSTNAME' && properties.provisioningState=='Succeeded'].id | [0]" \
+              --output tsv 2>/dev/null || true)"
+            [ "$cert_id" = "None" ] && cert_id=""
+            if [ -z "$cert_id" ]; then
+              echo "No issued certificate for $RESOLVER_CUSTOM_HOSTNAME yet; deploying without the custom domain."
+            fi
+          fi
           url="$(az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/resolver.bicep \
@@ -237,6 +257,7 @@ jobs:
               registryPassword="$GHCR_PULL_TOKEN" \
               webCustomHostname="$WEB_CUSTOM_HOSTNAME" \
               resolverCustomHostname="$RESOLVER_CUSTOM_HOSTNAME" \
+              resolverCertificateId="$cert_id" \
               resolverCorsAllowedOrigins="$RESOLVER_CORS_ALLOWED_ORIGINS" \
             --query "properties.outputs.resolverUrl.value" \
             --output tsv)"

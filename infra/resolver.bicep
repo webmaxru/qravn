@@ -74,6 +74,9 @@ param webCustomHostname string = ''
 @description('Optional custom HTTPS hostname for the resolver API, for example qravn-api.isainative.dev. Empty means no custom API hostname is configured. Binding is completed by the provisioning script after DNS exists.')
 param resolverCustomHostname string = ''
 
+@description('Resource id of the managed certificate for resolverCustomHostname. Empty leaves the custom domain unbound, which is the correct state before the certificate has been issued.')
+param resolverCertificateId string = ''
+
 @description('Comma-separated exact CORS origins for the resolver. Empty uses localhost dev origins plus webCustomHostname when provided. Never use a wildcard.')
 param resolverCorsAllowedOrigins string = ''
 
@@ -84,6 +87,7 @@ var useRegistryAuth = !empty(registryPassword)
 var registryPasswordSecretName = 'registry-password'
 var devCorsAllowedOrigins = 'http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173'
 var customWebOrigin = empty(webCustomHostname) ? '' : 'https://${webCustomHostname}'
+var bindCustomDomain = !empty(resolverCustomHostname) && !empty(resolverCertificateId)
 var effectiveCorsAllowedOrigins = !empty(resolverCorsAllowedOrigins)
   ? resolverCorsAllowedOrigins
   : (empty(customWebOrigin) ? devCorsAllowedOrigins : '${devCorsAllowedOrigins},${customWebOrigin}')
@@ -130,6 +134,16 @@ resource resolver 'Microsoft.App/containerApps@2024-03-01' = {
             weight: 100
           }
         ]
+        // Declared here so a deployment never strips it. A custom domain bound
+        // out of band with `az containerapp hostname bind` disappears on the
+        // next template deployment, because the template is the desired state.
+        customDomains: bindCustomDomain ? [
+          {
+            name: resolverCustomHostname
+            certificateId: resolverCertificateId
+            bindingType: 'SniEnabled'
+          }
+        ] : null
       }
       secrets: useRegistryAuth ? [
         {
