@@ -4,7 +4,7 @@
     <string name="tile_label">Sjekk QR-kode</string>
 
     <string name="scan_title">Rett kameraet mot en QR-kode</string>
-    <string name="scan_hint">Ingenting åpnes, og ingenting forlater telefonen din.</string>
+    <string name="scan_hint">49 sjekker kjøres før noe åpnes. Ingenting forlater telefonen din.</string>
     <string name="scan_viewfinder_description">Kamerasøker. En QR-kode leses automatisk når den er i bildet.</string>
     <string name="scan_again">Skann på nytt</string>
     <string name="scan_torch_on">Slå på lommelykt</string>
@@ -37,7 +37,7 @@
     <string name="result_confirm_body">Du er i ferd med å forlate QRavn og åpne %1$s i nettleseren. Denne sjekken fant faresignaler. En nettleser har egen beskyttelse, men den gjør ikke målet trygt.</string>
     <string name="result_confirm_open">Åpne</string>
     <string name="result_cancel">Avbryt</string>
-    <string name="result_no_evidence">Ingen faresignaler funnet</string>
+    <string name="result_no_evidence">Ingen av de 49 sjekkene fant noe</string>
     <plurals name="result_evidence_count">
         <item quantity="one">%1$d faresignal funnet</item>
         <item quantity="other">%1$d faresignaler funnet</item>

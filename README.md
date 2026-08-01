@@ -2,9 +2,9 @@
 
 A free, privacy-first QR code safety application for Norway.
 
-Scan a QR code, see exactly what is inside it, and get an evidence-based safety assessment **before** anything opens.
+Scan a QR code and QRavn runs **49 checks** on it before anything opens — 26 on the address, 16 on what the code actually contains, and 7 on where the link forwards you — then reports what it found and why.
 
-> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live. The Android application is implemented against the same core and is not yet published; iOS has not started.
+> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live. The Android application is implemented against the same core and is awaiting Play review; iOS is served by the PWA.
 >
 > **Web app:** <https://qravn.isainative.dev>
 >
@@ -19,6 +19,7 @@ Neither the iOS Camera app nor Google Lens investigates a QR code's destination 
 This project closes that gap:
 
 - Decodes locally and **never opens a link automatically**.
+- Runs 49 named checks from a frozen contract, and names the ones that fired.
 - Shows the complete payload before any external action.
 - Expands shortened URLs and redirect chains **on isolated server infrastructure**, never from the user's device.
 - Combines deterministic rules with a compact on-device classifier.

@@ -1,6 +1,24 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import findingCodes from '../../contracts/v1/finding-codes.json' with { type: 'json' }
+
+const CHECK_COUNT = Object.keys(findingCodes.findings).length
+
+/**
+ * The number of checks is quoted in the page title, the meta description, the
+ * card metadata and the installed app's manifest. Injecting it from the
+ * contract means adding a finding code updates all of them at once, rather
+ * than leaving four copies of a claim to drift out of date.
+ */
+function injectCheckCount() {
+  return {
+    name: 'inject-check-count',
+    transformIndexHtml(html: string) {
+      return html.replaceAll('%CHECK_COUNT%', String(CHECK_COUNT))
+    },
+  }
+}
 
 function stripZxingCdnDefault() {
   return {
@@ -26,6 +44,7 @@ export default defineConfig({
   },
   plugins: [
     stripZxingCdnDefault(),
+    injectCheckCount(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -34,7 +53,7 @@ export default defineConfig({
         name: 'QRavn – QR code safety',
         short_name: 'QRavn',
         description:
-          "Security professionals don't scan QR codes with the camera app. Read the whole address first, checked on your own device.",
+          `Reads a QR code and runs ${CHECK_COUNT} checks on it for the tricks scammers use — lookalike domains, hidden redirects, invisible characters — before anything opens.`,
         theme_color: '#fafaf8',
         background_color: '#fafaf8',
         display: 'standalone',

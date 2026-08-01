@@ -9,6 +9,7 @@ import type { ExpansionState, OnlineExpansion } from './components/RedirectPanel
 import type { Assessment, RedirectResolution } from './contracts/assessment';
 import { createEngine } from './engine/createEngine';
 import { normaliseLocale, textForCode, type Locale } from './engine/catalog';
+import { CHECK_COUNT } from './checkCount';
 import type { EngineInstance, SafetyEngine } from './engine/types';
 import { isOnlineModeAvailable, resolveRedirect } from './lib/resolverClient';
 
@@ -190,8 +191,15 @@ function App({ engineOverride, resolverOverride }: AppProps) {
             <span className="brand-wordmark">QRavn</span>
             <span className="brand-qualifier">for Norway</span>
           </p>
-          <h1>Never open a link you haven’t read</h1>
-          <p>That is the one rule every official guide agrees on, and the one thing a camera app will not let you do: it gives you a cut-off preview and a button. Paste a QR link below to read the whole address first — the check runs in your browser, and nothing opens until you decide.</p>
+          <h1>{CHECK_COUNT} checks a camera app never runs</h1>
+          <p>
+            A QR code is a picture of a link. You cannot read it, so you point your camera and trust
+            whatever happens next. QRavn reads the code instead and tests it for the tricks that make
+            a scam look ordinary — a domain one letter off your bank’s, a link that bounces through
+            four sites before it lands, characters that are invisible on screen but change where you
+            go. You get a verdict and the reasons behind it. The check runs on your own device, and
+            nothing opens unless you say so.
+          </p>
         </div>
         <div className="hero-controls">
           <LanguageSwitcher locale={locale} onChange={changeLocale} />

@@ -8,7 +8,7 @@
 
     <!-- Scan screen -->
     <string name="scan_title">Point at a QR code</string>
-    <string name="scan_hint">Nothing is opened and nothing leaves your phone.</string>
+    <string name="scan_hint">49 checks run before anything opens. Nothing leaves your phone.</string>
     <string name="scan_viewfinder_description">Camera viewfinder. A QR code is read automatically when it is in view.</string>
     <string name="scan_again">Scan again</string>
     <string name="scan_torch_on">Turn on flashlight</string>
@@ -43,7 +43,7 @@
     <string name="result_confirm_body">You are about to leave QRavn and open %1$s in your browser. This check found warning signs. A browser has its own protections, but they do not make a destination safe.</string>
     <string name="result_confirm_open">Open</string>
     <string name="result_cancel">Cancel</string>
-    <string name="result_no_evidence">No warning signs found</string>
+    <string name="result_no_evidence">Nothing found by any of the 49 checks</string>
     <plurals name="result_evidence_count">
         <item quantity="one">%1$d warning sign found</item>
         <item quantity="other">%1$d warning signs found</item>
