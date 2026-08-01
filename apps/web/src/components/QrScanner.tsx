@@ -1,38 +1,39 @@
 import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent } from 'react';
 import { decodeQrFromImage } from '../lib/qrDecoder';
+import { t, td } from '../lib/uiText';
+import type { Locale } from '../engine/catalog';
+import { BrandMark } from './BrandMark';
 
 interface QrScannerProps {
   onDecode: (payload: string) => void;
+  locale: Locale;
   disabled?: boolean;
 }
 
 type CameraState = 'idle' | 'starting' | 'scanning';
+type Status = { title: string; detail: string } | null;
 
-function explainCameraError(error: unknown): string {
-  if (!window.isSecureContext) {
-    return 'Camera scanning requires a secure context. Use HTTPS or localhost, or paste/upload an image instead.';
-  }
-  if (!(error instanceof DOMException)) {
-    return 'The camera could not be started. Paste a payload or upload an image instead.';
-  }
+/**
+ * Seven DOMException names told the reader seven technical stories. There are
+ * only three things a person can actually do about a camera that will not
+ * start, so there are three messages.
+ */
+function cameraProblemCode(error: unknown): string {
+  if (!window.isSecureContext) return 'ui.camera_problem';
+  if (!(error instanceof DOMException)) return 'ui.camera_problem';
   switch (error.name) {
     case 'NotAllowedError':
     case 'SecurityError':
-      return 'Camera permission was denied. You can still paste a payload or upload a QR screenshot.';
+      return 'ui.camera_denied';
     case 'NotFoundError':
     case 'DevicesNotFoundError':
-      return 'No camera was found on this device. Paste a payload or upload a QR screenshot instead.';
-    case 'NotReadableError':
-    case 'TrackStartError':
-      return 'The camera is already in use or unavailable. Close other camera apps, or use paste/upload.';
-    case 'OverconstrainedError':
-      return 'No rear-facing camera matched the request. Try another camera or upload an image.';
+      return 'ui.camera_missing';
     default:
-      return 'The camera could not be started. Paste a payload or upload an image instead.';
+      return 'ui.camera_problem';
   }
 }
 
-export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
+export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -40,7 +41,7 @@ export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
   const decodingRef = useRef(false);
   const scanningRef = useRef(false);
   const [cameraState, setCameraState] = useState<CameraState>('idle');
-  const [message, setMessage] = useState('Upload or paste a QR image, or start the camera.');
+  const [status, setStatus] = useState<Status>(null);
 
   function stopCamera() {
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
@@ -56,17 +57,17 @@ export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
   useEffect(() => stopCamera, []);
 
   async function decodeFile(file: Blob) {
-    setMessage('Decoding QR image locally…');
+    setStatus({ title: t('ui.reading_image', locale), detail: '' });
     try {
       const decoded = await decodeQrFromImage(file);
       if (decoded) {
-        setMessage('QR code decoded locally.');
+        setStatus(null);
         onDecode(decoded);
       } else {
-        setMessage('No QR code was found in that image. Try a clearer screenshot or paste the text.');
+        setStatus(td('ui.no_code_found', locale));
       }
     } catch {
-      setMessage('The image could not be decoded. Try another image or paste the QR payload text.');
+      setStatus(td('ui.no_code_found', locale));
     }
   }
 
@@ -86,16 +87,16 @@ export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
 
   async function startCamera() {
     if (!window.isSecureContext) {
-      setMessage(explainCameraError(new DOMException('Insecure context', 'SecurityError')));
+      setStatus(td('ui.camera_problem', locale));
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia) {
-      setMessage('This browser does not expose camera access. Upload a QR image or paste the payload instead.');
+      setStatus(td('ui.camera_missing', locale));
       return;
     }
 
     setCameraState('starting');
-    setMessage('Requesting camera permission…');
+    setStatus({ title: t('ui.scan_starting', locale), detail: '' });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       streamRef.current = stream;
@@ -104,11 +105,11 @@ export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
       setCameraState('scanning');
-      setMessage('Point the camera at a QR code. Frames are decoded locally only.');
+      setStatus({ title: t('ui.scan_aim', locale), detail: '' });
       scanNextFrame();
     } catch (error) {
       stopCamera();
-      setMessage(explainCameraError(error));
+      setStatus(td(cameraProblemCode(error), locale));
     }
   }
 
@@ -150,7 +151,7 @@ export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
         .then((decoded) => {
           if (decoded) {
             stopCamera();
-            setMessage('QR code decoded locally. Camera stopped.');
+            setStatus(null);
             onDecode(decoded);
             return;
           }
@@ -158,28 +159,65 @@ export function QrScanner({ onDecode, disabled = false }: QrScannerProps) {
           scanNextFrame();
         })
         .catch(() => {
+          // A frame that will not decode is the normal case while aiming, not
+          // an error worth interrupting the reader for.
           decodingRef.current = false;
-          setMessage('Could not decode this frame. Keep the QR code steady or upload an image.');
           scanNextFrame();
         });
     });
   }
 
+  const live = cameraState !== 'idle';
+
   return (
-    <section className="panel scanner" aria-labelledby="scanner-heading" onPaste={handlePaste}>
-      <h2 id="scanner-heading">Scan a QR code</h2>
-      <p>{message}</p>
-      <div className="scanner-actions">
-        <button type="button" onClick={() => void startCamera()} disabled={disabled || cameraState !== 'idle'}>
-          {cameraState === 'idle' ? 'Start camera' : 'Camera starting…'}
-        </button>
-        {cameraState !== 'idle' ? <button type="button" onClick={stopCamera}>Stop camera</button> : null}
-        <label className="file-picker">
-          Upload QR image
-          <input type="file" accept="image/*" onChange={(event) => void handleFileChange(event)} disabled={disabled} />
-        </label>
+    <section className="scan" aria-labelledby="scan-heading" onPaste={handlePaste}>
+      <h2 id="scan-heading" className="visually-hidden">
+        {t('ui.scan_target', locale)}
+      </h2>
+
+      {/* The frame, and the code you put inside it. The corners are a
+          viewfinder and the mark is the subject, so the instruction is the
+          picture — it does not depend on anyone reading a sentence. */}
+      <div className={`viewfinder${live ? ' viewfinder--live' : ''}`}>
+        <video ref={videoRef} className="viewfinder__video" playsInline muted aria-label={t('ui.scan_aim', locale)} />
+        {live ? null : (
+          <button type="button" className="viewfinder__target" onClick={() => void startCamera()} disabled={disabled}>
+            <span className="viewfinder__glyph" aria-hidden="true">
+              <BrandMark size={48} />
+            </span>
+            <span className="viewfinder__label">{t('ui.scan_start', locale)}</span>
+          </button>
+        )}
+        <span className="viewfinder__corners" aria-hidden="true" />
       </div>
-      <video ref={videoRef} className="camera-preview" playsInline muted aria-label="Camera preview" />
+
+      <p className="scan-status" role="status">
+        {status ? (
+          <>
+            <strong>{status.title}</strong>
+            {status.detail ? <span className="scan-status__detail"> {status.detail}</span> : null}
+          </>
+        ) : null}
+      </p>
+
+      <div className="scan-actions">
+        {live ? (
+          <button type="button" onClick={stopCamera}>
+            {t('ui.scan_stop', locale)}
+          </button>
+        ) : (
+          <label className="file-picker">
+            {t('ui.choose_photo', locale)}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(event) => void handleFileChange(event)}
+              disabled={disabled}
+            />
+          </label>
+        )}
+      </div>
+
       <canvas ref={canvasRef} hidden />
     </section>
   );

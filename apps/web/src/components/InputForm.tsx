@@ -1,11 +1,14 @@
 import { useState, type FormEvent, type KeyboardEvent } from 'react';
+import { t } from '../lib/uiText';
+import type { Locale } from '../engine/catalog';
 
 interface InputFormProps {
   onSubmit: (payload: string) => void;
+  locale: Locale;
   disabled?: boolean;
 }
 
-export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
+export function InputForm({ onSubmit, locale, disabled = false }: InputFormProps) {
   const [payload, setPayload] = useState('');
 
   function submit(event: FormEvent) {
@@ -27,17 +30,18 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
 
   return (
     <form className="check-form" onSubmit={submit}>
-      <label htmlFor="payload">Paste a suspicious link or QR payload</label>
+      <label htmlFor="payload">{t('ui.paste_label', locale)}</label>
       <textarea
         id="payload"
         value={payload}
-        rows={5}
-        placeholder="https://dnb.no@evil.example/login"
+        rows={3}
+        placeholder={t('ui.paste_placeholder', locale)}
         onChange={(event) => setPayload(event.target.value)}
         onKeyDown={handleKeyDown}
       />
-      <p className="form-help">Nothing is opened while checking. Press Enter or the button to check. Use Shift+Enter for a new line.</p>
-      <button type="submit" className="primary-action" disabled={disabled}>Check</button>
+      <button type="submit" disabled={disabled}>
+        {t('ui.check', locale)}
+      </button>
     </form>
   );
 }

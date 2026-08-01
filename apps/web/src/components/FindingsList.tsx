@@ -1,6 +1,7 @@
 import type { Finding } from '../contracts/assessment';
 import { localizeFinding, severityLabels, type Locale } from '../engine/catalog';
 import { sortFindingsBySeverity } from '../lib/assessment';
+import { t } from '../lib/uiText';
 
 interface FindingItemsProps {
   findings: Finding[];
@@ -25,7 +26,10 @@ export function FindingItems({ findings, locale, subjectBadge }: FindingItemsPro
             {subjectBadge ? <span className="subject-badge subject-badge--final">{subjectBadge}</span> : null}
             <h3>{finding.title || finding.code}</h3>
             {finding.detail ? <p>{finding.detail}</p> : null}
-            <code>{finding.code}</code>
+            {/* The contract code is traceability, not a message. It stays on
+                screen so a support conversation can name the exact rule, but at
+                a size that keeps it out of the reading path. */}
+            <code className="finding-code">{finding.code}</code>
           </div>
         </li>
       ))}
@@ -39,14 +43,14 @@ interface FindingsListProps {
 }
 
 export function FindingsList({ findings, locale }: FindingsListProps) {
+  // A clear result has nothing to list. An empty "what we found" panel is one
+  // more thing to read past on the screen people see most often, so it is not
+  // rendered at all rather than filled with a sentence saying nothing happened.
+  if (!findings.length) return null;
   return (
     <section className="panel" aria-labelledby="findings-heading">
-      <h2 id="findings-heading">Evidence findings</h2>
-      {findings.length ? (
-        <FindingItems findings={findings} locale={locale} />
-      ) : (
-        <p>No local findings were produced.</p>
-      )}
+      <h2 id="findings-heading">{t('ui.what_we_found', locale)}</h2>
+      <FindingItems findings={findings} locale={locale} />
     </section>
   );
 }

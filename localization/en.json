@@ -1,311 +1,171 @@
 {
-  "url.credentials_in_authority": {
-    "title": "Hidden real domain",
-    "detail": "Text before @ can make the address look as if it belongs somewhere else, while the host after @ is the one actually used. Observed value: {username}, {host}."
+  "limitation.classifier_unavailable": {
+    "title": "One of our checks did not run",
+    "detail": "The rest of the checks did. This result is built on what they found."
   },
-  "url.ip_literal_host": {
-    "title": "IP address host",
-    "detail": "The link uses an IP address instead of a normal domain name, making ownership harder to judge. Observed value: {host}."
+  "limitation.no_public_suffix_match": {
+    "title": "We could not tell who owns it",
+    "detail": "The ending of {host} is not one we recognise, so the owner is less certain."
   },
-  "url.non_standard_port": {
-    "title": "Unusual port",
-    "detail": "The port is not standard for common web links. It may be legitimate, but deserves extra checking. Observed value: {port}."
+  "limitation.offline_no_reputation": {
+    "title": "We did not ask anyone else",
+    "detail": "This check ran on your phone alone, against our own rules. No outside service was consulted."
   },
-  "url.punycode_host": {
-    "title": "Technical domain spelling",
-    "detail": "The domain has a technical IDN form and a display form. Such domains can be legitimate, including Norwegian names, but should be read carefully. Observed value: {punycodeHost}, {unicodeHost}."
+  "limitation.payload_not_understood": {
+    "title": "We did not recognise this format",
+    "detail": "The content is shown as plain text and nothing is opened or run."
   },
-  "url.mixed_script_host": {
-    "title": "Mixed writing systems",
-    "detail": "The host mixes writing systems. Similar letters from different scripts can make the domain hard to read correctly. Observed value: {host}, {scripts}."
+  "limitation.redirect_not_expanded": {
+    "title": "We did not follow the short link",
+    "detail": "Where {service} sends you is still unknown. You can ask us to follow it for you."
   },
-  "url.confusable_host": {
-    "title": "Confusable domain",
-    "detail": "The host contains characters that can look like other characters. This can make a domain appear familiar. Observed value: {host}, {skeleton}."
+  "limitation.redirect_partial": {
+    "title": "We only got part of the way",
+    "detail": "Following stopped after {hopCount} steps, so the last address is still unknown."
   },
-  "url.bidi_control_characters": {
-    "title": "Hidden text direction",
-    "detail": "The content contains characters that can change text direction on screen. This can hide or reorder parts of the address."
+  "limitation.redirect_resolution_failed": {
+    "title": "We could not follow the link",
+    "detail": "Following it stopped because {reason}. Only the scanned link was checked."
   },
-  "url.control_characters": {
-    "title": "Control characters found",
-    "detail": "The content contains invisible control characters. They can confuse display, copying, or interpretation."
+  "limitation.rules_stale": {
+    "title": "Our rules may be out of date",
+    "detail": "They were last updated {ageDays} days ago. Very new threats may be missing."
   },
-  "url.excessive_subdomains": {
-    "title": "Many subdomains",
-    "detail": "The address has many subdomains before the main domain. This can make the real domain harder to spot. Observed value: {count}."
+  "limitation.rules_unavailable": {
+    "title": "Our threat list did not load",
+    "detail": "We still read the address itself, but we could not compare it against known threats."
   },
-  "url.brand_in_subdomain": {
-    "title": "Known name in subdomain",
-    "detail": "A known name appears before the main domain, but that does not prove the link belongs to that organization. Observed value: {brand}, {registrableDomain}."
+  "online.disclosure": {
+    "title": "Before you continue",
+    "detail": "This link is sent to our own server. Our server visits it and follows where it goes. Your phone never touches it."
   },
-  "url.brand_in_path": {
-    "title": "Known name in path",
-    "detail": "A known name appears in the path after the domain. That part is freely controlled by the site. Observed value: {brand}."
+  "online.error": {
+    "title": "The link could not be checked",
+    "detail": "Something went wrong on our side. Your phone did not contact the link. You can try again."
   },
-  "url.hyphenated_brand_domain": {
-    "title": "Hyphenated known name",
-    "detail": "A known name is combined with a hyphen or extra words in another domain. This is often used for impersonation. Observed value: {brand}, {registrableDomain}."
+  "online.expand_button": {
+    "title": "See where this link goes",
+    "detail": ""
   },
-  "url.nested_url_in_query": {
-    "title": "Link inside link",
-    "detail": "The address contains another web address as a value. Such patterns are often used for redirects. Observed value: {nestedHost}."
+  "online.expand_heading": {
+    "title": "Check where this link really goes",
+    "detail": ""
   },
-  "url.open_redirect_parameter": {
-    "title": "Possible redirect",
-    "detail": "A parameter name suggests the link may send the user onward. The start and end sites may differ. Observed value: {parameter}."
+  "online.final_badge": {
+    "title": "Final destination",
+    "detail": ""
   },
-  "url.encoded_characters_in_host": {
-    "title": "Encoded host",
-    "detail": "The host contains percent-encoded characters. That can make the domain less clear."
+  "online.final_findings_heading": {
+    "title": "Warnings about the final destination",
+    "detail": ""
   },
-  "url.excessive_length": {
-    "title": "Very long address",
-    "detail": "The address is very long. Important information may be hidden far into the text. Observed value: {length}."
+  "online.outcome_incomplete": {
+    "title": "Could not finish expanding this link",
+    "detail": "Your device still did not contact the link. See what could not be determined below."
   },
-  "url.insecure_scheme": {
-    "title": "No HTTPS",
-    "detail": "The link does not use HTTPS. Traffic may be easier to observe or alter in transit."
+  "online.outcome_max_hops": {
+    "title": "Stopped: too many redirects",
+    "detail": "This link was judged untrusted because it kept redirecting past the safe limit of 5 hops."
   },
-  "url.javascript_scheme": {
-    "title": "JavaScript link",
-    "detail": "The content is a javascript: address. It can run code and must not be opened automatically."
+  "online.outcome_resolved": {
+    "title": "Followed to the final destination",
+    "detail": "We followed the redirects for you. This does not mean the destination is safe - read the findings below."
   },
-  "url.data_scheme": {
-    "title": "Embedded data address",
-    "detail": "The content is inside a data: address. It can display like a web page without a normal domain."
+  "online.path_label": {
+    "title": "Path it followed",
+    "detail": ""
   },
-  "url.file_scheme": {
-    "title": "Local file address",
-    "detail": "The address points to a local file or system path, not an ordinary website."
+  "online.resolving": {
+    "title": "Checking where it goes…",
+    "detail": "Your phone is not contacting the link."
   },
-  "url.unknown_scheme": {
-    "title": "Unknown link type",
-    "detail": "The scheme is not a normal http or https link. It may open an app or start an action. Observed value: {scheme}."
+  "online.retry_button": {
+    "title": "Try again",
+    "detail": ""
   },
-  "url.shortener": {
-    "title": "Shortened link",
-    "detail": "The link uses a shortening service. The final destination is not visible until redirect expansion is checked. Observed value: {service}."
+  "online.section_heading": {
+    "title": "Where this link leads",
+    "detail": ""
   },
-  "url.possible_shortener": {
-    "title": "Possible shortened link",
-    "detail": "The domain and short code look like a redirecting link, but this service is not in the known shortener list. The final destination is not visible until redirect expansion is checked. Observed value: {host}."
+  "payload.app_deep_link": {
+    "title": "Opens an app, not a page",
+    "detail": "It starts with {scheme}, which hands the code to an app on your phone."
   },
-  "url.suspicious_tld": {
-    "title": "Unusual top-level domain",
-    "detail": "The top-level domain appears more often in abuse. This is a weak signal and must be considered with other evidence. Observed value: {tld}."
+  "payload.binary_content": {
+    "title": "Not readable text",
+    "detail": "The code holds data rather than words. Nothing is opened or run."
   },
-  "url.known_malicious": {
-    "title": "Known malicious match",
-    "detail": "The address matches local threat data. That is concrete evidence to avoid or block the link. Observed value: {ruleId}."
+  "payload.calendar_event": {
+    "title": "A calendar entry",
+    "detail": "The code adds \"{summary}\" to your calendar. Check the time and details first."
   },
-  "url.no_registrable_domain": {
-    "title": "No main domain",
-    "detail": "We could not find a registrable main domain. Ownership and public suffix handling are therefore less certain. Observed value: {host}."
+  "payload.contact_card": {
+    "title": "A contact card",
+    "detail": "The code adds {name} to your contacts. Check the details before you save them."
+  },
+  "payload.crypto_address": {
+    "title": "A cryptocurrency address",
+    "detail": "This asks for a payment in {currency}. Payments like this cannot be reversed."
+  },
+  "payload.email_address": {
+    "title": "An email address",
+    "detail": "The code holds {address}. Nothing is sent unless you write and send it yourself."
+  },
+  "payload.empty": {
+    "title": "Nothing in the code",
+    "detail": "The code is empty. Try scanning it again."
+  },
+  "payload.geo_location": {
+    "title": "A place on the map",
+    "detail": "The code points at {latitude}, {longitude}. Opening it shows that spot in a map app."
   },
   "payload.not_a_url": {
     "title": "Not a web address",
-    "detail": "The QR content does not look like a normal web address. It may still be text or another format."
-  },
-  "payload.empty": {
-    "title": "Empty content",
-    "detail": "The QR code contains no text that can be assessed. Scan again if this was not expected."
-  },
-  "payload.binary_content": {
-    "title": "Binary content",
-    "detail": "The content resembles binary data or text that cannot be displayed safely. It is not opened automatically."
-  },
-  "payload.wifi_network": {
-    "title": "Wi‑Fi network",
-    "detail": "The QR code describes a Wi‑Fi network. Check that the network is expected before connecting. Observed value: {ssid}, {security}."
-  },
-  "payload.wifi_open_network": {
-    "title": "Open Wi‑Fi",
-    "detail": "The QR code describes an open Wi‑Fi network. Such networks usually do not encrypt traffic to the router. Observed value: {ssid}."
-  },
-  "payload.wifi_hidden_network": {
-    "title": "Hidden Wi‑Fi",
-    "detail": "The QR code describes a hidden Wi‑Fi network. Hidden does not automatically mean safer. Observed value: {ssid}."
-  },
-  "payload.email_address": {
-    "title": "Email address",
-    "detail": "The QR code contains an email address. Sending email is a separate action. Observed value: {address}."
-  },
-  "payload.phone_number": {
-    "title": "Phone number",
-    "detail": "The QR code contains a phone number. Check the number before calling. Observed value: {number}."
-  },
-  "payload.sms_message": {
-    "title": "SMS message",
-    "detail": "The QR code can create an SMS. Read the recipient and content before sending. Observed value: {number}."
-  },
-  "payload.premium_rate_number": {
-    "title": "Possible premium number",
-    "detail": "The number may have extra cost or a special rate. Check price and recipient first. Observed value: {number}."
-  },
-  "payload.geo_location": {
-    "title": "Geographic location",
-    "detail": "The QR code contains a geographic position. Opening it may show or share a location. Observed value: {latitude}, {longitude}."
-  },
-  "payload.contact_card": {
-    "title": "Contact card",
-    "detail": "The QR code contains a contact card. Check the details before saving them. Observed value: {name}."
-  },
-  "payload.calendar_event": {
-    "title": "Calendar event",
-    "detail": "The QR code contains a calendar event. Review time and details before adding it. Observed value: {summary}."
-  },
-  "payload.crypto_address": {
-    "title": "Crypto address",
-    "detail": "The QR code contains a crypto address. Such payments usually cannot be reversed. Observed value: {currency}."
+    "detail": "This code holds text rather than a link, so there is nothing to open."
   },
   "payload.otp_secret": {
-    "title": "One-time-code secret",
-    "detail": "The QR code contains a one-time-code secret. It can give access to login codes. Observed value: {issuer}."
+    "title": "A login-code key",
+    "detail": "This sets up the codes that protect an account at {issuer}. Only scan it if you started the setup."
   },
-  "payload.app_deep_link": {
-    "title": "App link",
-    "detail": "The QR code uses an app link. It can open an app or start an action. Observed value: {scheme}."
+  "payload.phone_number": {
+    "title": "A phone number",
+    "detail": "The code holds {number}. Check the number before you call it."
   },
-  "limitation.offline_no_reputation": {
-    "title": "No online lookup",
-    "detail": "The check was done without online reputation lookup. The result relies on local rules and structure."
+  "payload.premium_rate_number": {
+    "title": "A number that may cost extra",
+    "detail": "Calling or texting {number} can be charged at a higher rate. Check the price first."
   },
-  "limitation.redirect_not_expanded": {
-    "title": "Redirect not checked",
-    "detail": "We detected a shortened link, but did not fetch the final address. That requires a separate consent-based lookup. Observed value: {service}."
+  "payload.sms_message": {
+    "title": "Writes a text message",
+    "detail": "This prepares a message to {number}. Read who it goes to and what it says before sending."
   },
-  "limitation.rules_stale": {
-    "title": "Rules may be old",
-    "detail": "The local rules may be old. New threats may be missing until an update. Observed value: {ageDays}."
+  "payload.wifi_hidden_network": {
+    "title": "A hidden Wi‑Fi network",
+    "detail": "{ssid} does not show up in the list of networks. Hidden is not the same as safer."
   },
-  "limitation.rules_unavailable": {
-    "title": "Rules unavailable",
-    "detail": "Local threat rules were unavailable. Structural findings may still be shown."
+  "payload.wifi_network": {
+    "title": "Joins a Wi‑Fi network",
+    "detail": "This connects you to {ssid}, secured with {security}. Make sure it is the network you expect."
   },
-  "limitation.classifier_unavailable": {
-    "title": "Classifier unavailable",
-    "detail": "The local classifier was unavailable. The result relies on rules and observable properties."
+  "payload.wifi_open_network": {
+    "title": "An open Wi‑Fi network",
+    "detail": "{ssid} has no password, so others nearby can see what you send."
   },
-  "limitation.no_public_suffix_match": {
-    "title": "Unknown public suffix",
-    "detail": "We could not find a known public suffix. The main domain may therefore be calculated with less certainty. Observed value: {host}."
-  },
-  "limitation.payload_not_understood": {
-    "title": "Unknown QR format",
-    "detail": "The QR format was not understood. The content is shown as raw text without triggering actions."
-  },
-  "verdict.known_malicious": {
-    "title": "Known malicious",
-    "detail": "We found a concrete match in threat data or rules. Do not open the link without a specific reason."
-  },
-  "verdict.suspicious": {
-    "title": "Suspicious",
-    "detail": "We found signs often used in scams or misleading links. Read the findings before continuing."
-  },
-  "verdict.insufficient_evidence": {
-    "title": "Insufficient evidence",
-    "detail": "We cannot say enough about the content or final destination. That does not mean it is safe."
-  },
-  "verdict.no_known_threat_found": {
-    "title": "No known threat found",
-    "detail": "We found no known threats in this check. This is not a guarantee that the content is safe."
-  },
-  "ui.check": {
-    "title": "Check",
-    "detail": ""
-  },
-  "ui.paste_placeholder": {
-    "title": "Paste QR content or link",
-    "detail": ""
-  },
-  "ui.result": {
-    "title": "Result",
-    "detail": ""
-  },
-  "ui.findings": {
-    "title": "Findings",
-    "detail": ""
-  },
-  "ui.limitations": {
-    "title": "Limitations",
-    "detail": ""
-  },
-  "ui.what_we_found": {
-    "title": "What we found",
-    "detail": ""
-  },
-  "ui.open_anyway": {
-    "title": "Open anyway",
-    "detail": ""
-  },
-  "ui.open_blocked": {
-    "title": "Opening blocked",
-    "detail": ""
-  },
-  "ui.copy": {
-    "title": "Copy",
-    "detail": ""
-  },
-  "ui.scan_again": {
-    "title": "Scan again",
-    "detail": ""
-  },
-  "ui.about": {
-    "title": "About QRavn",
-    "detail": ""
-  },
-  "ui.privacy_note": {
-    "title": "Privacy",
-    "detail": "The check happens locally first."
-  },
-  "ui.language": {
-    "title": "Language",
-    "detail": ""
-  },
-  "ui.raw_payload": {
-    "title": "Raw payload",
-    "detail": ""
-  },
-  "ui.real_destination": {
-    "title": "Real destination",
-    "detail": ""
-  },
-  "ui.offline_mode_label": {
-    "title": "Offline mode",
-    "detail": ""
-  },
-  "ui.offline_mode_description": {
-    "title": "Check locally only",
-    "detail": "When offline mode is on, the app uses local rules only and does not ask the resolver to follow redirects."
-  },
-  "ui.offline_redirect_limitation": {
-    "title": "Redirects cannot be followed in offline mode",
-    "detail": "The final destination may be unknown unless you turn off offline mode and choose redirect expansion."
-  },
-  "ui.possible_redirect_warning": {
-    "title": "Possibly a redirect",
-    "detail": "This may send you to a different final destination. That does not mean the link is safe or unsafe by itself."
+  "redirect.chained_shorteners": {
+    "title": "Several shorteners in a row",
+    "detail": "The link passes through {count} shortening services. Stacking shorteners hides the destination and is rare in legitimate links."
   },
   "redirect.cross_domain": {
     "title": "Ends on a different domain",
     "detail": "The link starts on {fromDomain} but ends on {toDomain}. A different owner controls the page you would actually reach."
   },
-  "redirect.multiple_hops": {
-    "title": "Passes through several addresses",
-    "detail": "The link redirects {hopCount} times before arriving. Extra steps make the destination harder to predict."
-  },
-  "redirect.excessive_hops": {
-    "title": "Unusually long redirect chain",
-    "detail": "The link redirects {hopCount} times. Chains this long are uncommon for ordinary links and are often used to obscure where you end up."
-  },
   "redirect.downgrade_to_http": {
     "title": "Falls back to an unencrypted connection",
     "detail": "The chain moves from an encrypted connection to an unencrypted one at {host}. Anything sent there can be read or altered on the way."
   },
-  "redirect.chained_shorteners": {
-    "title": "Several shorteners in a row",
-    "detail": "The link passes through {count} shortening services. Stacking shorteners hides the destination and is rare in legitimate links."
+  "redirect.excessive_hops": {
+    "title": "Unusually long redirect chain",
+    "detail": "The link redirects {hopCount} times. Chains this long are uncommon for ordinary links and are often used to obscure where you end up."
   },
   "redirect.loop": {
     "title": "Redirects in a circle",
@@ -315,64 +175,328 @@
     "title": "Redirects using page content",
     "detail": "The page at {host} redirects using its own content instead of a normal server redirect. This is sometimes used to avoid automated checks."
   },
-  "limitation.redirect_resolution_failed": {
-    "title": "Could not follow the link",
-    "detail": "The final address could not be determined: {reason}. This assessment covers only the scanned link."
+  "redirect.multiple_hops": {
+    "title": "Passes through several addresses",
+    "detail": "The link redirects {hopCount} times before arriving. Extra steps make the destination harder to predict."
   },
-  "limitation.redirect_partial": {
-    "title": "Only partly followed",
-    "detail": "Following stopped after {hopCount} steps, so the final address is unknown. This assessment covers only what was reached."
-  },
-  "online.expand_heading": {
-    "title": "Check where this link really goes",
+  "ui.about": {
+    "title": "About QRavn",
     "detail": ""
   },
-  "online.disclosure": {
-    "title": "Before you expand",
-    "detail": "If you continue, this link's address is sent to our resolver service. Our server visits the link and follows its redirects. Your device never contacts the link."
-  },
-  "online.expand_button": {
-    "title": "Expand this link safely",
+  "ui.actions": {
+    "title": "What you can do",
     "detail": ""
   },
-  "online.resolving": {
-    "title": "Contacting our resolver...",
-    "detail": "Your device is not contacting the link."
-  },
-  "online.section_heading": {
-    "title": "Where this link leads",
+  "ui.breakdown_heading": {
+    "title": "The address, piece by piece",
     "detail": ""
   },
-  "online.path_label": {
-    "title": "Path it followed",
+  "ui.camera_denied": {
+    "title": "Camera access is turned off",
+    "detail": "You can still choose a photo or paste a link."
+  },
+  "ui.camera_missing": {
+    "title": "No camera on this device",
+    "detail": "Choose a photo or paste a link instead."
+  },
+  "ui.camera_problem": {
+    "title": "The camera would not start",
+    "detail": "Close other apps using the camera, or choose a photo instead."
+  },
+  "ui.check": {
+    "title": "Check",
     "detail": ""
   },
-  "online.final_findings_heading": {
-    "title": "Warnings about the final destination",
+  "ui.choose_photo": {
+    "title": "Choose a photo",
     "detail": ""
   },
-  "online.final_badge": {
-    "title": "Final destination",
+  "ui.copy": {
+    "title": "Copy text",
     "detail": ""
   },
-  "online.outcome_resolved": {
-    "title": "Followed to the final destination",
-    "detail": "We followed the redirects for you. This does not mean the destination is safe - read the findings below."
+  "ui.credential_note": {
+    "title": "The text before @ is not the destination.",
+    "detail": "Your browser goes to the name after @."
   },
-  "online.outcome_max_hops": {
-    "title": "Stopped: too many redirects",
-    "detail": "This link was judged untrusted because it kept redirecting past the safe limit of 5 hops."
-  },
-  "online.outcome_incomplete": {
-    "title": "Could not finish expanding this link",
-    "detail": "Your device still did not contact the link. See what could not be determined below."
-  },
-  "online.error": {
-    "title": "The link could not be expanded",
-    "detail": "Something went wrong contacting our resolver. Your device did not contact the link. You can try again."
-  },
-  "online.retry_button": {
-    "title": "Try expanding again",
+  "ui.engine_error": {
+    "title": "The checker could not start",
     "detail": ""
+  },
+  "ui.field_domain": {
+    "title": "Who owns it",
+    "detail": ""
+  },
+  "ui.field_host": {
+    "title": "Where it goes",
+    "detail": ""
+  },
+  "ui.field_none": {
+    "title": "None",
+    "detail": ""
+  },
+  "ui.field_path": {
+    "title": "Page",
+    "detail": ""
+  },
+  "ui.field_query": {
+    "title": "Extra values",
+    "detail": ""
+  },
+  "ui.field_scheme": {
+    "title": "Connection",
+    "detail": ""
+  },
+  "ui.field_subdomains": {
+    "title": "Names in front",
+    "detail": ""
+  },
+  "ui.follow_links": {
+    "title": "Look up short links",
+    "detail": "Short links hide where they go. With this on, our own server can follow one and tell you where it lands. Your phone never touches the link either way."
+  },
+  "ui.how_address": {
+    "title": "The web address",
+    "detail": "26 checks. Is the real name at the end instead of the start? Is one letter borrowed from another alphabet? Are there characters you cannot see?"
+  },
+  "ui.how_content": {
+    "title": "What the code really is",
+    "detail": "16 checks. A QR code is not always a link. It can be a text message that costs money, a wifi network, or a key to your login."
+  },
+  "ui.how_heading": {
+    "title": "What QRavn looks for",
+    "detail": ""
+  },
+  "ui.how_redirect": {
+    "title": "Where it sends you next",
+    "detail": "7 checks. Short links hide their destination. Some hop between sites, or stop protecting you along the way."
+  },
+  "ui.language": {
+    "title": "Language",
+    "detail": ""
+  },
+  "ui.limitations": {
+    "title": "What this check could not tell you",
+    "detail": ""
+  },
+  "ui.no_code_found": {
+    "title": "No QR code in that picture",
+    "detail": "Try a sharper photo, or paste the link instead."
+  },
+  "ui.offline_redirect_limitation": {
+    "title": "Where this short link ends up is still unknown",
+    "detail": "Turn on \"Look up short links\" in Settings to find out, without your phone touching it."
+  },
+  "ui.open_anyway": {
+    "title": "I still want to open {host}",
+    "detail": ""
+  },
+  "ui.open_blocked": {
+    "title": "Opening is blocked",
+    "detail": "This code cannot be opened from here."
+  },
+  "ui.open_new_tab": {
+    "title": "Open {host} in a new tab",
+    "detail": ""
+  },
+  "ui.paste_label": {
+    "title": "Link or QR text",
+    "detail": ""
+  },
+  "ui.paste_placeholder": {
+    "title": "Paste QR content or link",
+    "detail": ""
+  },
+  "ui.paste_toggle": {
+    "title": "Paste a link instead",
+    "detail": ""
+  },
+  "ui.payload_heading": {
+    "title": "What the code says",
+    "detail": ""
+  },
+  "ui.possible_redirect_warning": {
+    "title": "Possibly a redirect",
+    "detail": "This may send you to a different final destination. That does not mean the link is safe or unsafe by itself."
+  },
+  "ui.privacy_note": {
+    "title": "Privacy",
+    "detail": "No account, no tracking, no history. The check runs on your phone."
+  },
+  "ui.raw_payload": {
+    "title": "Show the exact text",
+    "detail": ""
+  },
+  "ui.reading_image": {
+    "title": "Reading the image…",
+    "detail": ""
+  },
+  "ui.real_destination": {
+    "title": "Real destination",
+    "detail": ""
+  },
+  "ui.reassurance": {
+    "title": "Nothing opens until you say so",
+    "detail": "The check runs on your phone. QRavn never visits the link."
+  },
+  "ui.result": {
+    "title": "Result",
+    "detail": ""
+  },
+  "ui.scan_again": {
+    "title": "Scan again",
+    "detail": ""
+  },
+  "ui.scan_aim": {
+    "title": "Point your camera at the code",
+    "detail": ""
+  },
+  "ui.scan_start": {
+    "title": "Scan with camera",
+    "detail": ""
+  },
+  "ui.scan_starting": {
+    "title": "Starting camera…",
+    "detail": ""
+  },
+  "ui.scan_stop": {
+    "title": "Stop camera",
+    "detail": ""
+  },
+  "ui.scan_target": {
+    "title": "Ready to scan",
+    "detail": ""
+  },
+  "ui.settings": {
+    "title": "Settings",
+    "detail": ""
+  },
+  "ui.tagline": {
+    "title": "Check a QR code before you open it",
+    "detail": ""
+  },
+  "ui.what_we_found": {
+    "title": "What we found",
+    "detail": ""
+  },
+  "url.bidi_control_characters": {
+    "title": "Text that can flip direction",
+    "detail": "Hidden characters can reverse part of the address on screen, so what you read is not what opens."
+  },
+  "url.brand_in_path": {
+    "title": "A known name after the address",
+    "detail": "{brand} appears after the address, where the site owner writes whatever they like."
+  },
+  "url.brand_in_subdomain": {
+    "title": "A known name in the wrong place",
+    "detail": "{brand} appears in the address, but the site is owned by {registrableDomain}. Anyone can put a name there."
+  },
+  "url.confusable_host": {
+    "title": "Letters chosen to look like others",
+    "detail": "{host} uses characters that imitate {skeleton}. That is how a fake name passes for a real one."
+  },
+  "url.control_characters": {
+    "title": "Invisible characters",
+    "detail": "The text contains characters you cannot see. They can hide part of the address."
+  },
+  "url.credentials_in_authority": {
+    "title": "Hidden real address",
+    "detail": "The part before @ is not where this goes. It opens {host}, not {username}."
+  },
+  "url.data_scheme": {
+    "title": "A page carried inside the code",
+    "detail": "The content is packed into the code itself, so there is no website behind it to check."
+  },
+  "url.encoded_characters_in_host": {
+    "title": "The name is written in code",
+    "detail": "Parts of the name are written as % codes instead of letters, which hides what it really says."
+  },
+  "url.excessive_length": {
+    "title": "Very long address",
+    "detail": "It runs to {length} characters, so the part that matters is easy to miss."
+  },
+  "url.excessive_subdomains": {
+    "title": "A long stack of names",
+    "detail": "There are {count} names in front of the real one, which pushes the part that matters out of sight."
+  },
+  "url.file_scheme": {
+    "title": "Points at a file on the device",
+    "detail": "This is not a website. It points into your phone or computer."
+  },
+  "url.hyphenated_brand_domain": {
+    "title": "A known name with something added",
+    "detail": "{registrableDomain} puts extra words around {brand}. Imitations are usually built this way."
+  },
+  "url.insecure_scheme": {
+    "title": "Not a protected connection",
+    "detail": "This uses http, not https. Anything you type can be read or changed on the way."
+  },
+  "url.ip_literal_host": {
+    "title": "A number instead of a name",
+    "detail": "This goes to {host}, a raw address with no name behind it. Real companies use names."
+  },
+  "url.javascript_scheme": {
+    "title": "This runs code, not a page",
+    "detail": "Opening it would run instructions on your phone. A QR code has no reason to do that."
+  },
+  "url.known_malicious": {
+    "title": "Matches a known bad address",
+    "detail": "This address is on our list of known threats, matched by rule {ruleId}."
+  },
+  "url.mixed_script_host": {
+    "title": "Letters from several alphabets",
+    "detail": "{host} mixes {scripts}. Letters that look identical can come from different alphabets."
+  },
+  "url.nested_url_in_query": {
+    "title": "Another address inside this one",
+    "detail": "A second address, {nestedHost}, is carried inside this link. That is a common way to pass you on."
+  },
+  "url.no_registrable_domain": {
+    "title": "No owner name to read",
+    "detail": "We could not work out who owns {host}, so there is nothing to recognise."
+  },
+  "url.non_standard_port": {
+    "title": "Unusual door number",
+    "detail": "The address asks for port {port}. Ordinary websites do not need one."
+  },
+  "url.open_redirect_parameter": {
+    "title": "Built to send you onward",
+    "detail": "The link carries a {parameter} value, which usually means it hands you to somewhere else."
+  },
+  "url.possible_shortener": {
+    "title": "Looks like a short link",
+    "detail": "{host} has the shape of a forwarding service, though it is not one we know by name."
+  },
+  "url.punycode_host": {
+    "title": "Special letters in the name",
+    "detail": "On screen it shows {unicodeHost}, but the real name is {punycodeHost}. Norwegian names use this too, so read it closely."
+  },
+  "url.shortener": {
+    "title": "A short link that hides the rest",
+    "detail": "{service} forwards you somewhere else, and the code alone does not say where."
+  },
+  "url.suspicious_tld": {
+    "title": "An ending seen often in scams",
+    "detail": "Addresses ending in {tld} turn up in fraud more than most. On its own it proves nothing."
+  },
+  "url.unknown_scheme": {
+    "title": "Not an ordinary web link",
+    "detail": "It starts with {scheme}, which opens an app or starts an action instead of a page."
+  },
+  "verdict.insufficient_evidence": {
+    "title": "Insufficient evidence",
+    "detail": "We cannot say enough about the content or final destination. That does not mean it is safe."
+  },
+  "verdict.known_malicious": {
+    "title": "Known malicious",
+    "detail": "We found a concrete match in threat data or rules. Do not open the link without a specific reason."
+  },
+  "verdict.no_known_threat_found": {
+    "title": "No known threat found",
+    "detail": "We found no known threats in this check. This is not a guarantee that the content is safe."
+  },
+  "verdict.suspicious": {
+    "title": "Suspicious",
+    "detail": "We found signs often used in scams or misleading links. Read the findings before continuing."
   }
 }

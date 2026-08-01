@@ -1,55 +1,50 @@
-.app-shell {
+/*
+ * Layout for a task, not a page.
+ *
+ * One thing is on screen at a time: the scan target, or the result. The frame
+ * around the target is drawn with three corners and never a fourth — the same
+ * open corner the mark has, for the same reason. A closed box would say the
+ * loop completes; this app never closes it by opening anything on your behalf.
+ */
+
+.app {
   width: min(100%, 58rem);
   margin: 0 auto;
   /* The top stays a plain 1rem: iOS keeps its own opaque status bar above the
      content, so that inset is already clear. The sides matter in landscape,
      where the notch eats into one edge, and the bottom clears the home
      indicator. env() is 0 wherever there is no inset, leaving the 1rem. */
-  padding: 1rem max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
+  padding: 0 max(1rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom))
     max(1rem, env(safe-area-inset-left));
 }
 
-.hero-header {
-  display: grid;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- app bar */
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  margin: 1rem 0;
+  min-height: 3.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
 }
 
-.hero-header h1 {
-  max-width: 12ch;
-  margin: 0.25rem 0 0.75rem;
-  font-size: clamp(2rem, 12vw, 4.25rem);
-  line-height: 0.95;
-  letter-spacing: -0.06em;
-}
-
-.hero-header p {
-  max-width: 46rem;
-}
-
-.hero-controls {
-  display: grid;
-  gap: 0.75rem;
-}
-
-/* Field labels are the machine's voice, so they are set in the utility
-   monospace: "verdict", "destination", "redirect path" name data, they are not
-   prose. */
-.eyebrow {
-  margin: 0;
-  color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-/* Masthead. The wordmark is live text rather than an image so it scales with
-   the reader's font size and stays selectable. */
 .brand-lockup {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
   margin: 0;
@@ -68,89 +63,177 @@
   letter-spacing: -0.03em;
 }
 
-.brand-qualifier {
+/* Two links, not a labelled fieldset. A person looking for their language
+   scans for "NO", so that is the whole control. */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.lang-toggle__option {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: 0;
   color: var(--text-muted);
+  background: none;
   font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-.language-switcher {
+.lang-toggle__option + .lang-toggle__option {
+  border-left: 1px solid var(--border);
+}
+
+.lang-toggle__option[aria-pressed='true'] {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+/* ------------------------------------------------------------- scan state */
+
+.app-main {
   display: grid;
   gap: 0.5rem;
-  margin: 0;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
 }
 
-.offline-mode-control {
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.switch-row {
+.task {
   display: grid;
-  grid-template-columns: auto 1fr;
+  justify-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0 1.5rem;
+  text-align: center;
+}
+
+.tagline {
+  max-width: 17ch;
+  margin: 0.75rem 0 0.5rem;
+  font-size: clamp(1.5rem, 6.5vw, 2.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.scan {
+  display: grid;
+  justify-items: center;
   gap: 0.75rem;
-  align-items: center;
+  width: 100%;
 }
 
-.switch-row input {
-  width: 2.75rem;
-  height: 1.5rem;
-  accent-color: var(--button-primary);
+.viewfinder {
+  position: relative;
+  /* svh, not vh: on iOS Safari vh is the toolbar-hidden height, so a vh cap
+     lets the target overflow while the toolbar is showing. Capping the square
+     by height keeps the whole target on screen in landscape. */
+  width: min(100%, 17rem, 44svh);
+  aspect-ratio: 1;
+  border-radius: 1.25rem;
+  overflow: hidden;
 }
 
-.switch-copy {
+.viewfinder__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--code-bg);
+}
+
+/* Idle, the frame is the button: one target, not a box plus a control
+   underneath it that does the same thing. It sits a step darker than the page
+   so it reads as a slot to put something into, not a card sitting on top. */
+.viewfinder__target {
+  position: absolute;
+  inset: 0;
   display: grid;
-  gap: 0.2rem;
-}
-
-.switch-title {
-  font-weight: 900;
-}
-
-.switch-detail {
-  color: var(--text-muted);
-  font-size: 0.92rem;
-}
-
-.language-switcher label {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.5rem;
-  border-radius: 0.75rem;
-}
-
-.language-switcher small {
-  color: var(--text-muted);
-}
-
-.check-form,
-.panel,
-.verdict {
-  margin: 1rem 0;
+  align-content: center;
+  justify-items: center;
+  gap: 0.9rem;
+  width: 100%;
   padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border: 0;
+  border-radius: inherit;
+  background: var(--calm-bg);
+  font-size: 1rem;
+  font-weight: 800;
 }
 
-.scanner {
+.viewfinder__glyph {
   display: grid;
-  gap: 0.75rem;
+  place-items: center;
+  color: var(--text);
 }
 
-.scanner-actions {
+/* The pill is drawn inside the button rather than beside it, so the whole
+   square stays the target while the affordance is still unmistakable. */
+.viewfinder__label {
+  padding: 0.65rem 1.15rem;
+  border-radius: 999px;
+  color: var(--button-primary-text);
+  background: var(--button-primary);
+  line-height: 1.2;
+}
+
+/* Three corners. The fourth is the mark's open corner, held open. */
+.viewfinder__corners {
+  --bracket: var(--border-strong);
+  --bracket-weight: 2px;
+  --bracket-arm: 1.5rem;
+
+  position: absolute;
+  inset: 0.8rem;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--bracket) 0 0) 0 0 / var(--bracket-arm) var(--bracket-weight) no-repeat,
+    linear-gradient(var(--bracket) 0 0) 0 0 / var(--bracket-weight) var(--bracket-arm) no-repeat,
+    linear-gradient(var(--bracket) 0 0) 100% 0 / var(--bracket-arm) var(--bracket-weight) no-repeat,
+    linear-gradient(var(--bracket) 0 0) 100% 0 / var(--bracket-weight) var(--bracket-arm) no-repeat,
+    linear-gradient(var(--bracket) 0 0) 0 100% / var(--bracket-arm) var(--bracket-weight) no-repeat,
+    linear-gradient(var(--bracket) 0 0) 0 100% / var(--bracket-weight) var(--bracket-arm) no-repeat;
+}
+
+.viewfinder--live .viewfinder__corners {
+  --bracket: var(--surface);
+  --bracket-weight: 3px;
+}
+
+.scan-status {
+  min-height: 1.5rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.scan-status strong {
+  color: var(--text);
+}
+
+.scan-status__detail {
+  color: var(--text-muted);
+}
+
+.scan-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
+}
+
+.reassurance {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.reassurance strong {
+  display: block;
+  color: var(--text);
 }
 
 .file-picker {
@@ -182,39 +265,190 @@
   outline-offset: 3px;
 }
 
-.camera-preview {
-  width: 100%;
-  /* svh, not vh: on iOS Safari vh is the toolbar-hidden height, so a vh cap
-     lets the preview overflow while the toolbar is showing. */
-  max-height: 60svh;
-  border-radius: 0.875rem;
-  background: var(--code-bg);
-}
-
+/* The second way in. Present, deliberately quiet: a phone scans, a desktop
+   pastes, and neither should have to hunt for its own path. The submit is an
+   outline button, not a filled one — the scan target is the primary action on
+   this screen and only one thing can be. */
 .check-form {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  width: min(100%, 26rem);
+  text-align: left;
+}
+
+.check-form button {
+  justify-self: end;
+  min-width: 8rem;
 }
 
 .check-form label {
-  font-size: 1.1rem;
-  font-weight: 800;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 textarea {
-  min-height: 9rem;
+  min-height: 4.5rem;
   resize: vertical;
-  padding: 0.875rem;
-  border: 1px solid var(--border-strong);
+  padding: 0.75rem;
+  border: 1px solid var(--border);
   border-radius: 0.875rem;
   color: var(--text);
   background: var(--input);
   font: inherit;
+  font-family: var(--mono);
+  font-size: 0.95rem;
 }
 
-.form-help {
+/* --------------------------------------------------------- result state */
+
+.result-stack {
+  display: grid;
+  gap: 0.25rem;
+  /* focus() on the result region scrolls it to the very top of the viewport,
+     where the sticky bar was cropping the verdict. Reserve the bar's height. */
+  scroll-margin-top: 4rem;
+}
+
+.scan-again {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0 2rem;
+}
+
+.panel,
+.verdict {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+/* Field labels are the machine's voice, so they are set in the utility
+   monospace: "verdict", "destination", "redirect path" name data, they are not
+   prose. */
+.eyebrow {
   margin: 0;
   color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------- secondary surfaces */
+
+.secondary {
+  display: grid;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* The count is the product. It is set as a numeral rather than folded into a
+   sentence, because a numeral needs no translating and no reading. */
+.how {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.how__tally {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: clamp(3.25rem, 16vw, 4.75rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+}
+
+.how h2 {
+  margin: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.how__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.how__item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.how__item dt {
+  font-weight: 800;
+}
+
+.how__item dd {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.settings summary {
+  padding: 0.5rem 0;
+  color: var(--text-muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settings .switch-row {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.switch-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.switch-row input {
+  width: 2.75rem;
+  height: 1.5rem;
+  margin: 0;
+  accent-color: var(--button-primary);
+}
+
+.switch-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.switch-title {
+  font-weight: 900;
+}
+
+.switch-detail {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.privacy-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------- primitives */
+
+/* Links are ink like everything else. The browser's default blue would be the
+   one colour on the page that means nothing, in an interface where colour is
+   reserved for a verdict. */
+a {
+  color: var(--text);
+  text-underline-offset: 0.15em;
 }
 
 button,
@@ -271,11 +505,6 @@ summary:focus-visible {
   font-weight: 700;
 }
 
-.result-stack {
-  display: grid;
-  gap: 0.25rem;
-}
-
 .verdict {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -296,6 +525,14 @@ summary:focus-visible {
 .verdict h2,
 .panel h2 {
   margin: 0 0 0.5rem;
+}
+
+/* The verdict heading is the answer and stays at display size. Everything below
+   it is a section label, so panel headings step down hard — otherwise the
+   result reads as six competing headlines instead of one answer with evidence. */
+.panel h2 {
+  font-size: 1.05rem;
+  line-height: 1.3;
 }
 
 .verdict--known_malicious {
@@ -372,6 +609,34 @@ pre {
   font-weight: 800;
 }
 
+/* The one line that answers "where does this actually take me". It is the
+   largest thing in the result stack after the verdict, because for most
+   readers it is the only part of the address that matters. */
+.destination-value {
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--focus);
+  border-radius: 0.75rem;
+  background: var(--host-bg);
+  font-family: var(--mono);
+  font-size: 1.2rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.breakdown {
+  margin-top: 0.75rem;
+}
+
+.breakdown > summary {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.breakdown[open] > summary {
+  margin-bottom: 0.75rem;
+}
+
 .finding-list,
 .limitations ul {
   display: grid;
@@ -395,6 +660,14 @@ pre {
   margin: 0 0 0.35rem;
 }
 
+.finding-code {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+}
+
 .severity-badge {
   align-self: start;
   padding: 0.2rem 0.55rem;
@@ -407,6 +680,15 @@ pre {
 
 .limitations {
   background: var(--calm-bg);
+}
+
+.limitations li strong {
+  display: block;
+}
+
+.limitations li p {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
 }
 
 .offline-limitation,
@@ -441,13 +723,22 @@ pre {
 }
 
 @media (min-width: 48rem) {
-  .app-shell {
-    padding: 2rem;
+  .app {
+    padding-inline: 2rem;
   }
 
-  .hero-header {
-    grid-template-columns: 1fr 18rem;
+  .viewfinder {
+    width: min(100%, 19rem, 50svh);
+  }
+
+  .how {
+    grid-template-columns: auto 1fr;
     align-items: start;
+    column-gap: 1.5rem;
+  }
+
+  .how__tally {
+    grid-row: span 2;
   }
 
   .breakdown-grid {

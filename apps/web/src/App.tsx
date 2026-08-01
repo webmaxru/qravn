@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
-import { BrandMark } from './components/BrandMark';
+import { AppBar } from './components/AppBar';
 import { InputForm } from './components/InputForm';
-import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { QrScanner } from './components/QrScanner';
 import { ResultPanel } from './components/ResultPanel';
 import type { ExpansionState, OnlineExpansion } from './components/RedirectPanel';
 import type { Assessment, RedirectResolution } from './contracts/assessment';
 import { createEngine } from './engine/createEngine';
-import { normaliseLocale, textForCode, type Locale } from './engine/catalog';
+import { normaliseLocale, type Locale } from './engine/catalog';
 import { CHECK_COUNT } from './checkCount';
+import { detectLocale, storeLocale, t, td } from './lib/uiText';
 import type { EngineInstance, SafetyEngine } from './engine/types';
 import { isOnlineModeAvailable, resolveRedirect } from './lib/resolverClient';
 
@@ -41,7 +41,7 @@ function readStoredOfflineMode(): boolean {
 }
 
 function App({ engineOverride, resolverOverride }: AppProps) {
-  const [locale, setLocale] = useState<Locale>('en');
+  const [locale, setLocale] = useState<Locale>(detectLocale);
   const [engineInstance, setEngineInstance] = useState<EngineInstance | null>(
     engineOverride ? { engine: engineOverride, mode: 'mock' } : null,
   );
@@ -135,6 +135,14 @@ function App({ engineOverride, resolverOverride }: AppProps) {
     assessWith(payload, locale, null);
   }
 
+  // Back to the one thing this app is for. Nothing about the last check is kept.
+  function scanAgain() {
+    setAssessment(null);
+    setLastPayload('');
+    setRedirectResolution(null);
+    setExpansionState('idle');
+  }
+
   // The user explicitly asked to expand the scanned shortener. Send it to our
   // resolver, then re-run the check with the returned chain. Every documented
   // failure comes back as a resolution with a failure outcome, which the core
@@ -168,6 +176,7 @@ function App({ engineOverride, resolverOverride }: AppProps) {
   function changeLocale(nextLocale: Locale) {
     const normalized = normaliseLocale(nextLocale);
     setLocale(normalized);
+    storeLocale(normalized);
     // Re-assess in the new locale, preserving any expanded chain so switching
     // language does not silently drop the online result.
     if (lastPayload && engineInstance) assessWith(lastPayload, normalized, redirectResolution);
@@ -178,98 +187,108 @@ function App({ engineOverride, resolverOverride }: AppProps) {
     state: expansionState,
     onExpand: () => void handleExpand(),
   };
-  const offlineLabel = textForCode('ui.offline_mode_label', {}, locale);
-  const offlineDescription = textForCode('ui.offline_mode_description', {}, locale);
-  const offlineLimitation = textForCode('ui.offline_redirect_limitation', {}, locale);
+  const busy = !engineInstance || Boolean(engineError);
+  const reassurance = td('ui.reassurance', locale);
+  const followLinks = td('ui.follow_links', locale);
+  const privacy = td('ui.privacy_note', locale);
+  const groups = ['ui.how_address', 'ui.how_content', 'ui.how_redirect'] as const;
 
   return (
-    <main className="app-shell">
-      <header className="hero-header">
-        <div>
-          <p className="brand-lockup">
-            <BrandMark />
-            <span className="brand-wordmark">QRavn</span>
-            <span className="brand-qualifier">for Norway</span>
-          </p>
-          <h1>{CHECK_COUNT} checks a camera app never runs</h1>
-          <p>
-            A QR code is a picture of a link. You cannot read it, so you point your camera and trust
-            whatever happens next. QRavn reads the code instead and tests it for the tricks that make
-            a scam look ordinary — a domain one letter off your bank’s, a link that bounces through
-            four sites before it lands, characters that are invisible on screen but change where you
-            go. You get a verdict and the reasons behind it. The check runs on your own device, and
-            nothing opens unless you say so.
-          </p>
-        </div>
-        <div className="hero-controls">
-          <LanguageSwitcher locale={locale} onChange={changeLocale} />
-          <section className="offline-mode-control" aria-labelledby="offline-mode-heading">
-            <div className="switch-row">
-              <input
-                id="offline-mode-toggle"
-                type="checkbox"
-                role="switch"
-                checked={offlineMode}
-                aria-checked={offlineMode}
-                aria-describedby="offline-mode-description"
-                onChange={(event) => setOfflineMode(event.currentTarget.checked)}
-              />
-              <span className="switch-copy">
-                <label id="offline-mode-heading" className="switch-title" htmlFor="offline-mode-toggle">
-                  {offlineLabel.title}
-                </label>
-                <span id="offline-mode-description" className="switch-detail">
-                  <strong>{offlineDescription.title}</strong>
-                  {offlineDescription.detail ? ` — ${offlineDescription.detail}` : ''}
-                </span>
-              </span>
-            </div>
+    <div className="app">
+      <AppBar locale={locale} onLocaleChange={changeLocale} />
+
+      <main className="app-main">
+        {engineInstance?.message ? <div className="dev-banner" role="status">{engineInstance.message}</div> : null}
+        {engineError ? (
+          <section className="panel engine-error" role="alert" aria-labelledby="engine-error-heading">
+            <h2 id="engine-error-heading">{t('ui.engine_error', locale)}</h2>
+            <p>{engineError}</p>
           </section>
-        </div>
-      </header>
+        ) : null}
 
-      {offlineMode ? (
-        <section className="panel offline-limitation" role="note" aria-labelledby="offline-limitation-heading">
-          <h2 id="offline-limitation-heading">{offlineLimitation.title}</h2>
-          {offlineLimitation.detail ? <p>{offlineLimitation.detail}</p> : null}
-        </section>
-      ) : null}
+        {assessment ? (
+          <>
+            <h1 className="visually-hidden">{t('ui.result', locale)}</h1>
+            <ResultPanel
+              assessment={assessment}
+              locale={locale}
+              redirectResolution={redirectResolution}
+              online={online}
+              offlineMode={offlineMode}
+              ref={resultRef}
+            />
+            <div className="scan-again">
+              <button type="button" className="primary-action" onClick={scanAgain}>
+                {t('ui.scan_again', locale)}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="task">
+            <h1 className="tagline">{t('ui.tagline', locale)}</h1>
+            <QrScanner onDecode={runCheck} locale={locale} disabled={busy} />
+            <p className="reassurance">
+              <strong>{reassurance.title}</strong>
+              {reassurance.detail ? <span> {reassurance.detail}</span> : null}
+            </p>
+            <InputForm onSubmit={runCheck} locale={locale} disabled={busy} />
+          </div>
+        )}
+      </main>
 
-      {engineInstance?.message ? <div className="dev-banner" role="status">{engineInstance.message}</div> : null}
-      {engineError ? (
-        <section className="panel engine-error" role="alert" aria-labelledby="engine-error-heading">
-          <h2 id="engine-error-heading">Analyser unavailable</h2>
-          <p>{engineError}</p>
-        </section>
-      ) : null}
+      <footer className="secondary" aria-label={t('ui.about', locale)}>
+        {assessment ? null : (
+          <section className="how" aria-labelledby="how-heading">
+            {/* The number is the point of the product, so it is set as a number
+                rather than buried in a sentence — and it reads the same in both
+                languages. CHECK_COUNT is derived from the contract at build
+                time, so this cannot drift from what the engine actually runs. */}
+            <p className="how__tally" aria-hidden="true">
+              {CHECK_COUNT}
+            </p>
+            <h2 id="how-heading">{t('ui.how_heading', locale)}</h2>
+            <dl className="how__list">
+              {groups.map((code) => {
+                const group = td(code, locale);
+                return (
+                  <div key={code} className="how__item">
+                    <dt>{group.title}</dt>
+                    <dd>{group.detail}</dd>
+                  </div>
+                );
+              })}
+            </dl>
+          </section>
+        )}
 
-      <QrScanner onDecode={runCheck} disabled={!engineInstance || Boolean(engineError)} />
-      <InputForm onSubmit={runCheck} disabled={!engineInstance || Boolean(engineError)} />
+        <details className="settings">
+          <summary>{t('ui.settings', locale)}</summary>
+          <div className="switch-row">
+            <input
+              id="follow-links-toggle"
+              type="checkbox"
+              role="switch"
+              checked={!offlineMode}
+              aria-checked={!offlineMode}
+              aria-describedby="follow-links-description"
+              onChange={(event) => setOfflineMode(!event.currentTarget.checked)}
+            />
+            <span className="switch-copy">
+              <label className="switch-title" htmlFor="follow-links-toggle">
+                {followLinks.title}
+              </label>
+              <span id="follow-links-description" className="switch-detail">
+                {followLinks.detail}
+              </span>
+            </span>
+          </div>
+        </details>
 
-      {assessment ? (
-        <ResultPanel
-          assessment={assessment}
-          locale={locale}
-          redirectResolution={redirectResolution}
-          online={online}
-          offlineMode={offlineMode}
-          ref={resultRef}
-        />
-      ) : (
-        <section className="panel empty-state" aria-live="polite">
-          <h2>Ready when you paste</h2>
-          <p>The destination is never fetched, previewed, or opened during analysis.</p>
-        </section>
-      )}
-
-      <section className="panel privacy" aria-labelledby="privacy-heading">
-        <h2 id="privacy-heading">About / privacy</h2>
-        <p>Everything in this prototype runs locally in the browser. There is no analytics, telemetry, tracking pixel, link preview, favicon lookup, or backend API call — unless offline mode is off and you explicitly ask us to expand a shortened link, which sends only that link to our own resolver so your device never contacts it. Offline mode disables that expansion option entirely.</p>
-        <p>
-          <a href="/privacy">Read the full privacy policy</a>
+        <p className="privacy-note">
+          {privacy.detail} <a href="/privacy">{privacy.title}</a>
         </p>
-      </section>
-    </main>
+      </footer>
+    </div>
   );
 }
 

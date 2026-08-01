@@ -52,7 +52,7 @@ async function waitForEngineReady(page: Page): Promise<void> {
 
 async function submit(page: Page, payload: string): Promise<void> {
   await waitForEngineReady(page);
-  await page.getByLabel(/Paste a suspicious link/i).fill(payload);
+  await page.getByLabel(/Link or QR text/i).fill(payload);
   await page.getByRole('button', { name: /^Check$/ }).click();
   await expect(page.getByTestId('result-region')).toBeVisible();
 }
@@ -108,7 +108,7 @@ test.describe('axe-core static scans across every meaningful UI state', () => {
   test('two-step "prepare opening" confirmation state', async ({ page }) => {
     await page.goto('/');
     await submit(page, 'https://example.com/login');
-    await page.getByRole('button', { name: /prepare opening example\.com/i }).click();
+    await page.getByRole('button', { name: /still want to open example\.com/i }).click();
     await expect(page.getByRole('link', { name: /Open example\.com in a new tab/i })).toBeVisible();
     await scan(page, 'prepare-opening-confirmed');
   });
@@ -127,23 +127,22 @@ test.describe('axe-core static scans across every meaningful UI state', () => {
     });
     await page.goto('/');
     await waitForEngineReady(page);
-    await page.getByLabel(/Paste a suspicious link/i).fill('https://example.com');
+    await page.getByLabel(/Link or QR text/i).fill('https://example.com');
     await page.getByRole('button', { name: /^Check$/ }).click();
-    await expect(page.getByRole('heading', { name: /Analyser unavailable/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /checker could not start/i })).toBeVisible();
     await scan(page, 'engine-error');
   });
 
   const locales = [
-    { code: 'nb', radio: /NB/i },
-    { code: 'nn', radio: /NN/i },
-    { code: 'en', radio: /EN/i },
+    { code: 'nb', button: 'NO' },
+    { code: 'en', button: 'EN' },
   ] as const;
 
   for (const locale of locales) {
     test(`rendered result localized to ${locale.code} (also asserts <html lang>)`, async ({ page }) => {
       await page.goto('/');
       await submit(page, 'https://trusted.no@evil.example/login');
-      await page.getByRole('radio', { name: locale.radio }).check();
+      await page.getByRole('button', { name: locale.button, exact: true }).click();
       // A mismatched document language makes every localized string announce in
       // the wrong voice; axe cannot detect the mismatch, so assert it directly.
       await expect(page.locator('html')).toHaveAttribute('lang', locale.code);
@@ -178,8 +177,8 @@ test.describe('keyboard and focus behaviour axe cannot see', () => {
     const joined = seen.join('|').toLowerCase();
     expect(joined, `tab order was: ${seen.join(' -> ')}`).toContain('textarea');
     expect(joined).toMatch(/check/);
-    expect(joined).toMatch(/start camera/);
-    expect(joined).toMatch(/upload qr image/);
+    expect(joined).toMatch(/scan with camera/);
+    expect(joined).toMatch(/choose a photo/);
     expect(joined).toMatch(/\ben\b|english|language/);
     // Focus advanced through several distinct controls rather than sticking.
     expect(new Set(seen).size).toBeGreaterThan(3);
@@ -244,13 +243,13 @@ test.describe('keyboard and focus behaviour axe cannot see', () => {
     await page.goto('/');
 
     const check = page.getByRole('button', { name: /^Check$/ });
-    const field = page.getByLabel(/Paste a suspicious link/i);
+    const field = page.getByLabel(/Link or QR text/i);
     await expect(check).toBeDisabled(); // pointer path is blocked
 
     await field.fill('https://example.com');
     await field.press('Enter'); // keyboard path must be blocked too
     await expect(page.getByTestId('result-region')).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: /Analyser unavailable/i })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: /checker could not start/i })).toHaveCount(0);
 
     release();
     await expect(check).toBeEnabled();
@@ -262,7 +261,7 @@ test.describe('keyboard and focus behaviour axe cannot see', () => {
     await page.goto('/');
     await submit(page, 'https://example.com/login');
 
-    const prepare = page.getByRole('button', { name: /prepare opening example\.com/i });
+    const prepare = page.getByRole('button', { name: /still want to open example\.com/i });
     await prepare.focus();
     await expect(prepare).toBeFocused();
     await page.keyboard.press('Enter');
@@ -272,7 +271,7 @@ test.describe('keyboard and focus behaviour axe cannot see', () => {
     await openLink.focus();
     await expect(openLink).toBeFocused();
 
-    await expect(page.getByRole('button', { name: /Copy payload/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Copy text$/ })).toBeVisible();
   });
 
   test('animations are suppressed under prefers-reduced-motion', async ({ page }) => {

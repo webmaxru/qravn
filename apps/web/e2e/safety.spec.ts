@@ -18,7 +18,7 @@ async function submitPayload(page: import('@playwright/test').Page, payload: str
   // perfectly correct "Empty content" result, in whichever test happened to run
   // first. a11y.spec.ts already gates on the same signal for this reason.
   await expect(page.getByRole('button', { name: /^Check$/ })).toBeEnabled({ timeout: 25_000 });
-  const field = page.getByLabel(/Paste a suspicious link/i);
+  const field = page.getByLabel(/Link or QR text/i);
   await field.fill(payload);
   await expect(field).toHaveValue(payload);
   await page.getByRole('button', { name: /^Check$/ }).click();
@@ -31,7 +31,7 @@ test('credential-in-authority finding appears without an unguarded open link', a
   await expect(page.getByText('url.credentials_in_authority')).toBeVisible();
   await expect(page.getByText(/text before @ is not the destination/i)).toBeVisible();
   await expect(page.getByRole('link', { name: /Open evil\.example/i })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /prepare opening evil\.example/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /still want to open evil\.example/i })).toBeVisible();
 });
 
 test('open_blocked renders no anchor to the payload', async ({ page }) => {
@@ -48,7 +48,7 @@ test('opening requires assessment plus a second explicit confirmation', async ({
   await submitPayload(page, 'https://example.com/login');
 
   await expect(page.getByRole('link', { name: /Open example\.com/i })).toHaveCount(0);
-  await page.getByRole('button', { name: /prepare opening example\.com/i }).click();
+  await page.getByRole('button', { name: /still want to open example\.com/i }).click();
   await expect(page.getByRole('link', { name: /Open example\.com/i })).toBeVisible();
 });
 
@@ -57,7 +57,7 @@ test('switching language changes rendered text', async ({ page }) => {
   await submitPayload(page, 'plain text');
   const english = await page.locator('.finding h3').first().textContent();
 
-  await page.getByRole('radio', { name: /NB/i }).check();
+  await page.getByRole('button', { name: 'NO', exact: true }).click();
   await expect.poll(async () => page.locator('.finding h3').first().textContent()).not.toBe(english);
 });
 
@@ -67,7 +67,7 @@ test('keyboard-only submit moves focus to the announced result region', async ({
   // waits for the button to become enabled. Typing does not, so this test raced
   // the WebAssembly load and failed intermittently on a cold runner.
   await expect(page.getByRole('button', { name: /^Check$/ })).toBeEnabled();
-  await page.getByLabel(/Paste a suspicious link/i).focus();
+  await page.getByLabel(/Link or QR text/i).focus();
   await page.keyboard.type('https://example.com');
   await page.keyboard.press('Enter');
 
@@ -138,7 +138,7 @@ test('online expansion is opt-in and still never contacts the scanned host', asy
 
   // The offline check flags the shortener and offers the opt-in — but nothing has
   // been sent to any server yet. Explicit consent is required.
-  const expandButton = page.getByRole('button', { name: /Expand this link safely/i });
+  const expandButton = page.getByRole('button', { name: /See where this link goes/i });
   await expect(expandButton).toBeVisible();
   expect(resolverCalls).toBe(0);
 

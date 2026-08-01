@@ -26,12 +26,12 @@ describe('RedirectPanel opt-in', () => {
     );
 
     expect(screen.getByRole('heading', { name: /Check where this link really goes/i })).toBeInTheDocument();
-    expect(screen.getByText(/this link's address is sent to our resolver/i)).toBeInTheDocument();
-    expect(screen.getByText(/Your device never contacts the link/i)).toBeInTheDocument();
+    expect(screen.getByText(/This link is sent to our own server/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your phone never touches it/i)).toBeInTheDocument();
 
     // Nothing happens until the user actively chooses to expand.
     expect(onExpand).not.toHaveBeenCalled();
-    await user.click(screen.getByRole('button', { name: /Expand this link safely/i }));
+    await user.click(screen.getByRole('button', { name: /See where this link goes/i }));
     expect(onExpand).toHaveBeenCalledTimes(1);
   });
 
@@ -45,7 +45,7 @@ describe('RedirectPanel opt-in', () => {
       />,
     );
     expect(container).toBeEmptyDOMElement();
-    expect(screen.queryByRole('button', { name: /Expand this link safely/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /See where this link goes/i })).not.toBeInTheDocument();
   });
 
   // Regression: aka.ms is a real shortener that uses readable word slugs, so the
@@ -58,7 +58,7 @@ describe('RedirectPanel opt-in', () => {
   ])('offers expansion for %s', (_label, payload) => {
     render(<RedirectPanel assessment={assessOnline(payload)} resolution={null} locale="en" online={online()} />);
 
-    expect(screen.getByRole('button', { name: /Expand this link safely/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /See where this link goes/i })).toBeInTheDocument();
   });
 
   it('renders nothing when the payload cannot be expanded at all', () => {
@@ -72,8 +72,8 @@ describe('RedirectPanel opt-in', () => {
     render(
       <RedirectPanel assessment={assessOnline(SHORTENER)} resolution={null} locale="en" online={online({ state: 'resolving' })} />,
     );
-    expect(screen.getByRole('button', { name: /Expand this link safely/i })).toBeDisabled();
-    expect(screen.getByText(/Contacting our resolver/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /See where this link goes/i })).toBeDisabled();
+    expect(screen.getByText(/Checking where it goes/i)).toBeInTheDocument();
   });
 
   it('shows an error state that never reassures, with a retry that re-requests', async () => {
@@ -87,11 +87,11 @@ describe('RedirectPanel opt-in', () => {
         online={online({ state: 'error', onExpand })}
       />,
     );
-    expect(screen.getByText(/The link could not be expanded/i)).toBeInTheDocument();
-    expect(screen.getByText(/Your device did not contact the link/i)).toBeInTheDocument();
+    expect(screen.getByText(/The link could not be checked/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your phone did not contact the link/i)).toBeInTheDocument();
     expect(screen.queryByText(/Followed to the final destination/i)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: /Try expanding again/i }));
+    await user.click(screen.getByRole('button', { name: /Try again/i }));
     expect(onExpand).toHaveBeenCalledTimes(1);
   });
 });

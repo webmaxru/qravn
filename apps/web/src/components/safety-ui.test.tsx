@@ -90,7 +90,7 @@ describe('safety UI', () => {
 
     expect(screen.getByText(/Opening is blocked/i)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /open/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /prepare opening/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /still want to open/i })).not.toBeInTheDocument();
   });
 
   it('visually calls out credentials before @ as not the destination', () => {
@@ -119,11 +119,11 @@ describe('safety UI', () => {
     const user = userEvent.setup();
     render(<App engineOverride={new MockSafetyEngine()} />);
 
-    await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'plain text');
+    await user.type(screen.getByLabelText(/Link or QR text/i), 'plain text');
     await user.click(screen.getByRole('button', { name: /check/i }));
     const englishTitle = screen.getByRole('heading', { name: /Not a web/i, level: 3 }).textContent;
 
-    await user.click(screen.getByRole('radio', { name: /NB/i }));
+    await user.click(screen.getByRole('button', { name: 'NO' }));
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 3 }).textContent).not.toBe(englishTitle);
     });
@@ -134,7 +134,7 @@ describe('safety UI', () => {
     const user = userEvent.setup();
     render(<App engineOverride={new MockSafetyEngine()} />);
 
-    await user.type(screen.getByLabelText(/Paste a suspicious link/i), '<script>alert(1)</script>');
+    await user.type(screen.getByLabelText(/Link or QR text/i), '<script>alert(1)</script>');
     await user.click(screen.getByRole('button', { name: /check/i }));
 
     expect(screen.getAllByText('<script>alert(1)</script>').length).toBeGreaterThan(0);
@@ -142,31 +142,41 @@ describe('safety UI', () => {
     alertSpy.mockRestore();
   });
 
-  describe('offline mode', () => {
-    it('defaults to online-capable mode with offline mode off', () => {
+  describe('short-link lookup', () => {
+    // The switch is the positive of what the app stores. `offlineMode` false
+    // means the resolver may be asked, which the reader sees as "Look up short
+    // links" being on. Inverting a stored flag in the view is easy to get
+    // backwards, so every one of these asserts the visible state, not the flag.
+    async function openSettings(user: ReturnType<typeof userEvent.setup>) {
+      await user.click(screen.getByText('Settings'));
+    }
+
+    it('defaults to looking short links up', async () => {
       window.localStorage.clear();
+      const user = userEvent.setup();
 
       render(<App engineOverride={new FixedAssessmentEngine(assessmentWithRedirectCue)} />);
+      await openSettings(user);
 
-      expect(screen.getByRole('switch', { name: /Offline mode/i })).not.toBeChecked();
-      expect(screen.queryByText(/Redirects cannot be followed in offline mode/i)).not.toBeInTheDocument();
+      expect(screen.getByRole('switch', { name: /Look up short links/i })).toBeChecked();
     });
 
-    it('persists the toggle across remounts', async () => {
+    it('persists the choice across remounts', async () => {
       window.localStorage.clear();
       const user = userEvent.setup();
       const { unmount } = render(<App engineOverride={new FixedAssessmentEngine(assessmentWithoutRedirectCue)} />);
 
-      await user.click(screen.getByRole('switch', { name: /Offline mode/i }));
-      expect(screen.getByRole('switch', { name: /Offline mode/i })).toBeChecked();
+      await openSettings(user);
+      await user.click(screen.getByRole('switch', { name: /Look up short links/i }));
+      expect(screen.getByRole('switch', { name: /Look up short links/i })).not.toBeChecked();
       unmount();
 
       render(<App engineOverride={new FixedAssessmentEngine(assessmentWithoutRedirectCue)} />);
-      expect(screen.getByRole('switch', { name: /Offline mode/i })).toBeChecked();
-      expect(screen.getByText(/Redirects cannot be followed in offline mode/i)).toBeInTheDocument();
+      await openSettings(user);
+      expect(screen.getByRole('switch', { name: /Look up short links/i })).not.toBeChecked();
     });
 
-    it('never calls the resolver while offline mode is on, including for a known shortener', async () => {
+    it('never calls the resolver while lookup is off, including for a known shortener', async () => {
       window.localStorage.clear();
       const user = userEvent.setup();
       const resolve = vi.fn();
@@ -177,15 +187,16 @@ describe('safety UI', () => {
         />,
       );
 
-      await user.click(screen.getByRole('switch', { name: /Offline mode/i }));
-      await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'https://bit.ly/abc');
+      await openSettings(user);
+      await user.click(screen.getByRole('switch', { name: /Look up short links/i }));
+      await user.type(screen.getByLabelText(/Link or QR text/i), 'https://bit.ly/abc');
       await user.click(screen.getByRole('button', { name: /check/i }));
 
-      expect(screen.queryByRole('button', { name: /Expand this link safely/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /See where this link goes/i })).not.toBeInTheDocument();
       expect(resolve).not.toHaveBeenCalled();
     });
 
-    it('does not lose the current result when switched on, but removes redirect expansion', async () => {
+    it('does not lose the current result when lookup is turned off, but removes the option', async () => {
       window.localStorage.clear();
       const user = userEvent.setup();
       render(
@@ -195,15 +206,19 @@ describe('safety UI', () => {
         />,
       );
 
-      await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'https://bit.ly/abc');
+      await user.type(screen.getByLabelText(/Link or QR text/i), 'https://bit.ly/abc');
       await user.click(screen.getByRole('button', { name: /check/i }));
       expect(screen.getByText(/Review redirect evidence/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Expand this link safely/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /See where this link goes/i })).toBeInTheDocument();
 
-      await user.click(screen.getByRole('switch', { name: /Offline mode/i }));
+      await openSettings(user);
+      await user.click(screen.getByRole('switch', { name: /Look up short links/i }));
 
       expect(screen.getByText(/Review redirect evidence/i)).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /Expand this link safely/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /See where this link goes/i })).not.toBeInTheDocument();
+      // Settings stays reachable from the result, because the limitation shown
+      // there tells the reader to go and change exactly this switch.
+      expect(screen.getByText(/Where this short link ends up is still unknown/i)).toBeInTheDocument();
     });
   });
 
@@ -219,7 +234,7 @@ describe('safety UI', () => {
       render(<ResultPanel assessment={assessmentWithRedirectCue()} locale="en" offlineMode />);
 
       expect(screen.getByRole('heading', { name: /Possibly a redirect/i })).toBeInTheDocument();
-      expect(screen.getByText(/Redirects cannot be followed in offline mode/i)).toBeInTheDocument();
+      expect(screen.getByText(/Where this short link ends up is still unknown/i)).toBeInTheDocument();
     });
 
     it('is absent when the assessment has no redirect cue', () => {
@@ -233,9 +248,9 @@ describe('safety UI', () => {
     it('submits on Enter when the analyser is ready', async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
-      render(<InputForm onSubmit={onSubmit} />);
+      render(<InputForm onSubmit={onSubmit} locale="en" />);
 
-      await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'https://example.com{Enter}');
+      await user.type(screen.getByLabelText(/Link or QR text/i), 'https://example.com{Enter}');
 
       expect(onSubmit).toHaveBeenCalledWith('https://example.com');
     });
@@ -248,9 +263,9 @@ describe('safety UI', () => {
     it('does not submit on Enter while the analyser is still loading', async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
-      render(<InputForm onSubmit={onSubmit} disabled />);
+      render(<InputForm onSubmit={onSubmit} locale="en" disabled />);
 
-      await user.type(screen.getByLabelText(/Paste a suspicious link/i), 'https://example.com{Enter}');
+      await user.type(screen.getByLabelText(/Link or QR text/i), 'https://example.com{Enter}');
 
       expect(onSubmit).not.toHaveBeenCalled();
       expect(screen.getByRole('button', { name: /check/i })).toBeDisabled();
@@ -259,9 +274,9 @@ describe('safety UI', () => {
     it('keeps Shift+Enter as a newline rather than a submit', async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
-      render(<InputForm onSubmit={onSubmit} />);
+      render(<InputForm onSubmit={onSubmit} locale="en" />);
 
-      const field = screen.getByLabelText(/Paste a suspicious link/i);
+      const field = screen.getByLabelText(/Link or QR text/i);
       await user.type(field, 'line one{Shift>}{Enter}{/Shift}line two');
 
       expect(onSubmit).not.toHaveBeenCalled();

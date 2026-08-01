@@ -97,17 +97,17 @@ const uiTexts: Catalog = {
     detail: '',
   },
   'online.disclosure': {
-    title: 'Before you expand',
+    title: 'Before you continue',
     detail:
-      "If you continue, this link's address is sent to our resolver service. Our server visits the link and follows its redirects. Your device never contacts the link.",
+      'This link is sent to our own server. Our server visits it and follows where it goes. Your phone never touches it.',
   },
   'online.expand_button': {
-    title: 'Expand this link safely',
+    title: 'See where this link goes',
     detail: '',
   },
   'online.resolving': {
-    title: 'Contacting our resolver…',
-    detail: 'Your device is not contacting the link.',
+    title: 'Checking where it goes…',
+    detail: 'Your phone is not contacting the link.',
   },
   'online.section_heading': {
     title: 'Where this link leads',
@@ -140,22 +140,13 @@ const uiTexts: Catalog = {
     detail: 'Your device still did not contact the link. See what could not be determined below.',
   },
   'online.error': {
-    title: 'The link could not be expanded',
+    title: 'The link could not be checked',
     detail:
-      'Something went wrong contacting our resolver. Your device did not contact the link. You can try again.',
+      'Something went wrong on our side. Your phone did not contact the link. You can try again.',
   },
   'online.retry_button': {
-    title: 'Try expanding again',
+    title: 'Try again',
     detail: '',
-  },
-  'ui.offline_mode_label': {
-    title: 'Offline mode',
-    detail: '',
-  },
-  'ui.offline_mode_description': {
-    title: 'Check locally only',
-    detail:
-      'When offline mode is on, the app uses local rules only and does not ask the resolver to follow redirects.',
   },
   'ui.offline_redirect_limitation': {
     title: 'Redirects cannot be followed in offline mode',

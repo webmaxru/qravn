@@ -34,6 +34,20 @@ export const ResultPanel = forwardRef<HTMLDivElement, ResultPanelProps>(function
   const redirectWarning = textForCode('ui.possible_redirect_warning', {}, locale);
   const offlineLimitation = textForCode('ui.offline_redirect_limitation', {}, locale);
 
+  // The exact text of the code is evidence, not the answer. When there is an
+  // address to show, "where does this go" comes first and the raw text moves to
+  // the bottom. When there is no address, the text is all there is, so it leads.
+  const payloadPanel = (
+    <section className="panel payload" aria-labelledby="payload-heading">
+      <h2 id="payload-heading">{textForCode('ui.payload_heading', {}, locale).title}</h2>
+      <p className="payload-display">{assessment.displayPayload}</p>
+      <details>
+        <summary>{textForCode('ui.raw_payload', {}, locale).title}</summary>
+        <pre>{assessment.rawPayload}</pre>
+      </details>
+    </section>
+  );
+
   return (
     <div className="result-stack" aria-live="polite" aria-atomic="false" tabIndex={-1} ref={ref} data-testid="result-region">
       <VerdictBanner verdict={assessment.verdict} summary={assessment.summary} locale={locale} />
@@ -53,19 +67,14 @@ export const ResultPanel = forwardRef<HTMLDivElement, ResultPanelProps>(function
           {offlineLimitation.detail ? <p>{offlineLimitation.detail}</p> : null}
         </section>
       ) : null}
-      <section className="panel" aria-labelledby="payload-heading">
-        <h2 id="payload-heading">Payload text</h2>
-        <p className="payload-display">{assessment.displayPayload}</p>
-        <details>
-          <summary>Show raw payload as inert text</summary>
-          <pre>{assessment.rawPayload}</pre>
-        </details>
-      </section>
-      {assessment.url ? <UrlBreakdownView url={assessment.url} /> : null}
+      {assessment.url ? <UrlBreakdownView url={assessment.url} locale={locale} /> : payloadPanel}
       <RedirectPanel assessment={assessment} resolution={redirectResolution} locale={locale} online={online} />
       <FindingsList findings={scanned} locale={locale} />
-      <LimitationsList limitations={assessment.limitations} />
-      <Actions assessment={assessment} />
+      {assessment.limitations.length ? (
+        <LimitationsList limitations={assessment.limitations} locale={locale} />
+      ) : null}
+      <Actions assessment={assessment} locale={locale} />
+      {assessment.url ? payloadPanel : null}
     </div>
   );
 });

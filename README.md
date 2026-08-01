@@ -24,7 +24,7 @@ This project closes that gap:
 - Expands shortened URLs and redirect chains **on isolated server infrastructure**, never from the user's device.
 - Combines deterministic rules with a compact on-device classifier.
 - Works offline by default; online mode is explicit and opt-in.
-- Explains its evidence in Bokmål, Nynorsk, and English.
+- Explains its evidence in Bokmål, Nynorsk, and English (the web app offers Bokmål and English).
 - Uses generative AI only to *explain* evidence, never to decide the verdict.
 
 ### Verdicts

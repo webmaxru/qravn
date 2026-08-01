@@ -10,7 +10,23 @@ const findings = registry.findings ?? {};
 const limitations = registry.limitations ?? {};
 const registryCodes = new Set([...Object.keys(findings), ...Object.keys(limitations)]);
 const verdictCodes = ['verdict.known_malicious','verdict.suspicious','verdict.insufficient_evidence','verdict.no_known_threat_found'];
-const uiCodes = ['ui.check','ui.paste_placeholder','ui.result','ui.findings','ui.limitations','ui.what_we_found','ui.open_anyway','ui.open_blocked','ui.copy','ui.scan_again','ui.about','ui.privacy_note','ui.language','ui.raw_payload','ui.real_destination','ui.offline_mode_label','ui.offline_mode_description','ui.offline_redirect_limitation','ui.possible_redirect_warning'];
+const uiCodes = [
+  // Chrome the task surface itself is built from.
+  'ui.tagline','ui.reassurance','ui.scan_target','ui.scan_start','ui.scan_stop','ui.scan_starting',
+  'ui.scan_aim','ui.choose_photo','ui.reading_image','ui.no_code_found',
+  'ui.camera_denied','ui.camera_missing','ui.camera_problem',
+  'ui.paste_toggle','ui.paste_label','ui.paste_placeholder','ui.check',
+  // Result chrome.
+  'ui.result','ui.what_we_found','ui.limitations','ui.actions','ui.open_anyway','ui.open_blocked',
+  'ui.open_new_tab','ui.copy','ui.scan_again','ui.raw_payload','ui.real_destination',
+  'ui.payload_heading','ui.breakdown_heading','ui.credential_note',
+  'ui.field_scheme','ui.field_host','ui.field_domain','ui.field_subdomains','ui.field_path',
+  'ui.field_query','ui.field_none',
+  // Secondary surfaces, kept off the primary path.
+  'ui.settings','ui.follow_links','ui.how_heading','ui.how_address','ui.how_content','ui.how_redirect',
+  'ui.about','ui.privacy_note','ui.language','ui.engine_error',
+  'ui.offline_redirect_limitation','ui.possible_redirect_warning',
+];
 // UI chrome for explicit online (redirect-expansion) mode. Listed here so the
 // gate fails if any locale is missing one: the app targets Norway, so an
 // English string silently falling through to a Bokmal/Nynorsk user is a defect,
@@ -20,7 +36,13 @@ const allowedCatalogCodes = new Set([...registryCodes, ...verdictCodes, ...uiCod
 const declaredParams = new Map();
 for (const [code, meta] of Object.entries(findings)) declaredParams.set(code, new Set(meta.params ?? []));
 for (const [code, meta] of Object.entries(limitations)) declaredParams.set(code, new Set(meta.params ?? []));
-for (const code of [...verdictCodes, ...uiCodes, ...onlineCodes]) declaredParams.set(code, new Set());
+// A UI string may interpolate only what it declares here. The rule the gate
+// exists to keep is "no undeclared placeholder", not "no placeholder": the two
+// controls that open a destination have to name that destination, and leaving
+// them in English for a Norwegian reader is exactly the defect this file is
+// meant to catch.
+const uiParams = { 'ui.open_anyway': ['host'], 'ui.open_new_tab': ['host'] };
+for (const code of [...verdictCodes, ...uiCodes, ...onlineCodes]) declaredParams.set(code, new Set(uiParams[code] ?? []));
 const placeholderPattern = /\{([A-Za-z_][A-Za-z0-9_]*)\}/g;
 
 for (const locale of ['nb', 'nn', 'en']) {
@@ -40,7 +62,7 @@ for (const locale of ['nb', 'nn', 'en']) {
         if (!allowed.has(name)) errors.push(`${locale}: ${code} uses unknown placeholder {${name}} in ${field}`);
       }
     }
-    if (registryCodes.has(code)) {
+    if (allowed.size > 0) {
       for (const name of allowed) if (!seen.has(name)) errors.push(`${locale}: ${code} does not use declared placeholder {${name}}`);
     } else if (seen.size > 0) {
       errors.push(`${locale}: ${code} must not use placeholders`);

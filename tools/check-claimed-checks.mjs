@@ -44,13 +44,18 @@ if (groupTotal !== expected) {
   process.exit(1)
 }
 
-// Surfaces that state the number as a literal. The web app derives it from the
-// contract at build time, so it is deliberately not listed here.
+// Surfaces that state the number as a literal. The web app's own hero derives it
+// from the contract at build time, so it is deliberately not listed here — but
+// the localized "what QRavn looks for" copy spells out the per-group split in
+// three languages, and that has to be guarded like everything else.
 const surfaces = [
   'apps/android/play-listing.md',
   'apps/android/app/src/main/res/values/strings.xml',
   'apps/android/app/src/main/res/values-nb/strings.xml',
   'apps/android/app/src/main/res/values-nn/strings.xml',
+  'localization/en.json',
+  'localization/nb.json',
+  'localization/nn.json',
   'README.md',
 ]
 
