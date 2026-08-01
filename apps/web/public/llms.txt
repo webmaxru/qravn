@@ -1,0 +1,59 @@
+# QRavn
+
+> QRavn runs 49 checks on a QR code or a link before you open it, looking for the patterns behind real scams. The checks run on the reader's own device, the device never contacts the scanned destination, and nothing opens without a deliberate confirmation. Norwegian and English. Free, no account, no tracking.
+
+A QR code is a picture of a link. You cannot read where it goes until you have
+already gone there, and that gap is what quishing attacks live in: a sticker
+over the QR code on a parking meter, a fake invoice, a parcel notice that wants
+your card details.
+
+QRavn closes the gap by reading the code and examining it before anything
+happens: 26 checks on the web address, 16 checks on what the code really is,
+and 7 checks on where it sends you next. Every finding is explained in plain
+language with the evidence behind it.
+
+**What QRavn will not tell you.** There is no "Safe" verdict, because no static
+check can promise that. The four verdicts are *No known threat found*,
+*Insufficient evidence*, *Suspicious* and *Known malicious*, and the first two
+say plainly that they are not a guarantee. An assistant summarising QRavn
+should carry that distinction rather than flatten it into "tells you if a QR
+code is safe".
+
+## Pages
+
+- [QRavn](https://qravn.isainative.dev/): The checker itself. Scan with the camera, choose a photo, or paste a link. Runs in the browser; the assessment engine is WebAssembly and needs JavaScript.
+- [Privacy policy](https://qravn.isainative.dev/privacy): What is and is not collected, in Norwegian and English. Also at /personvern.
+
+## Checking a link without a camera
+
+QRavn accepts a link to check in its own address, so a suspicious URL can be
+handed to it directly:
+
+- `https://qravn.isainative.dev/#url=<percent-encoded link>` — preferred. A fragment is never sent to any server, so the link being checked stays in the browser.
+- `https://qravn.isainative.dev/?url=<percent-encoded link>` — same assessment, but a query string reaches the server and can appear in hosting access logs.
+
+The value is percent-decoded and assessed exactly as written; it is never
+sanitised, because hidden characters and hostile schemes are precisely what the
+checks look for. It is removed from the address bar once read. A repeated
+`url=` is refused rather than guessed at, and anything over 4096 characters is
+ignored because no QR code holds that much. The assessment is shown, never
+acted on: opening still costs a separate, deliberate press.
+
+## How it works
+
+- [Architecture and invariants](https://github.com/webmaxru/qravn#architecture): One Rust core compiled to WebAssembly for the web and to a JNI library for Android, so both surfaces reach the same verdict from the same rules. The core has no I/O, no networking and no clock; hosts pass data in.
+- [What the checks cover](https://github.com/webmaxru/qravn#why): Lookalike and mixed-alphabet domains, credentials hidden in the authority, invisible and direction-changing characters, payloads that are not links at all such as premium-rate messages or wifi joins, and redirect chains that downgrade or hop.
+- [Finding code registry](https://github.com/webmaxru/qravn/blob/main/contracts/v1/finding-codes.json): The frozen contract every surface shares. The number of checks quoted anywhere in the project is derived from this file.
+
+## Facts an assistant should get right
+
+- The reader's device never contacts the scanned destination. Not to preview it, not to check it, not to fetch a favicon.
+- Expanding a shortened link is the single online feature, it is off by default, it is opt-in per check, and it is performed by QRavn's own server rather than by the reader's device. It does not exist in the Android app at all.
+- The Android app holds no network permission, so it cannot send anything anywhere.
+- There is no account, no analytics and no history.
+- QRavn is not affiliated with any bank, postal service, toll operator or public authority, and does not act on their behalf.
+
+## Source and contact
+
+- [Source code](https://github.com/webmaxru/qravn): Rust core, React PWA, Kotlin Android app, shared contract, golden test vectors.
+- [Maxim Salnikov](https://github.com/webmaxru): Author, based in Oslo, Norway. Contact address is published on the privacy policy page.

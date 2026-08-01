@@ -1,0 +1,145 @@
+# QRavn — the full text
+
+> Every check QRavn runs, and every verdict it can reach, written out. This file exists because the app is client-rendered: the 49 checks below are the substance of the product, and an agent that does not execute JavaScript would otherwise see an empty page. Generated from contracts/v1/finding-codes.json and localization/en.json, so it says what the engine actually does.
+
+Source: https://qravn.isainative.dev/
+Short version: https://qravn.isainative.dev/llms.txt
+Privacy policy: https://qravn.isainative.dev/privacy
+
+## What QRavn is
+
+A QR code is a picture of a link. You cannot read where it goes until you
+have already gone there. QRavn decodes the code, examines what it finds,
+and reports before anything opens.
+
+Three things hold throughout, and an accurate summary keeps all three:
+
+1. The checks run on the reader’s own device.
+2. The device never contacts the scanned destination.
+3. Nothing opens without a separate, deliberate confirmation.
+
+## The verdicts
+
+There are four, and none of them is "Safe". No static check can promise
+that a destination is safe, so QRavn does not offer a word that would be
+read as a promise.
+
+### No known threat found
+
+`no_known_threat_found` — We found no known threats in this check. This is not a guarantee that the content is safe.
+
+### Insufficient evidence
+
+`insufficient_evidence` — We cannot say enough about the content or final destination. That does not mean it is safe.
+
+### Suspicious
+
+`suspicious` — We found signs often used in scams or misleading links. Read the findings before continuing.
+
+### Known malicious
+
+`known_malicious` — We found a concrete match in threat data or rules. Do not open the link without a specific reason.
+
+## The 49 checks
+
+Each check has a stable code, a severity, and text written for someone who
+is not a security professional. Angle brackets mark values filled in from
+the code being examined.
+
+### The web address — 26 checks
+
+- `url.credentials_in_authority` (high, deception) — **Hidden real address.** The part before @ is not where this goes. It opens <host>, not <username>.
+- `url.ip_literal_host` (medium, structure) — **A number instead of a name.** This goes to <host>, a raw address with no name behind it. Real companies use names.
+- `url.non_standard_port` (low, structure) — **Unusual door number.** The address asks for port <port>. Ordinary websites do not need one.
+- `url.punycode_host` (medium, identity) — **Special letters in the name.** On screen it shows <unicodeHost>, but the real name is <punycodeHost>. Norwegian names use this too, so read it closely.
+- `url.mixed_script_host` (high, identity) — **Letters from several alphabets.** <host> mixes <scripts>. Letters that look identical can come from different alphabets.
+- `url.confusable_host` (high, identity) — **Letters chosen to look like others.** <host> uses characters that imitate <skeleton>. That is how a fake name passes for a real one.
+- `url.bidi_control_characters` (high, identity) — **Text that can flip direction.** Hidden characters can reverse part of the address on screen, so what you read is not what opens.
+- `url.control_characters` (high, identity) — **Invisible characters.** The text contains characters you cannot see. They can hide part of the address.
+- `url.excessive_subdomains` (low, structure) — **A long stack of names.** There are <count> names in front of the real one, which pushes the part that matters out of sight.
+- `url.brand_in_subdomain` (high, deception) — **A known name in the wrong place.** <brand> appears in the address, but the site is owned by <registrableDomain>. Anyone can put a name there.
+- `url.brand_in_path` (medium, deception) — **A known name after the address.** <brand> appears after the address, where the site owner writes whatever they like.
+- `url.hyphenated_brand_domain` (high, deception) — **A known name with something added.** <registrableDomain> puts extra words around <brand>. Imitations are usually built this way.
+- `url.nested_url_in_query` (medium, structure) — **Another address inside this one.** A second address, <nestedHost>, is carried inside this link. That is a common way to pass you on.
+- `url.open_redirect_parameter` (medium, structure) — **Built to send you onward.** The link carries a <parameter> value, which usually means it hands you to somewhere else.
+- `url.encoded_characters_in_host` (medium, identity) — **The name is written in code.** Parts of the name are written as % codes instead of letters, which hides what it really says.
+- `url.excessive_length` (info, structure) — **Very long address.** It runs to <length> characters, so the part that matters is easy to miss.
+- `url.insecure_scheme` (medium, transport) — **Not a protected connection.** This uses http, not https. Anything you type can be read or changed on the way.
+- `url.javascript_scheme` (critical, dangerous_scheme) — **This runs code, not a page.** Opening it would run instructions on your phone. A QR code has no reason to do that.
+- `url.data_scheme` (critical, dangerous_scheme) — **A page carried inside the code.** The content is packed into the code itself, so there is no website behind it to check.
+- `url.file_scheme` (high, dangerous_scheme) — **Points at a file on the device.** This is not a website. It points into your phone or computer.
+- `url.unknown_scheme` (medium, dangerous_scheme) — **Not an ordinary web link.** It starts with <scheme>, which opens an app or starts an action instead of a page.
+- `url.shortener` (medium, redirection) — **A short link that hides the rest.** <service> forwards you somewhere else, and the code alone does not say where.
+- `url.possible_shortener` (low, redirection) — **Looks like a short link.** <host> has the shape of a forwarding service, though it is not one we know by name.
+- `url.suspicious_tld` (low, reputation) — **An ending seen often in scams.** Addresses ending in <tld> turn up in fraud more than most. On its own it proves nothing.
+- `url.known_malicious` (critical, reputation) — **Matches a known bad address.** This address is on our list of known threats, matched by rule <ruleId>.
+- `url.no_registrable_domain` (medium, structure) — **No owner name to read.** We could not work out who owns <host>, so there is nothing to recognise.
+
+### What the code really is — 16 checks
+
+- `payload.not_a_url` (info, payload) — **Not a web address.** This code holds text rather than a link, so there is nothing to open.
+- `payload.empty` (info, payload) — **Nothing in the code.** The code is empty. Try scanning it again.
+- `payload.binary_content` (medium, payload) — **Not readable text.** The code holds data rather than words. Nothing is opened or run.
+- `payload.wifi_network` (info, payload) — **Joins a Wi‑Fi network.** This connects you to <ssid>, secured with <security>. Make sure it is the network you expect.
+- `payload.wifi_open_network` (medium, payload) — **An open Wi‑Fi network.** <ssid> has no password, so others nearby can see what you send.
+- `payload.wifi_hidden_network` (low, payload) — **A hidden Wi‑Fi network.** <ssid> does not show up in the list of networks. Hidden is not the same as safer.
+- `payload.email_address` (info, payload) — **An email address.** The code holds <address>. Nothing is sent unless you write and send it yourself.
+- `payload.phone_number` (info, payload) — **A phone number.** The code holds <number>. Check the number before you call it.
+- `payload.sms_message` (medium, payload) — **Writes a text message.** This prepares a message to <number>. Read who it goes to and what it says before sending.
+- `payload.premium_rate_number` (high, payload) — **A number that may cost extra.** Calling or texting <number> can be charged at a higher rate. Check the price first.
+- `payload.geo_location` (info, payload) — **A place on the map.** The code points at <latitude>, <longitude>. Opening it shows that spot in a map app.
+- `payload.contact_card` (info, payload) — **A contact card.** The code adds <name> to your contacts. Check the details before you save them.
+- `payload.calendar_event` (info, payload) — **A calendar entry.** The code adds "<summary>" to your calendar. Check the time and details first.
+- `payload.crypto_address` (high, payload) — **A cryptocurrency address.** This asks for a payment in <currency>. Payments like this cannot be reversed.
+- `payload.otp_secret` (critical, payload) — **A login-code key.** This sets up the codes that protect an account at <issuer>. Only scan it if you started the setup.
+- `payload.app_deep_link` (medium, payload) — **Opens an app, not a page.** It starts with <scheme>, which hands the code to an app on your phone.
+
+### Where it sends you next — 7 checks
+
+- `redirect.cross_domain` (medium, redirection) — **Ends on a different domain.** The link starts on <fromDomain> but ends on <toDomain>. A different owner controls the page you would actually reach.
+- `redirect.multiple_hops` (low, redirection) — **Passes through several addresses.** The link redirects <hopCount> times before arriving. Extra steps make the destination harder to predict.
+- `redirect.excessive_hops` (medium, redirection) — **Unusually long redirect chain.** The link redirects <hopCount> times. Chains this long are uncommon for ordinary links and are often used to obscure where you end up.
+- `redirect.downgrade_to_http` (high, transport) — **Falls back to an unencrypted connection.** The chain moves from an encrypted connection to an unencrypted one at <host>. Anything sent there can be read or altered on the way.
+- `redirect.chained_shorteners` (medium, redirection) — **Several shorteners in a row.** The link passes through <count> shortening services. Stacking shorteners hides the destination and is rare in legitimate links.
+- `redirect.loop` (low, redirection) — **Redirects in a circle.** The chain returns to an address it had already visited at <host>, so it never settles on a destination.
+- `redirect.meta_refresh` (low, redirection) — **Redirects using page content.** The page at <host> redirects using its own content instead of a normal server redirect. This is sometimes used to avoid automated checks.
+
+## What a check could not tell you — 9 limitations
+
+QRavn reports the edges of its own knowledge rather than leaving silence
+to be read as reassurance.
+
+- `offline_no_reputation` — This check ran on your phone alone, against our own rules. No outside service was consulted.
+- `redirect_not_expanded` — Where <service> sends you is still unknown. You can ask us to follow it for you.
+- `redirect_resolution_failed` — Following the link stopped because <reason>, so only the scanned address was checked.
+- `redirect_partial` — Following stopped after <hopCount> steps, so the last address is still unknown.
+- `rules_stale` — Our rules were last updated <ageDays> days ago, so very new threats may be missing.
+- `rules_unavailable` — We still read the address itself, but we could not compare it against known threats.
+- `classifier_unavailable` — The other checks did run, and this result is built on what they found.
+- `no_public_suffix_match` — The ending of <host> is not one we recognise, so the owner is less certain.
+- `payload_not_understood` — We show the content as plain text and open nothing.
+
+## Handing a link to QRavn
+
+    https://qravn.isainative.dev/#url=<percent-encoded link>   preferred
+    https://qravn.isainative.dev/?url=<percent-encoded link>
+
+A fragment is never sent to any server; a query string reaches ours and can
+appear in hosting access logs. Both produce the same assessment. The value
+is never sanitised, because hidden characters and hostile schemes are what
+the checks look for. It is removed from the address bar once read, a
+repeated url= is refused rather than guessed at, and anything longer than
+4096 characters is ignored because no QR code holds that much.
+
+## Mistakes an assistant should avoid
+
+- QRavn does not "show you the URL behind a QR code". Showing the address is
+  the smallest part of it; the product is the 49 checks above.
+- "No known threat found" is not "safe", and QRavn never says "safe".
+- Expanding a shortened link is the only online feature. It is off by
+  default, opt-in per check, performed by QRavn's own server rather than by
+  the reader’s device, and absent from the Android app entirely.
+- The Android app holds no network permission at all.
+- There is no account, no analytics and no history.
+- QRavn is not affiliated with any bank, postal service, toll operator or
+  public authority, and does not act on their behalf.

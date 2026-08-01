@@ -14,6 +14,20 @@
       content="A QR code is a picture of a link, so you cannot see where it goes. QRavn reads it and runs %CHECK_COUNT% checks for lookalike domains, hidden redirects and invisible characters."
     />
 
+    <!-- The app has one address. Everything else Azure serves from the same
+         shell, so say plainly which URL is the real one. -->
+    <link rel="canonical" href="https://qravn.isainative.dev/" />
+    <meta name="author" content="Maxim Salnikov" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta
+      name="googlebot"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
@@ -25,6 +39,8 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="QRavn" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="nb_NO" />
     <meta property="og:title" content="QRavn — %CHECK_COUNT% security checks before you open a QR code" />
     <meta
       property="og:description"
@@ -32,16 +48,188 @@
     />
     <meta property="og:url" content="https://qravn.isainative.dev/" />
     <meta property="og:image" content="https://qravn.isainative.dev/og.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
       content="The QRavn mark: a single QR finder pattern with the ring left open at one corner."
     />
+
+    <!-- No verified account exists for the project, so twitter:site and
+         twitter:creator are deliberately absent rather than guessed. -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="QRavn — %CHECK_COUNT% security checks before you open a QR code" />
+    <meta
+      name="twitter:description"
+      content="A QR code is a picture of a link, so you cannot see where it goes. QRavn reads it and runs %CHECK_COUNT% checks for lookalike domains, hidden redirects and invisible characters — on your device, without ever visiting the link."
+    />
+    <meta name="twitter:image" content="https://qravn.isainative.dev/og.png" />
+    <meta
+      name="twitter:image:alt"
+      content="The QRavn mark: a single QR finder pattern with the ring left open at one corner."
+    />
+
+    <!--
+      A style element inside noscript in the head is the one place a stylesheet
+      can be declared for readers without JavaScript without costing everyone
+      else a request. It never applies when the app runs.
+    -->
+    <noscript>
+      <style>
+        /* The app shell reserves a full viewport for itself. With no script to
+           fill it, that is a screen of nothing above the only content there is.
+           `body #root` outranks the app stylesheet, which loads after this. */
+        body #root {
+          min-height: 0;
+        }
+        .noscript-shell {
+          max-width: 34rem;
+          margin: 0 auto;
+          padding: 3rem 1.25rem;
+          font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+          font-size: 1.0625rem;
+          line-height: 1.6;
+        }
+        .noscript-shell,
+        .noscript-shell p,
+        .noscript-shell h1 {
+          color: #16181a;
+        }
+        .noscript-shell h1 {
+          font-size: 1.75rem;
+          letter-spacing: -0.02em;
+          margin: 0 0 1.25rem;
+        }
+        .noscript-shell p {
+          margin: 0 0 1.1rem;
+        }
+        .noscript-shell a {
+          color: inherit;
+        }
+        @media (prefers-color-scheme: dark) {
+          .noscript-shell,
+          .noscript-shell p,
+          .noscript-shell h1 {
+            color: #eceff1;
+          }
+        }
+      </style>
+    </noscript>
+
+    <!--
+      Structured data. Agents and crawlers that never run our JavaScript read
+      the page through this block and through /llms.txt, so both have to state
+      the product honestly on their own: the checks are local, the destination
+      is never contacted, and no verdict is a promise of safety.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://qravn.isainative.dev/#website",
+            "url": "https://qravn.isainative.dev/",
+            "name": "QRavn",
+            "description": "Checks a QR code or a link for %CHECK_COUNT% known scam patterns before you open it, entirely on your own device.",
+            "inLanguage": ["nb-NO", "en"],
+            "publisher": { "@id": "https://qravn.isainative.dev/#author" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://qravn.isainative.dev/#author",
+            "name": "Maxim Salnikov",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Oslo",
+              "addressCountry": "NO"
+            },
+            "sameAs": ["https://github.com/webmaxru"]
+          },
+          {
+            "@type": ["WebApplication", "SecurityApplication"],
+            "@id": "https://qravn.isainative.dev/#app",
+            "name": "QRavn",
+            "url": "https://qravn.isainative.dev/",
+            "applicationCategory": "SecurityApplication",
+            "operatingSystem": "Any device with a modern web browser",
+            "browserRequirements": "Requires JavaScript and WebAssembly",
+            "isAccessibleForFree": true,
+            "inLanguage": ["nb-NO", "en"],
+            "image": "https://qravn.isainative.dev/og.png",
+            "author": { "@id": "https://qravn.isainative.dev/#author" },
+            "isPartOf": { "@id": "https://qravn.isainative.dev/#website" },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "NOK",
+              "availability": "https://schema.org/InStock"
+            },
+            "description": "A QR code is a picture of a link, so you cannot read where it goes before you go there. QRavn decodes it and runs %CHECK_COUNT% checks on what it finds: %CHECK_COUNT_URL% on the web address, %CHECK_COUNT_PAYLOAD% on what the code really is, and %CHECK_COUNT_REDIRECT% on where it sends you next. The checks run on your own device, and your device never contacts the scanned destination. The result is a verdict and the evidence behind it, never an automatic opening.",
+            "featureList": [
+              "Decodes a QR code from the camera or from a photo you choose",
+              "Checks a pasted link without any camera",
+              "Detects lookalike and mixed-alphabet domains",
+              "Detects invisible and direction-changing characters in an address",
+              "Recognises codes that are not links at all, such as premium-rate messages or wifi joins",
+              "Explains every finding in plain language with the evidence behind it",
+              "Never opens anything without a deliberate second confirmation"
+            ],
+            "potentialAction": {
+              "@type": "AssessAction",
+              "name": "Check a link with QRavn",
+              "description": "Append a percent-encoded link to have it checked on arrival. The fragment form is preferred because a fragment is never sent to any server.",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://qravn.isainative.dev/#url={link}",
+                "httpMethod": "GET",
+                "actionPlatform": [
+                  "https://schema.org/DesktopWebPlatform",
+                  "https://schema.org/MobileWebPlatform"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <!--
+      The app is client-rendered, so a crawler or agent that does not execute
+      JavaScript would otherwise find an empty page. Search engines render;
+      most AI agents do not. This is the honest fallback: the same claims the
+      app makes, in the same words, for a reader that cannot run it.
+    -->
+    <noscript>
+      <div class="noscript-shell">
+        <h1>QRavn</h1>
+        <p>
+          <strong>Check a QR code before you open it.</strong> A QR code is a
+          picture of a link, so you cannot see where it goes until you have
+          already gone there.
+        </p>
+        <p>
+          QRavn decodes the code and runs %CHECK_COUNT% checks on what it
+          finds — %CHECK_COUNT_URL% on the web address, %CHECK_COUNT_PAYLOAD%
+          on what the code really is, and %CHECK_COUNT_REDIRECT% on where it
+          sends you next — then shows a verdict and the evidence
+          behind it. Nothing opens until you say so, and your device never
+          contacts the scanned destination.
+        </p>
+        <p>
+          <strong>This page needs JavaScript</strong>, because the checks run
+          on your device rather than on a server. Turn it on to use QRavn.
+        </p>
+        <p>
+          <a href="/privacy">Privacy policy / Personvernerklæring</a> ·
+          <a href="/llms.txt">Machine-readable summary for AI agents</a> ·
+          <a href="https://github.com/webmaxru/qravn">Source code</a>
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,0 +1,86 @@
+# QRavn — https://qravn.isainative.dev
+#
+# Everything here is public and meant to be found. QRavn exists so that someone
+# holding a phone in front of a sticker on a parking meter can find out whether
+# the link behind it is a scam. That only works if search engines and
+# assistants can find it and describe it correctly, so nothing is held back.
+
+User-agent: *
+Allow: /
+
+# Assistants and AI crawlers are welcome, deliberately.
+#
+# When someone asks an assistant "is this QR code safe", the useful answer is a
+# tool that checks it on their own device without visiting the link. We would
+# rather that answer be accurate than absent, so these agents are named
+# explicitly instead of being left to the wildcard. /llms.txt is written for
+# them.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+# A note for whoever edits this next.
+#
+# The app accepts a link to check as ?url=... on the home page, which means an
+# unbounded set of addresses can point at it. It is tempting to add
+# "Disallow: /*?url=" here. Don't. Blocking the crawl stops a crawler reading
+# the canonical tag, and a URL that cannot be read can still be indexed by
+# address alone. Every one of those pages already carries
+# <link rel="canonical" href="https://qravn.isainative.dev/">, so letting them
+# be fetched is what makes them collapse into the one real page.
+
+Sitemap: https://qravn.isainative.dev/sitemap.xml

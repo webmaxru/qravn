@@ -57,6 +57,10 @@ const surfaces = [
   'localization/nb.json',
   'localization/nn.json',
   'README.md',
+  // Written for crawlers and AI agents, which makes them the surfaces most
+  // likely to be quoted back at someone without anyone here seeing it happen.
+  'apps/web/public/llms.txt',
+  'apps/web/public/llms-full.txt',
 ]
 
 // "49 checks", "49 sjekker"/"de 49 sjekkene" (bokmål), "49 sjekkar"/"dei 49
