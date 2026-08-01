@@ -1603,5 +1603,5 @@ The resolver fetches arbitrary attacker-chosen URLs from server infrastructure, 
   - `qr-safety-market-research-norway.md`
 - Completed research remains the design rationale; this plan supersedes the earlier research-only milestone list as the implementation source of truth.
 - The unified-core research of 26 July 2026 revised two earlier decisions: the core must be WebAssembly-clean from the first commit, and classifier inference moves into the Rust core instead of Core ML and LiteRT exports.
-- Project root is `C:\Users\masalnik\Downloads\projects\QRavn`. All planning documents live in its `planning/` folder; `planning/README.md` is the index.
+- All planning documents live in the repository's `planning/` folder; `planning/README.md` is the index.
 - Implementation started on 26 July 2026; see "Implementation status" above for what is verified.

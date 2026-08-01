@@ -350,6 +350,129 @@ jobs:
             apps/android/safety-core/build/reports/
           retention-days: 7
 
+  ios:
+    name: iOS app
+    # The only macOS in this project. The developer machine is Windows, so this
+    # runner is the compiler, the simulator and the reviewer for everything
+    # under apps/ios.
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Detect iOS app
+        id: ios
+        shell: bash
+        run: |
+          if [ -f apps/ios/project.yml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::apps/ios/project.yml is not present yet; skipping iOS checks."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report toolchain
+        if: steps.ios.outputs.present == 'true'
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      # Same rule as Android: the client never re-derives a verdict, so CI
+      # builds the real Rust core rather than a stub. Both simulator slices are
+      # installed so the XCFramework is valid on Intel and Apple Silicon.
+      - name: Install Rust stable with Apple targets
+        if: steps.ios.outputs.present == 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+      - name: Cache cargo
+        if: steps.ios.outputs.present == 'true'
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            core/target/
+          key: ${{ runner.os }}-cargo-ios-${{ hashFiles('core/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-ios-
+
+      - name: Install XcodeGen
+        if: steps.ios.outputs.present == 'true'
+        run: brew install xcodegen
+
+      # Order matters and mirrors the web app: the native package is produced
+      # first, then the project that consumes it is generated, then the build
+      # runs. No Xcode run script phase touches cargo.
+      - name: Build the Rust core as an XCFramework
+        if: steps.ios.outputs.present == 'true'
+        run: bash apps/ios/scripts/build-core.sh
+
+      - name: Generate the Xcode project
+        if: steps.ios.outputs.present == 'true'
+        working-directory: apps/ios
+        run: xcodegen generate
+
+      # The runner image's simulator set changes between releases, so the
+      # destination is resolved rather than hard-coded to a device name.
+      - name: Choose a simulator
+        id: simulator
+        if: steps.ios.outputs.present == 'true'
+        run: |
+          udid=$(xcrun simctl list devices available --json \
+            | jq -r '[.devices[][] | select(.name | startswith("iPhone"))] | last | .udid')
+          if [ -z "$udid" ] || [ "$udid" = "null" ]; then
+            echo "::error::No available iPhone simulator on this runner."
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices available | grep "$udid"
+
+      - name: Build
+        if: steps.ios.outputs.present == 'true'
+        working-directory: apps/ios
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project QRavn.xcodeproj \
+            -scheme QravnApp \
+            -configuration Debug \
+            -destination "id=${{ steps.simulator.outputs.udid }}" \
+            -resultBundlePath build-results.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      # These guard product invariants, not styling: that the real Rust core
+      # loads through the C ABI with its catalogs packaged, that a blocked
+      # verdict offers no way to open the link, and that nothing but http and
+      # https can ever leave the app.
+      - name: Test
+        if: steps.ios.outputs.present == 'true'
+        working-directory: apps/ios
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project QRavn.xcodeproj \
+            -scheme QravnApp \
+            -configuration Debug \
+            -destination "id=${{ steps.simulator.outputs.udid }}" \
+            -resultBundlePath test-results.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload results on failure
+        if: failure() && steps.ios.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-results
+          path: |
+            apps/ios/*.xcresult
+          retention-days: 7
+
   contract:
     name: Contract and localization
     runs-on: ubuntu-latest

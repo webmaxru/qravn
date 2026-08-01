@@ -44,6 +44,19 @@ apps/android/.kotlin/
 *.aab
 .cxx/
 
+# iOS
+# The Xcode project is generated from apps/ios/project.yml by XcodeGen; a
+# pbxproj is build output and is never committed.
+apps/ios/*.xcodeproj/
+apps/ios/*.xcworkspace/
+apps/ios/Generated/
+apps/ios/Frameworks/
+apps/ios/DerivedData/
+xcuserdata/
+*.xcresult
+*.ipa
+*.dSYM.zip
+
 # Editor / OS
 .vscode/
 .idea/

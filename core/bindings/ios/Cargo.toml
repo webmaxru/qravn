@@ -1,0 +1,17 @@
+[package]
+name = "qravn-safety-ffi"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "qravn_safety_ffi"
+# staticlib so the engine links straight into the app binary: Apple only accepts
+# dynamic libraries that are packaged as frameworks, and a static archive also
+# leaves nothing for the app to load at runtime. rlib keeps `cargo test` working
+# on the CI host, which is how the unit tests below run.
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+safety-core = { path = "../../crates/safety-core" }
+serde_json.workspace = true

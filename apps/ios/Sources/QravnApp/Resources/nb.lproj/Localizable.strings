@@ -1,0 +1,41 @@
+/* Generated from apps/android/app/src/main/res by tools/gen-ios-strings.mjs.
+   The two clients must say the same thing; edit the Android resource and
+   regenerate rather than editing this file. */
+
+"scan_title" = "Rett kameraet mot en QR-kode";
+"scan_hint" = "49 sjekker kjøres før noe åpnes. Ingenting forlater telefonen din.";
+"scan_viewfinder_description" = "Kamerasøker. En QR-kode leses automatisk når den er i bildet.";
+"scan_from_clipboard" = "Sjekk kopiert tekst";
+"scan_analysing" = "Sjekker…";
+"scan_again" = "Skann på nytt";
+"permission_title" = "Kameratilgang trengs for å skanne";
+"permission_body" = "Kameraet brukes bare mens denne skjermen er åpen. Bildene blir på telefonen og lastes aldri opp.";
+"permission_grant" = "Tillat kamera";
+"permission_open_settings" = "Åpne appinnstillinger";
+"result_destination" = "Mål";
+"result_why" = "Hvorfor dette resultatet";
+"result_limitations" = "Dette kunne ikke sjekkes";
+"result_no_evidence" = "Ingen av de 49 sjekkene fant noe";
+"result_subject_final" = "Gjelder det endelige målet";
+"result_copy" = "Kopier";
+"result_copied" = "Kopiert";
+"result_share" = "Del";
+"result_cancel" = "Avbryt";
+"result_open_browser" = "Åpne i nettleser";
+"result_open_anyway" = "Åpne likevel";
+"result_open_blocked" = "Åpning er blokkert";
+"result_confirm_title" = "Åpne denne adressen?";
+"result_confirm_body" = "Du er i ferd med å forlate QRavn og åpne %1$@ i nettleseren. Denne sjekken fant faresignaler. En nettleser har egen beskyttelse, men den gjør ikke målet trygt.";
+"result_confirm_open" = "Åpne";
+"result_no_browser" = "Ingen nettleser er installert";
+"error_camera_unavailable" = "Kameraet kunne ikke startes";
+"error_engine_title" = "Sikkerhetssjekken kan ikke starte";
+"error_engine_body" = "Analysemotoren ble ikke lastet, så ingen vurdering kan vises. Å installere appen på nytt løser dette som regel.";
+"error_clipboard_empty" = "Det er ingen tekst å sjekke";
+"error_shared_unsupported" = "Den typen delt innhold kan ikke sjekkes";
+"settings_offline_notice" = "Denne versjonen fungerer helt uten nett. Den har ingen internettillatelse og kan derfor ikke kontakte en skannet adresse eller noen tjener.";
+"settings_engine_version" = "Analysemotor %1$@, regler %2$@";
+
+/* iOS-only surface; see IOS_ONLY in the generator. */
+"scan_manual_entry_label" = "Lenke som skal sjekkes";
+"scan_check" = "Sjekk";
