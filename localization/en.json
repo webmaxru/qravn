@@ -1,7 +1,7 @@
 {
   "limitation.classifier_unavailable": {
     "title": "One of our checks did not run",
-    "detail": "The rest of the checks did. This result is built on what they found."
+    "detail": "The other checks did run, and this result is built on what they found."
   },
   "limitation.no_public_suffix_match": {
     "title": "We could not tell who owns it",
@@ -13,7 +13,7 @@
   },
   "limitation.payload_not_understood": {
     "title": "We did not recognise this format",
-    "detail": "The content is shown as plain text and nothing is opened or run."
+    "detail": "We show the content as plain text and open nothing."
   },
   "limitation.redirect_not_expanded": {
     "title": "We did not follow the short link",
@@ -25,11 +25,11 @@
   },
   "limitation.redirect_resolution_failed": {
     "title": "We could not follow the link",
-    "detail": "Following it stopped because {reason}. Only the scanned link was checked."
+    "detail": "Following the link stopped because {reason}, so only the scanned address was checked."
   },
   "limitation.rules_stale": {
     "title": "Our rules may be out of date",
-    "detail": "They were last updated {ageDays} days ago. Very new threats may be missing."
+    "detail": "Our rules were last updated {ageDays} days ago, so very new threats may be missing."
   },
   "limitation.rules_unavailable": {
     "title": "Our threat list did not load",

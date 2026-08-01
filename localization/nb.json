@@ -1,7 +1,7 @@
 {
   "limitation.classifier_unavailable": {
     "title": "En av sjekkene våre kjørte ikke",
-    "detail": "Resten av sjekkene gjorde det. Dette resultatet bygger på det de fant."
+    "detail": "De andre sjekkene kjørte, og dette resultatet bygger på det de fant."
   },
   "limitation.no_public_suffix_match": {
     "title": "Vi klarte ikke å se hvem som eier den",
@@ -13,7 +13,7 @@
   },
   "limitation.payload_not_understood": {
     "title": "Vi kjente ikke igjen dette formatet",
-    "detail": "Innholdet vises som ren tekst, og ingenting åpnes eller kjøres."
+    "detail": "Vi viser innholdet som ren tekst og åpner ingenting."
   },
   "limitation.redirect_not_expanded": {
     "title": "Vi fulgte ikke den korte lenken",
@@ -25,11 +25,11 @@
   },
   "limitation.redirect_resolution_failed": {
     "title": "Vi klarte ikke å følge lenken",
-    "detail": "Følgingen stoppet fordi {reason}. Bare den skannede lenken ble sjekket."
+    "detail": "Følgingen av lenken stoppet fordi {reason}, så bare den skannede adressen ble sjekket."
   },
   "limitation.rules_stale": {
     "title": "Reglene våre kan være utdaterte",
-    "detail": "De ble sist oppdatert for {ageDays} dager siden. Helt nye trusler kan mangle."
+    "detail": "Reglene våre ble sist oppdatert for {ageDays} dager siden, så helt nye trusler kan mangle."
   },
   "limitation.rules_unavailable": {
     "title": "Trussellisten vår ble ikke lastet",

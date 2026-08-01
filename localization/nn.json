@@ -1,7 +1,7 @@
 {
   "limitation.classifier_unavailable": {
     "title": "Ein av sjekkane våre køyrde ikkje",
-    "detail": "Resten av sjekkane gjorde det. Dette resultatet byggjer på det dei fann."
+    "detail": "Dei andre sjekkane køyrde, og dette resultatet byggjer på det dei fann."
   },
   "limitation.no_public_suffix_match": {
     "title": "Vi klarte ikkje å sjå kven som eig henne",
@@ -13,7 +13,7 @@
   },
   "limitation.payload_not_understood": {
     "title": "Vi kjende ikkje att dette formatet",
-    "detail": "Innhaldet blir vist som rein tekst, og ingenting blir opna eller køyrt."
+    "detail": "Vi viser innhaldet som rein tekst og opnar ingenting."
   },
   "limitation.redirect_not_expanded": {
     "title": "Vi følgde ikkje den korte lenka",
@@ -25,11 +25,11 @@
   },
   "limitation.redirect_resolution_failed": {
     "title": "Vi klarte ikkje å følgje lenka",
-    "detail": "Følginga stoppa fordi {reason}. Berre den skanna lenka vart sjekka."
+    "detail": "Følginga av lenka stoppa fordi {reason}, så berre den skanna adressa vart sjekka."
   },
   "limitation.rules_stale": {
     "title": "Reglane våre kan vere utdaterte",
-    "detail": "Dei vart sist oppdaterte for {ageDays} dagar sidan. Heilt nye trugsmål kan mangle."
+    "detail": "Reglane våre vart sist oppdaterte for {ageDays} dagar sidan, så heilt nye trugsmål kan mangle."
   },
   "limitation.rules_unavailable": {
     "title": "Trugsmålslista vår vart ikkje lasta",
