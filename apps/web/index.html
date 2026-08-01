@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover is what makes env(safe-area-inset-*) resolve to
+         anything on a notched iPhone. Without it the insets are always 0 and
+         the shell cannot hold itself back from the notch or the home
+         indicator once the app is installed to the home screen. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <title>QRavn — read a QR link before your camera app opens it</title>
     <meta
