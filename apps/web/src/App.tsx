@@ -11,6 +11,7 @@ import { normaliseLocale, type Locale } from './engine/catalog';
 import { CHECK_COUNT } from './checkCount';
 import { detectLocale, storeLocale, t, td } from './lib/uiText';
 import type { EngineInstance, SafetyEngine } from './engine/types';
+import { readLinkPayload, stripLinkPayload } from './lib/linkParams';
 import { isOnlineModeAvailable, resolveRedirect } from './lib/resolverClient';
 
 declare global {
@@ -54,6 +55,10 @@ function App({ engineOverride, resolverOverride }: AppProps) {
   const [expansionState, setExpansionState] = useState<ExpansionState>('idle');
   const [offlineMode, setOfflineMode] = useState(readStoredOfflineMode);
   const resultRef = useRef<HTMLDivElement | null>(null);
+  // Captured during the first render, because the address bar is cleared
+  // immediately afterwards and the engine is not ready to act on it yet.
+  const [linkPayload] = useState(() => readLinkPayload(window.location.search, window.location.hash));
+  const linkPayloadChecked = useRef(false);
 
   const resolver = useMemo<AppResolver>(
     () => resolverOverride ?? { available: isOnlineModeAvailable(), resolve: (url) => resolveRedirect(url) },
@@ -142,6 +147,26 @@ function App({ engineOverride, resolverOverride }: AppProps) {
     setRedirectResolution(null);
     setExpansionState('idle');
   }
+
+  // Clear the payload out of the address bar straight away, before the engine
+  // has even loaded. It has already been read into state, and leaving it there
+  // would put someone else's link into this browser's history and into any
+  // address copied out of the bar.
+  useEffect(() => {
+    if (linkPayload !== null) stripLinkPayload();
+  }, [linkPayload]);
+
+  // A payload arriving in a link is checked exactly like a pasted one: locally,
+  // with no expanded chain, so nothing is fetched and nothing is opened. The
+  // ref keeps a later engine reload from silently re-running a check the reader
+  // already dismissed with "Scan again".
+  useEffect(() => {
+    if (linkPayload === null || linkPayloadChecked.current || !engineInstance) return;
+    linkPayloadChecked.current = true;
+    runCheck(linkPayload);
+    // runCheck closes over `engineInstance`, which is already a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkPayload, engineInstance]);
 
   // The user explicitly asked to expand the scanned shortener. Send it to our
   // resolver, then re-run the check with the returned chain. Every documented

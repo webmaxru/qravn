@@ -153,3 +153,53 @@ test('online expansion is opt-in and still never contacts the scanned host', asy
   // device never touched the scanned host or its destination.
   expect(forbiddenRequests).toEqual([]);
 });
+
+test('a payload carried in a link is checked without ever contacting the destination', async ({ page }) => {
+  // The whole feature in one assertion. Anyone can mail this link to a victim,
+  // so arriving with a payload attached must behave exactly like pasting one:
+  // assessed on the device, and the destination left untouched.
+  const forbiddenRequests: string[] = [];
+  await page.route('**/*', (route) => {
+    if (new URL(route.request().url()).hostname === 'evil.example') {
+      forbiddenRequests.push(route.request().url());
+      return route.abort();
+    }
+    return route.continue();
+  });
+
+  await page.goto(`/?url=${encodeURIComponent('https://trusted.no@evil.example/login')}`);
+
+  await expect(page.getByTestId('result-region')).toBeVisible({ timeout: 25_000 });
+  await expect(page.getByText(/text before @ is not the destination/i)).toBeVisible();
+  expect(forbiddenRequests).toEqual([]);
+});
+
+test('a payload carried in a link is cleared from the address bar', async ({ page }) => {
+  await page.goto(`/?url=${encodeURIComponent('https://evil.example/phishing')}`);
+  await expect(page.getByTestId('result-region')).toBeVisible({ timeout: 25_000 });
+
+  // Nobody else's link should survive in this browser's history, in a
+  // screenshot of the address bar, or in an address copied out of it.
+  await expect.poll(() => new URL(page.url()).search).toBe('');
+  expect(page.url()).not.toContain('evil.example');
+});
+
+test('a payload carried in a link is never opened automatically', async ({ page }) => {
+  await page.goto(`/?url=${encodeURIComponent('https://example.com/login')}`);
+  await expect(page.getByTestId('result-region')).toBeVisible({ timeout: 25_000 });
+
+  // Still on our own origin, and opening still costs a deliberate second action.
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole('link', { name: /Open example\.com/i })).toHaveCount(0);
+  await page.getByRole('button', { name: /still want to open example\.com/i }).click();
+  await expect(page.getByRole('link', { name: /Open example\.com/i })).toBeVisible();
+});
+
+test('a hostile scheme carried in a link renders no anchor', async ({ page }) => {
+  await page.goto(`/?url=${encodeURIComponent('javascript:alert(1)')}`);
+  await expect(page.getByTestId('result-region')).toBeVisible({ timeout: 25_000 });
+
+  await expect(page.getByText(/Opening is blocked/i)).toBeVisible();
+  await expect(page.locator('a[href^="javascript:"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /open/i })).toHaveCount(0);
+});

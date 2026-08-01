@@ -196,6 +196,44 @@ emulator, and the shared contract.
 
 ---
 
+## Handing a link to the web app
+
+The web app accepts a link to check in its own URL, so a suspicious address can
+be assessed without a camera — pasted from an email, or passed in from another
+tool.
+
+```text
+https://qravn.isainative.dev/#url=https%3A%2F%2Fexample.com%2Fpath   ← preferred
+https://qravn.isainative.dev/?url=https%3A%2F%2Fexample.com%2Fpath
+```
+
+**Prefer the fragment.** A query string is sent to the server in the request
+line and can be recorded in hosting access logs; everything after `#` never
+leaves the browser. Both forms produce the same assessment. When both are
+present the fragment wins.
+
+Rules that the implementation
+([`apps/web/src/lib/linkParams.ts`](apps/web/src/lib/linkParams.ts)) enforces:
+
+- The value is percent-decoded and passed to the engine **byte for byte**. It is
+  never sanitised — hidden characters, bidi controls and `javascript:` schemes
+  are precisely what the checks look for, so removing them would destroy the
+  evidence. Only display is neutralised.
+- The parameter is removed from the address bar as soon as it is read, so the
+  link is not carried into `Referer`, bookmarks or shared screenshots.
+- A repeated `url=` is refused outright rather than resolved by picking one,
+  because the verdict would otherwise describe a string the reader cannot
+  identify.
+- Values longer than 4096 characters are ignored. A QR code cannot hold more
+  than roughly 4296 characters, so anything longer did not come from a scan.
+- Anything rejected falls through to the normal home screen.
+
+The assessment runs locally and is shown, never acted on. Opening the link still
+requires an explicit press, exactly as it does after a scan, and the online
+redirect resolver is never triggered this way.
+
+---
+
 ## Documentation
 
 All research and planning lives in [`planning/`](planning/). Start with [`planning/README.md`](planning/README.md).
