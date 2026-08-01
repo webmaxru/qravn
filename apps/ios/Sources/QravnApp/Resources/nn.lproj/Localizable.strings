@@ -1,0 +1,41 @@
+/* Generated from apps/android/app/src/main/res by tools/gen-ios-strings.mjs.
+   The two clients must say the same thing; edit the Android resource and
+   regenerate rather than editing this file. */
+
+"scan_title" = "Rett kameraet mot ein QR-kode";
+"scan_hint" = "49 sjekkar blir køyrde før noko blir opna. Ingenting forlèt telefonen din.";
+"scan_viewfinder_description" = "Kamerasøkjar. Ein QR-kode blir lesen automatisk når han er i biletet.";
+"scan_from_clipboard" = "Sjekk kopiert tekst";
+"scan_analysing" = "Sjekkar…";
+"scan_again" = "Skann på nytt";
+"permission_title" = "Kameratilgang trengst for å skanne";
+"permission_body" = "Kameraet blir berre brukt medan denne skjermen er open. Bileta blir på telefonen og blir aldri lasta opp.";
+"permission_grant" = "Tillat kamera";
+"permission_open_settings" = "Opne appinnstillingar";
+"result_destination" = "Mål";
+"result_why" = "Kvifor dette resultatet";
+"result_limitations" = "Dette kunne ikkje sjekkast";
+"result_no_evidence" = "Ingen av dei 49 sjekkane fann noko";
+"result_subject_final" = "Gjeld den endelege destinasjonen";
+"result_copy" = "Kopier";
+"result_copied" = "Kopiert";
+"result_share" = "Del";
+"result_cancel" = "Avbryt";
+"result_open_browser" = "Opne i nettlesar";
+"result_open_anyway" = "Opne likevel";
+"result_open_blocked" = "Opning er blokkert";
+"result_confirm_title" = "Opne denne adressa?";
+"result_confirm_body" = "Du er i ferd med å forlate QRavn og opne %1$@ i nettlesaren. Denne sjekken fann faresignal. Ein nettlesar har eige vern, men det gjer ikkje målet trygt.";
+"result_confirm_open" = "Opne";
+"result_no_browser" = "Ingen nettlesar er installert";
+"error_camera_unavailable" = "Kameraet kunne ikkje startast";
+"error_engine_title" = "Tryggleikssjekken kan ikkje starte";
+"error_engine_body" = "Analysemotoren blei ikkje lasta, så inga vurdering kan visast. Å installere appen på nytt løyser dette som regel.";
+"error_clipboard_empty" = "Det er ingen tekst å sjekke";
+"error_shared_unsupported" = "Den typen delt innhald kan ikkje sjekkast";
+"settings_offline_notice" = "Denne versjonen fungerer heilt utan nett. Han har ingen internettløyve og kan difor ikkje kontakte ei skanna adresse eller nokon tenar.";
+"settings_engine_version" = "Analysemotor %1$@, reglar %2$@";
+
+/* iOS-only surface; see IOS_ONLY in the generator. */
+"scan_manual_entry_label" = "Lenkje som skal sjekkast";
+"scan_check" = "Sjekk";

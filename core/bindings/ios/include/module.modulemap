@@ -1,0 +1,8 @@
+// Lets Swift `import QravnSafetyFFI` instead of carrying a bridging header,
+// which framework targets cannot use. Shipped inside the XCFramework's Headers
+// directory, where clang discovers it through the header search path Xcode adds
+// for the bundled static library.
+module QravnSafetyFFI {
+    header "qravn_safety.h"
+    export *
+}

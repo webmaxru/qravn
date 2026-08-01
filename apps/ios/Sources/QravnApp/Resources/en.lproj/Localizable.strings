@@ -1,0 +1,41 @@
+/* Generated from apps/android/app/src/main/res by tools/gen-ios-strings.mjs.
+   The two clients must say the same thing; edit the Android resource and
+   regenerate rather than editing this file. */
+
+"scan_title" = "Point at a QR code";
+"scan_hint" = "49 checks run before anything opens. Nothing leaves your phone.";
+"scan_viewfinder_description" = "Camera viewfinder. A QR code is read automatically when it is in view.";
+"scan_from_clipboard" = "Check copied text";
+"scan_analysing" = "Checking…";
+"scan_again" = "Scan again";
+"permission_title" = "Camera access is needed to scan";
+"permission_body" = "The camera is used only while this screen is open. Images stay on your phone and are never uploaded.";
+"permission_grant" = "Allow camera";
+"permission_open_settings" = "Open app settings";
+"result_destination" = "Destination";
+"result_why" = "Why this result";
+"result_limitations" = "What this check could not do";
+"result_no_evidence" = "Nothing found by any of the 49 checks";
+"result_subject_final" = "Applies to the final destination";
+"result_copy" = "Copy";
+"result_copied" = "Copied";
+"result_share" = "Share";
+"result_cancel" = "Cancel";
+"result_open_browser" = "Open in browser";
+"result_open_anyway" = "Open anyway";
+"result_open_blocked" = "Opening is blocked";
+"result_confirm_title" = "Open this address?";
+"result_confirm_body" = "You are about to leave QRavn and open %1$@ in your browser. This check found warning signs. A browser has its own protections, but they do not make a destination safe.";
+"result_confirm_open" = "Open";
+"result_no_browser" = "No browser is installed";
+"error_camera_unavailable" = "The camera could not be started";
+"error_engine_title" = "The safety check cannot start";
+"error_engine_body" = "The analysis engine did not load, so no result can be shown. Reinstalling the app usually fixes this.";
+"error_clipboard_empty" = "There is no text to check";
+"error_shared_unsupported" = "That kind of shared content cannot be checked";
+"settings_offline_notice" = "This version works entirely offline. It has no internet permission, so it cannot contact a scanned address or any server.";
+"settings_engine_version" = "Analysis engine %1$@, rules %2$@";
+
+/* iOS-only surface; see IOS_ONLY in the generator. */
+"scan_manual_entry_label" = "Link to check";
+"scan_check" = "Check";

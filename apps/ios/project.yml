@@ -1,0 +1,177 @@
+## XcodeGen specification for the QRavn iOS client.
+##
+## The .xcodeproj is generated rather than committed: a pbxproj is build output
+## in every meaningful sense, it cannot be reviewed, and it is the single worst
+## file in an iOS repository to resolve a merge conflict in. Regenerate with
+## `xcodegen generate` from this directory, which is what CI does.
+##
+## Structure mirrors apps/android: a QravnSafetyCore module that owns the Rust
+## core and the shared catalogs, and an app module that only renders what the
+## core decided.
+name: QRavn
+
+options:
+  bundleIdPrefix: no.qravn
+  createIntermediateGroups: true
+  deploymentTarget:
+    iOS: "16.0"
+  generateEmptyDirectories: true
+  # Xcode's own recommended settings churn between releases; pinning here keeps
+  # the generated project identical on every machine and on CI.
+  xcodeVersion: "16.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    # The Android app builds lint with warningsAsErrors. Same standard here:
+    # a warning in a security client is a defect that has not been triaged yet.
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    GCC_TREAT_WARNINGS_AS_ERRORS: YES
+    CLANG_ENABLE_OBJC_ARC: YES
+    ENABLE_STRICT_OBJC_MSGSEND: YES
+    # No run script phases exist in this project by design: the Rust core is
+    # built by scripts/build-core.sh before xcodebuild runs, exactly as the web
+    # app's wasm package is built before Vite. Sandboxing is therefore free.
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+
+targets:
+  ## The Kotlin `no.qravn.safety` module, ported. Owns the FFI boundary, the
+  ## contract projection and the shared localization catalogs. Nothing in here
+  ## may re-derive a verdict.
+  QravnSafetyCore:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Sources/QravnSafetyCore
+      # The shared catalogs are the only source of finding, limitation and
+      # verdict wording. Referenced rather than copied so a Norwegian string can
+      # never drift between the web, Android and iOS surfaces.
+      - path: ../../localization/en.json
+        buildPhase: resources
+        group: QravnSafetyCore/Resources
+      - path: ../../localization/nb.json
+        buildPhase: resources
+        group: QravnSafetyCore/Resources
+      - path: ../../localization/nn.json
+        buildPhase: resources
+        group: QravnSafetyCore/Resources
+    dependencies:
+      # Static archive: it links into this framework's binary, so there is
+      # nothing extra to load at runtime and nothing extra to sign.
+      - framework: Frameworks/QravnSafetyFFI.xcframework
+        embed: false
+    info:
+      path: Generated/QravnSafetyCore-Info.plist
+      properties:
+        CFBundleName: QravnSafetyCore
+        CFBundleShortVersionString: "1.0.2"
+        CFBundleVersion: "3"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: no.qravn.safety
+        DEFINES_MODULE: YES
+        SKIP_INSTALL: YES
+        # Points at the checked-in module map next to the C header, which is
+        # what lets Swift say `import QravnSafetyFFI`.
+        SWIFT_INCLUDE_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../core/bindings/ios/include
+        HEADER_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../core/bindings/ios/include
+
+  ## The `no.qravn.android` app module, ported. Renders assessments; decides
+  ## nothing.
+  QravnApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/QravnApp
+    dependencies:
+      - target: QravnSafetyCore
+        embed: true
+    info:
+      path: Generated/QravnApp-Info.plist
+      properties:
+        CFBundleName: QRavn
+        CFBundleDisplayName: QRavn
+        # Kept in step with apps/android/app/build.gradle.kts.
+        CFBundleShortVersionString: "1.0.2"
+        CFBundleVersion: "3"
+        # Norway-first, exactly as the Android locales_config declares.
+        CFBundleDevelopmentRegion: nb
+        CFBundleLocalizations: [nb, nn, en]
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        # The one and only permission this app asks for. The Android manifest is
+        # verified to contain nothing beyond CAMERA; this is the same promise.
+        NSCameraUsageDescription: >-
+          QRavn uses the camera only to read QR codes on your device. Nothing is
+          uploaded, and a scanned link is never opened for you.
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: no.qravn.ios
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        # No account is available on CI, and a simulator build needs no identity.
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+  ## Mirrors apps/android/safety-core/src/test: host-free logic tests, so the
+  ## suite needs no signing identity and no app launch.
+  QravnSafetyCoreTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/QravnSafetyCoreTests
+    dependencies:
+      - target: QravnSafetyCore
+        embed: true
+    info:
+      path: Generated/QravnSafetyCoreTests-Info.plist
+      properties:
+        CFBundleName: QravnSafetyCoreTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: no.qravn.safety.tests
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+  ## Mirrors apps/android/app/src/test: the platform helpers that decide what
+  ## reaches the engine and what may leave the app, tested without an
+  ## application. The sources are compiled into the bundle rather than imported
+  ## from the app target, which is the direct analogue of the Android unit tests
+  ## running on a plain JVM, and keeps the suite free of a signed host.
+  QravnAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/QravnAppTests
+      - path: Sources/QravnApp/Platform
+    info:
+      path: Generated/QravnAppTests-Info.plist
+      properties:
+        CFBundleName: QravnAppTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: no.qravn.ios.tests
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+schemes:
+  QravnApp:
+    build:
+      targets:
+        QravnApp: all
+        QravnSafetyCoreTests: [test]
+        QravnAppTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - QravnSafetyCoreTests
+        - QravnAppTests

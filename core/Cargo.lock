@@ -268,6 +268,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "qravn-safety-ffi"
+version = "0.1.0"
+dependencies = [
+ "safety-core",
+ "serde_json",
+]
+
+[[package]]
 name = "qravn-safety-jni"
 version = "0.1.0"
 dependencies = [
