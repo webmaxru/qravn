@@ -464,6 +464,39 @@ jobs:
             -resultBundlePath test-results.xcresult \
             CODE_SIGNING_ALLOWED=NO
 
+      # A build setting that fails to expand still builds, still tests, and is
+      # then rejected by App Store validation at the end of a long archive. The
+      # icon and the privacy manifest are the same shape of problem: nothing
+      # here is exercised by a simulator run, so assert the bundle directly.
+      - name: Check the app bundle is shippable
+        if: steps.ios.outputs.present == 'true'
+        working-directory: apps/ios
+        run: |
+          set -o pipefail
+          products=$(xcodebuild -project QRavn.xcodeproj -scheme QravnApp \
+            -configuration Debug \
+            -destination "id=${{ steps.simulator.outputs.udid }}" \
+            -showBuildSettings CODE_SIGNING_ALLOWED=NO \
+            | awk -F' = ' '/ BUILT_PRODUCTS_DIR = /{print $2; exit}')
+          app="$products/QravnApp.app"
+          plist="$app/Info.plist"
+          short=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")
+          build=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist")
+          echo "version $short ($build)"
+          case "$short$build" in
+            *'$('*)
+              echo "::error::Info.plist kept a literal build setting; the upload would be rejected."
+              exit 1
+              ;;
+          esac
+          for required in AppIcon60x60@2x.png PrivacyInfo.xcprivacy; do
+            if [ ! -f "$app/$required" ]; then
+              echo "::error::$required is missing from the built app."
+              ls -1 "$app"
+              exit 1
+            fi
+          done
+
       - name: Upload results on failure
         if: failure() && steps.ios.outputs.present == 'true'
         uses: actions/upload-artifact@v4
