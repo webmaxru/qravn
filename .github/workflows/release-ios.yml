@@ -1,0 +1,224 @@
+name: Release iOS
+
+# Archives, signs and ships the iOS app to TestFlight.
+#
+# Manual by design. An App Store upload is not something a merge should trigger:
+# every build consumes a build number that can never be reused, and a submission
+# is a statement to Apple about a security product.
+#
+# The workflow is committed before the Apple account exists and no-ops without
+# credentials, so the pipeline is reviewable now and starts working the moment
+# the secrets are added.
+#
+# Required repository secrets:
+#   APPLE_TEAM_ID                  Ten-character team id from the developer portal.
+#   APPLE_DIST_CERT_P12_BASE64     Apple Distribution certificate and private key,
+#                                  exported as .p12, then base64 encoded.
+#   APPLE_DIST_CERT_PASSWORD       The password set when exporting that .p12.
+#   APP_STORE_CONNECT_KEY_ID       App Store Connect API key id.
+#   APP_STORE_CONNECT_ISSUER_ID    App Store Connect API issuer id.
+#   APP_STORE_CONNECT_PRIVATE_KEY  Contents of the AuthKey_XXXX.p8 file.
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: >-
+          CFBundleVersion for this upload. Must be higher than every build
+          already on TestFlight. Defaults to this workflow's run number.
+        required: false
+        type: string
+      upload:
+        description: Upload to TestFlight. Unticked builds and signs only.
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-ios
+  cancel-in-progress: false
+
+jobs:
+  testflight:
+    name: Archive and upload
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # The secrets context is not available to job-level conditions, so the
+      # gate is a step output, the same shape the CI workflow uses for detecting
+      # an app that is not there yet.
+      - name: Detect release credentials
+        id: creds
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CERT: ${{ secrets.APPLE_DIST_CERT_P12_BASE64 }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        run: |
+          missing=()
+          [ -n "$TEAM_ID" ] || missing+=(APPLE_TEAM_ID)
+          [ -n "$CERT" ] || missing+=(APPLE_DIST_CERT_P12_BASE64)
+          [ -n "$KEY_ID" ] || missing+=(APP_STORE_CONNECT_KEY_ID)
+          if [ ${#missing[@]} -eq 0 ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Skipping the iOS release: ${missing[*]} not set. See the header of this workflow."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Rust stable with Apple targets
+        if: steps.creds.outputs.present == 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-apple-ios
+
+      - name: Install XcodeGen
+        if: steps.creds.outputs.present == 'true'
+        run: brew install xcodegen
+
+      - name: Build the Rust core as an XCFramework
+        if: steps.creds.outputs.present == 'true'
+        run: bash apps/ios/scripts/build-core.sh
+
+      - name: Generate the Xcode project
+        if: steps.creds.outputs.present == 'true'
+        working-directory: apps/ios
+        run: xcodegen generate
+
+      # A dedicated keychain that exists only for this job: the runner is
+      # ephemeral, but a certificate should still never be added to the login
+      # keychain, and this way the cleanup step can simply delete the file.
+      - name: Import the signing certificate
+        if: steps.creds.outputs.present == 'true'
+        env:
+          CERT_BASE64: ${{ secrets.APPLE_DIST_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.APPLE_DIST_CERT_PASSWORD }}
+        run: |
+          keychain="$RUNNER_TEMP/qravn-signing.keychain-db"
+          password="$(uuidgen)"
+          echo "$CERT_BASE64" | base64 --decode > "$RUNNER_TEMP/dist.p12"
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 3600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+          security import "$RUNNER_TEMP/dist.p12" -k "$keychain" \
+            -P "$CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$password" "$keychain" > /dev/null
+          security list-keychains -d user -s "$keychain" login.keychain-db
+          rm -f "$RUNNER_TEMP/dist.p12"
+          security find-identity -v -p codesigning "$keychain"
+
+      - name: Write the App Store Connect API key
+        if: steps.creds.outputs.present == 'true'
+        env:
+          PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        run: |
+          # altool and xcodebuild both look for the key in this exact location.
+          mkdir -p "$HOME/private_keys"
+          printf '%s\n' "$PRIVATE_KEY" > "$HOME/private_keys/AuthKey_${KEY_ID}.p8"
+          chmod 600 "$HOME/private_keys/AuthKey_${KEY_ID}.p8"
+
+      # -allowProvisioningUpdates with an API key lets xcodebuild create and
+      # download the distribution profile for both the app and the embedded
+      # framework. A profile specifier passed on the command line would be
+      # applied to every target, including the framework it does not fit.
+      - name: Archive
+        if: steps.creds.outputs.present == 'true'
+        working-directory: apps/ios
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          BUILD_NUMBER: ${{ inputs.build_number || github.run_number }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project QRavn.xcodeproj \
+            -scheme QravnApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/QRavn.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$HOME/private_keys/AuthKey_${KEY_ID}.p8" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER"
+
+      - name: Export the IPA
+        if: steps.creds.outputs.present == 'true'
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          # Written here rather than committed so the team id stays a secret.
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>export</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/QRavn.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$HOME/private_keys/AuthKey_${KEY_ID}.p8" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID"
+          ls -la "$RUNNER_TEMP/export"
+
+      - name: Validate against App Store Connect
+        if: steps.creds.outputs.present == 'true'
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          xcrun altool --validate-app -f "$RUNNER_TEMP"/export/*.ipa -t ios \
+            --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"
+
+      - name: Upload to TestFlight
+        if: steps.creds.outputs.present == 'true' && inputs.upload
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          xcrun altool --upload-app -f "$RUNNER_TEMP"/export/*.ipa -t ios \
+            --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"
+
+      # The dSYMs are the only way to read a crash report from a build signed
+      # here, and the archive is gone with the runner.
+      - name: Upload build artefacts
+        if: always() && steps.creds.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release
+          path: |
+            ${{ runner.temp }}/export/*.ipa
+            ${{ runner.temp }}/QRavn.xcarchive/dSYMs
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Remove the signing keychain
+        if: always()
+        run: |
+          security list-keychains -d user -s login.keychain-db || true
+          rm -f "$RUNNER_TEMP/qravn-signing.keychain-db"
+          rm -rf "$HOME/private_keys"

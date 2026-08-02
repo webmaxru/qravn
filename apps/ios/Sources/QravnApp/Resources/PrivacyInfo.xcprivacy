@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    Required by App Store Connect since May 2024.
+
+    Every array here is empty, and that is the whole point of the product: the
+    app has no networking code, no analytics, no accounts and no identifiers, so
+    there is nothing to declare. This file is the machine-readable version of
+    the privacy policy at https://qravn.isainative.dev/privacy.
+
+    NSPrivacyAccessedAPITypes is empty because the app calls none of the
+    required-reason APIs. It does not read file timestamps, disk space, system
+    boot time, the active keyboard list, or user defaults. If any of those ever
+    appear in apps/ios, this file must gain the matching category and reason
+    code or the upload is rejected.
+-->
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array/>
+</dict>
+</plist>

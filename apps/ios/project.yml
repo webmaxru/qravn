@@ -64,11 +64,13 @@ targets:
       path: Generated/QravnSafetyCore-Info.plist
       properties:
         CFBundleName: QravnSafetyCore
-        CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "3"
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: no.qravn.safety
+        MARKETING_VERSION: "1.0.2"
+        CURRENT_PROJECT_VERSION: "3"
         DEFINES_MODULE: YES
         SKIP_INSTALL: YES
         # Points at the checked-in module map next to the C header, which is
@@ -95,9 +97,10 @@ targets:
       properties:
         CFBundleName: QRavn
         CFBundleDisplayName: QRavn
-        # Kept in step with apps/android/app/build.gradle.kts.
-        CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "3"
+        # Driven by build settings so CI can raise the build number without
+        # editing a file. TestFlight refuses a build number it has seen before.
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         # Norway-first, exactly as the Android locales_config declares.
         CFBundleDevelopmentRegion: nb
         CFBundleLocalizations: [nb, nn, en]
@@ -115,10 +118,26 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: no.qravn.ios
         TARGETED_DEVICE_FAMILY: "1"
-        CODE_SIGN_STYLE: Automatic
-        # No account is available on CI, and a simulator build needs no identity.
-        CODE_SIGNING_REQUIRED: NO
-        CODE_SIGNING_ALLOWED: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # Kept in step with apps/android/app/build.gradle.kts.
+        MARKETING_VERSION: "1.0.2"
+        CURRENT_PROJECT_VERSION: "3"
+      configs:
+        # Signing is disabled for the simulator work CI does on every pull
+        # request, and left on for Release so the same project can be archived
+        # for the App Store. The identity, team and profile are supplied by
+        # xcodebuild at archive time rather than committed here.
+        Debug:
+          CODE_SIGN_STYLE: Automatic
+          CODE_SIGNING_REQUIRED: NO
+          CODE_SIGNING_ALLOWED: NO
+        Release:
+          # xcodebuild is given -allowProvisioningUpdates and an App Store
+          # Connect key, so it creates and downloads the profile itself. That
+          # keeps profile names and team identifiers out of this file, and it
+          # signs the embedded framework correctly, which a profile specifier
+          # passed on the command line cannot do.
+          CODE_SIGN_STYLE: Automatic
 
   ## Mirrors apps/android/safety-core/src/test: host-free logic tests, so the
   ## suite needs no signing identity and no app launch.
