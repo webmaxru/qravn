@@ -26,6 +26,7 @@ verdicts.
 | `Tests/QravnAppTests/` | `app/src/test` | Platform helpers, host-free. |
 | `scripts/build-core.sh` | `safety-core/build.gradle.kts` native build | Builds the Rust core and packages it as an XCFramework. |
 | `project.yml` | `settings.gradle.kts` + module `build.gradle.kts` | The single source of the Xcode project. |
+| `app-store-listing.md` | `play-listing.md` | Store copy in `no` and `en-US`, review notes, privacy answers. |
 
 Type names, enum wire values, catalog codes and version numbers are kept
 identical to the Android client on purpose. A drift between the two is a bug.
@@ -78,6 +79,39 @@ Run it after changing `apps/android/app/src/main/res/values*/strings.xml` so bot
 clients keep saying the same thing. A handful of strings have no Android
 counterpart because the surface does not exist there; they are authored in the
 generator itself.
+
+## App icon
+
+`Sources/QravnApp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`
+is generated from the canonical geometry in `brand/app-icon.svg`:
+
+```sh
+node tools/gen-ios-appicon.mjs
+```
+
+It is committed, because Xcode needs the PNG as a source asset, but it is
+generated so it cannot drift from the brand mark and so the shape is reviewable
+as a diff rather than as a binary. The App Store rejects an icon with an alpha
+channel or with the rounded corners baked in, so this one has neither — iOS
+applies its own mask.
+
+## Releasing
+
+`.github/workflows/release-ios.yml` archives, signs, validates and uploads to
+TestFlight. It is `workflow_dispatch` only: every upload consumes a build number
+that can never be reused. Without the six Apple secrets it no-ops with a notice,
+so the pipeline is reviewable before the developer account exists.
+
+`app-store-listing.md` holds the store copy, the review notes and the privacy
+answers. Its "49 checks" claims are enforced against
+`contracts/v1/finding-codes.json` by the `Contract and localization` CI job, so a
+stale number fails the build rather than the store page. Its field lengths are
+measured by `tools/check-store-listings.mjs`; run it before pasting anything into
+App Store Connect, which rejects an over-length field only at upload.
+
+`Sources/QravnApp/Resources/PrivacyInfo.xcprivacy` declares no tracking, no
+collected data and no required-reason API use. If any of those change, that file
+must change with them or App Store Connect rejects the build.
 
 ## Continuous integration
 
