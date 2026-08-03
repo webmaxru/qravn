@@ -4,7 +4,7 @@ A free, privacy-first QR code safety application for Norway.
 
 Scan a QR code and QRavn runs **49 checks** on it before anything opens — 26 on the address, 16 on what the code actually contains, and 7 on where the link forwards you — then reports what it found and why.
 
-> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live. The Android application is implemented against the same core and is awaiting Play review; iOS is served by the PWA.
+> **Status:** early implementation. The shared core, the web surface and the redirect resolver are live. The Android application is implemented against the same core and is awaiting Play review. The iOS application is implemented and built in CI; its TestFlight pipeline is in place and waits only on an Apple developer account. The web app is additionally being submitted to the Microsoft Store as a packaged PWA.
 >
 > **Web app:** <https://qravn.isainative.dev>
 >
@@ -80,14 +80,18 @@ core/            Rust workspace — the shared safety core
   crates/        payload, url-policy, verdict, rules, classifier, evidence
   bindings/wasm/ wasm-bindgen wrapper published to the web app
   bindings/android/  JNI wrapper loaded by the Android app
+  bindings/ios/  C ABI wrapper packaged as an XCFramework
 apps/web/        Vite + TypeScript progressive web application
 apps/android/    Kotlin + Compose application — see apps/android/README.md
+apps/ios/        Swift + SwiftUI application — see apps/ios/README.md
+services/resolver/  Isolated redirect resolver — the only thing that ever contacts a scanned address
 brand/           Logo, app icons and store artwork — the visual source of truth
 contracts/       Versioned schemas shared by every surface
 localization/    nb, nn, en catalogs keyed by finding code
 test-vectors/    Golden corpora, including decoder conformance
 planning/        Market research, technical research, implementation plan
-tools/           Contract checks and the brand asset renderer
+tools/           Contract checks, store listing and asset checks, brand renderer
+infra/           Bicep and provisioning scripts for the resolver and web hosting
 .github/         CI and deployment workflows
 ```
 
@@ -169,9 +173,43 @@ geometry, sized so the mark survives every launcher mask.
 
 ---
 
+## Store listings
+
+Three stores, three sets of rules, and each rejects an upload that is one pixel
+or one character out — at upload, after every other field has been filled in.
+The complete list of slots every store offers, images and text, required and
+optional, including the ones deliberately left empty, is
+[`brand/STORE-ASSETS.md`](brand/STORE-ASSETS.md).
+
+That document is generated. The source is `brand/store-assets.json`, which is
+also what the checkers read, so the list a person works from cannot drift from
+the list CI enforces. A slot missing from the registry is a slot nobody will
+produce an asset for — which is how the Microsoft Store poster art was missed
+once already.
+
+| Store | Listing copy | Image detail |
+|---|---|---|
+| App Store | [`apps/ios/app-store-listing.md`](apps/ios/app-store-listing.md) | [`brand/app-store/README.md`](brand/app-store/README.md) |
+| Google Play | [`apps/android/play-listing.md`](apps/android/play-listing.md) | [`apps/android/README.md`](apps/android/README.md) |
+| Microsoft Store | [`brand/microsoft-store/store-listing.md`](brand/microsoft-store/store-listing.md) | [`brand/microsoft-store/README.md`](brand/microsoft-store/README.md) |
+
+```bash
+node tools/check-store-listings.mjs       # every field inside its limit
+node tools/check-store-images.mjs         # every image the size its slot wants
+node tools/gen-store-assets-doc.mjs       # regenerate STORE-ASSETS.md
+node --test "tools/*.test.mjs"            # the checkers themselves
+```
+
+Every store screenshot is a photograph of the running app driven by a payload
+from `test-vectors/golden/`, never a mockup, so a verdict shown in a listing is
+one the engine is tested to produce and no two stores can disagree about the
+same address. None of those payloads is contacted, including during capture.
+
+---
+
 ## Getting started
 
-Requires Rust (stable), Node 20+, and `wasm-pack`.
+Requires Rust (stable), Node 22, and `wasm-pack`.
 
 ```bash
 # Core
@@ -189,10 +227,18 @@ The Android application additionally needs the Android SDK, the NDK and
 cd apps/android && ./gradlew assembleDebug
 ```
 
-CI (`.github/workflows/ci.yml`) gates every push and pull request on five jobs:
+The iOS application needs macOS with Xcode 16 and XcodeGen. See
+[`apps/ios/README.md`](apps/ios/README.md).
+
+```bash
+bash apps/ios/scripts/build-core.sh && cd apps/ios && xcodegen generate
+```
+
+CI (`.github/workflows/ci.yml`) gates every push and pull request on six jobs:
 the Rust core including the `wasm32` build, the web app, browser tests across
 Chromium, Firefox and WebKit, the Android app including instrumented tests on an
-emulator, and the shared contract.
+emulator, the iOS app on a macOS runner, and the shared contract — which also
+holds the store listing and store asset checks.
 
 ---
 
@@ -235,6 +281,19 @@ redirect resolver is never triggered this way.
 ---
 
 ## Documentation
+
+Each surface documents itself:
+
+| Document | Purpose |
+|---|---|
+| [`apps/web/README.md`](apps/web/README.md) | The PWA: engine boundary, wasm packaging, the checks that gate it |
+| [`apps/android/README.md`](apps/android/README.md) | Android build, JNI core, Play release path |
+| [`apps/ios/README.md`](apps/ios/README.md) | iOS build, XCFramework core, TestFlight path |
+| [`services/resolver/README.md`](services/resolver/README.md) | The isolated redirect resolver and its SSRF defences |
+| [`infra/README.md`](infra/README.md) | Azure provisioning for the resolver and web hosting |
+| [`brand/STORE-ASSETS.md`](brand/STORE-ASSETS.md) | Every store slot, image and text, across all three stores |
+| [`test-vectors/README.md`](test-vectors/README.md) | The golden corpus and the redirect-chain schema |
+| [`AGENTS.md`](AGENTS.md) | Product invariants and the commands that verify them |
 
 All research and planning lives in [`planning/`](planning/). Start with [`planning/README.md`](planning/README.md).
 
