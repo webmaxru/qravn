@@ -33,6 +33,19 @@ settings:
     # built by scripts/build-core.sh before xcodebuild runs, exactly as the web
     # app's wasm package is built before Vite. Sandboxing is therefore free.
     ENABLE_USER_SCRIPT_SANDBOXING: YES
+    # Where `import QravnSafetyFFI` is resolved: the checked-in module map next
+    # to the C header. Only QravnSafetyCore imports it, but the setting has to
+    # be project-wide, because that import is part of QravnSafetyCore's module
+    # interface and so every target that imports QravnSafetyCore has to be able
+    # to resolve it too. Scoping this to QravnSafetyCore alone builds under
+    # Xcode 16 and fails under Xcode 26 with "Unable to find module dependency"
+    # against the app target.
+    SWIFT_INCLUDE_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../../core/bindings/ios/include
+    HEADER_SEARCH_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../../core/bindings/ios/include
 
 targets:
   ## The Kotlin `no.qravn.safety` module, ported. Owns the FFI boundary, the
@@ -73,14 +86,6 @@ targets:
         CURRENT_PROJECT_VERSION: "3"
         DEFINES_MODULE: YES
         SKIP_INSTALL: YES
-        # Points at the checked-in module map next to the C header, which is
-        # what lets Swift say `import QravnSafetyFFI`.
-        SWIFT_INCLUDE_PATHS:
-          - $(inherited)
-          - $(SRCROOT)/../../core/bindings/ios/include
-        HEADER_SEARCH_PATHS:
-          - $(inherited)
-          - $(SRCROOT)/../../core/bindings/ios/include
 
   ## The `no.qravn.android` app module, ported. Renders assessments; decides
   ## nothing.
