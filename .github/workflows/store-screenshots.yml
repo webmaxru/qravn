@@ -38,6 +38,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Select Xcode
+        # The runner defaults to Xcode 16.4 while shipping iOS 26 runtimes, and
+        # the 6.9" iPhone the store asks for only exists on those. That pairing
+        # does not fail, it hangs: the test target builds in two minutes and
+        # xcodebuild never prints "Testing started". Take the newest Xcode so the
+        # toolchain is at least as new as the runtime it has to drive.
+        run: |
+          newest="$(ls -d /Applications/Xcode_*.app | sort -V | tail -n 1)"
+          echo "selecting $newest"
+          sudo xcode-select -s "$newest/Contents/Developer"
+          xcodebuild -version
+
       - name: Report toolchain
         run: |
           xcodebuild -version

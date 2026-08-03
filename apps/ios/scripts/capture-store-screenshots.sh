@@ -103,6 +103,34 @@ if [ -z "$udid" ]; then
   exit 1
 fi
 
+# A simulator runtime newer than the selected Xcode's SDK is not a supported
+# pairing, and it does not announce itself: the test target builds and then
+# xcodebuild waits forever without ever starting the test. A hosted runner
+# defaults to an older Xcode than its newest runtime, so this is the normal
+# case rather than an exotic one. Say so in a second instead of hanging.
+sdk_version="$(xcrun --sdk iphonesimulator --show-sdk-version 2>/dev/null || echo 0)"
+device_runtime="$(xcrun simctl list devices --json 2>/dev/null \
+  | /usr/bin/python3 -c 'import json, re, sys
+udid = sys.argv[1]
+for identifier, devices in json.load(sys.stdin)["devices"].items():
+    if any(d.get("udid") == udid for d in devices):
+        match = re.search(r"iOS-(\d+)-(\d+)$", identifier)
+        print(f"{match.group(1)}.{match.group(2)}" if match else "")
+        break
+else:
+    print("")' "$udid")"
+
+if [ -n "$device_runtime" ] && [ "${device_runtime%%.*}" -gt "${sdk_version%%.*}" ]; then
+  echo "error: the simulator runs iOS $device_runtime but the selected Xcode" >&2
+  echo "       only has the iOS $sdk_version SDK. xcodebuild hangs on that" >&2
+  echo "       pairing rather than refusing it." >&2
+  echo "       Select a newer Xcode with xcode-select, or install a 6.9\"" >&2
+  echo "       device on a runtime this Xcode supports." >&2
+  xcodebuild -version >&2
+  exit 1
+fi
+echo "    iOS $device_runtime against the iOS $sdk_version SDK"
+
 xcrun simctl boot "$udid" 2>/dev/null || true
 
 # macOS ships no `timeout`, and anything that talks to CoreSimulator can wedge.
@@ -197,9 +225,11 @@ for entry in "${locales[@]}"; do
       -project "$ios_dir/QRavn.xcodeproj" \
       -scheme QravnScreenshots \
       -configuration Debug \
-      -destination "id=$udid" \
+      -destination "id=$udid,arch=arm64" \
       -resultBundlePath "$result" \
       -derivedDataPath "$derived/DerivedData" \
+      -test-timeouts-enabled YES \
+      -maximum-test-execution-time-allowance 900 \
       CODE_SIGNING_ALLOWED=NO
 
   # The test writes straight to the host filesystem, which the simulator can
