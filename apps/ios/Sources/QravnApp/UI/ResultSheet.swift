@@ -38,6 +38,11 @@ struct ResultSheet: View {
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            // On the ScrollView rather than the stack inside it: a plain VStack
+            // is accessibility-transparent, so SwiftUI pushes an identifier put
+            // there down onto the leaves instead of exposing a container. The
+            // store screenshot run waits on this element.
+            .accessibilityIdentifier("result_sheet")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
