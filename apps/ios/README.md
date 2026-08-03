@@ -24,7 +24,9 @@ verdicts.
 | `Sources/QravnApp/Platform/` | `app/.../platform/` | Frame stabilisation, incoming text, the open policy. |
 | `Tests/QravnSafetyCoreTests/` | `safety-core/src/test` + instrumented core tests | Contract decoding and the real core through the C ABI. |
 | `Tests/QravnAppTests/` | `app/src/test` | Platform helpers, host-free. |
+| `Tests/QravnScreenshots/` | manual emulator capture | Takes the App Store screenshots from the shipping app. |
 | `scripts/build-core.sh` | `safety-core/build.gradle.kts` native build | Builds the Rust core and packages it as an XCFramework. |
+| `scripts/capture-store-screenshots.sh` | `adb shell wm size` + screen capture | Drives the UI test on a 6.9" simulator and writes `brand/app-store/screenshots/`. |
 | `project.yml` | `settings.gradle.kts` + module `build.gradle.kts` | The single source of the Xcode project. |
 | `app-store-listing.md` | `play-listing.md` | Store copy in `no` and `en-US`, review notes, privacy answers. |
 
@@ -95,6 +97,36 @@ as a diff rather than as a binary. The App Store rejects an icon with an alpha
 channel or with the rounded corners baked in, so this one has neither — iOS
 applies its own mask.
 
+`tools/check-store-images.mjs` re-reads the PNG header on every CI run and fails
+if any of those three properties stops being true.
+
+## Store screenshots
+
+App Store Connect needs one 1320 × 2868 set per listing language;
+`TARGETED_DEVICE_FAMILY: "1"` means no iPad set is asked for. They are captured
+from the shipping app by a UI test rather than composed in a design tool:
+
+```sh
+apps/ios/scripts/capture-store-screenshots.sh
+```
+
+The script builds the core, generates the project, picks a 6.9" simulator,
+freezes the status bar at 09:41, and runs `Tests/QravnScreenshots` once per
+language into `brand/app-store/screenshots/`. Simulator captures are RGBA and
+App Store Connect rejects an image with an alpha channel, so the script runs
+`tools/strip-png-alpha.mjs` over the frames before checking their dimensions;
+it refuses any genuinely translucent image rather than compositing one. It
+needs macOS. Since the development machine here is Windows, the usual route is
+the **App Store screenshots** workflow, which runs the same script on a hosted
+Mac.
+
+`QravnScreenshots` is deliberately outside the `QravnApp` scheme, so the suite
+that runs on every pull request stays headless and fast. See
+[`brand/app-store/README.md`](../../brand/app-store/README.md) for what each
+frame shows and why frame 6 is worth re-taking on hardware, and
+[`brand/STORE-ASSETS.md`](../../brand/STORE-ASSETS.md) for every slot the App
+Store offers, including the ones this product does not fill.
+
 ## Releasing
 
 `.github/workflows/release-ios.yml` archives, signs, validates and uploads to
@@ -107,7 +139,9 @@ answers. Its "49 checks" claims are enforced against
 `contracts/v1/finding-codes.json` by the `Contract and localization` CI job, so a
 stale number fails the build rather than the store page. Its field lengths are
 measured by `tools/check-store-listings.mjs`; run it before pasting anything into
-App Store Connect, which rejects an over-length field only at upload.
+App Store Connect, which rejects an over-length field only at upload. Which
+fields exist at all, and which App Store slots are deliberately left empty, is
+[`brand/STORE-ASSETS.md`](../../brand/STORE-ASSETS.md).
 
 `Sources/QravnApp/Resources/PrivacyInfo.xcprivacy` declares no tracking, no
 collected data and no required-reason API use. If any of those change, that file

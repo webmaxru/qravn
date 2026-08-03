@@ -80,6 +80,9 @@ struct ScanScreen: View {
                     .keyboardType(.URL)
                     .lineLimit(1...3)
                     .accessibilityLabel("scan_manual_entry_label")
+                    // Identifiers, not labels: the labels are localized, and the
+                    // store screenshots are captured once per listing language.
+                    .accessibilityIdentifier("scan_manual_entry")
 
                 Button {
                     Task { await viewModel.checkManualEntry() }
@@ -96,6 +99,7 @@ struct ScanScreen: View {
                 // still needs a name for VoiceOver.
                 .accessibilityLabel(Text("scan_check"))
                 .accessibilityValue(viewModel.isAssessing ? Text("scan_analysing") : Text(""))
+                .accessibilityIdentifier("scan_check")
             }
 
             if let notice = viewModel.notice {

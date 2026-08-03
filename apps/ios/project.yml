@@ -180,6 +180,30 @@ targets:
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGNING_ALLOWED: NO
 
+  ## The store screenshots, taken from the shipping app rather than drawn.
+  ##
+  ## Deliberately absent from the QravnApp scheme: this target launches a
+  ## simulator and sleeps for animations, which is the wrong shape of work for
+  ## the suite that runs on every pull request. It has its own scheme, and
+  ## .github/workflows/store-screenshots.yml runs it on demand.
+  QravnScreenshots:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Tests/QravnScreenshots
+    dependencies:
+      - target: QravnApp
+    info:
+      path: Generated/QravnScreenshots-Info.plist
+      properties:
+        CFBundleName: QravnScreenshots
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: no.qravn.ios.screenshots
+        TEST_TARGET_NAME: QravnApp
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
 schemes:
   QravnApp:
     build:
@@ -194,3 +218,17 @@ schemes:
       targets:
         - QravnSafetyCoreTests
         - QravnAppTests
+
+  ## Store screenshots only. Kept separate so `xcodebuild test -scheme QravnApp`
+  ## stays the fast, headless suite it is today.
+  QravnScreenshots:
+    build:
+      targets:
+        QravnApp: all
+        QravnScreenshots: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - QravnScreenshots

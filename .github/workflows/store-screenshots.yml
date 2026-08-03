@@ -1,0 +1,98 @@
+## Captures the App Store screenshots on a hosted Mac.
+##
+## The developer machine for this project is Windows, and only Apple ships the
+## iOS simulator, so this is how the listing images get taken. It is manual
+## rather than part of CI: it boots a simulator and sleeps for animations, which
+## is a poor fit for a check that runs on every pull request, and the output is
+## reviewed by a human before it goes near App Store Connect.
+##
+## Run it from the Actions tab, download the `app-store-screenshots` artifact,
+## unzip it over brand/app-store/screenshots/ and commit what you keep.
+name: App Store screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit the captured screenshots back to the branch
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    name: Capture on a 6.9" simulator
+    runs-on: macos-15
+    timeout-minutes: 60
+    permissions:
+      # Only needed for the optional commit-back; the capture itself reads.
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Report toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      # The pictures show verdicts, and every verdict in this product comes from
+      # the Rust core. Building the real core is therefore not optional here
+      # either: a screenshot of a stub would be a screenshot of a different app.
+      - name: Install Rust stable with Apple targets
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+      - name: Cache cargo
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            core/target/
+          key: ${{ runner.os }}-cargo-ios-${{ hashFiles('core/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-ios-
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Capture
+        run: bash apps/ios/scripts/capture-store-screenshots.sh
+
+      - name: Upload the screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots
+          path: brand/app-store/screenshots/
+          retention-days: 30
+
+      # The result bundles carry a frame-by-frame record of what the app did,
+      # which is the only way to see why a capture came out wrong.
+      - name: Upload the result bundles on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots-results
+          path: apps/ios/.screenshots/*.xcresult
+          retention-days: 7
+
+      - name: Commit the screenshots
+        if: inputs.commit
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain brand/app-store/screenshots)" ]; then
+            echo "::notice::The captured screenshots are identical to the committed ones."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add brand/app-store/screenshots
+          git commit -m "Capture App Store screenshots on a 6.9\" simulator"
+          git push
