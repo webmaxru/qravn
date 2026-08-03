@@ -264,18 +264,26 @@ question is answered before the build is uploaded.
 ## Screenshots
 
 Required: **6.9" (1320 × 2868)**. Apple scales it down for every smaller iPhone,
-so one set is enough. Up to 10 per locale, first three visible without scrolling.
+so one set is enough, and `TARGETED_DEVICE_FAMILY: "1"` means no iPad set is
+asked for at all. Up to 10 per locale, first three visible without scrolling.
 
-Reuse the composition already approved for Play — see `brand/play/screenshots/`
-— in this order, since the first three carry the argument:
+They are captured from the shipping app rather than composed, by
+`apps/ios/scripts/capture-store-screenshots.sh` — see
+[`brand/app-store/README.md`](../../brand/app-store/README.md). Every address in
+them is a golden test vector, and the same ones the Microsoft Store listing
+photographs, so no two listings can show different verdicts for one address.
+
+In this order, since the first three carry the argument:
 
 1. A verdict on a lookalike domain, findings visible.
-2. A blocked verdict, showing there is no button to open it.
+2. A blocked verdict, scrolled to where an open button would have been.
 3. The address panel, showing the real domain called out.
 4. The "why" panel with the finding list.
-5. The offline notice in settings.
+5. The quiet verdict: no known threat found, which is not "safe".
+6. The first screen, with the notice that the analysis stays on the device.
 
-Locales: `no` and `en-US`, mirroring the listing languages.
+Locales: `no` and `en-US`, mirroring the listing languages. Files land in
+`brand/app-store/screenshots/{no,en-US}/`.
 
 ## Review notes
 

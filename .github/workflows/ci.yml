@@ -514,13 +514,46 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # Pinned because the store asset tests below are run through node --test
+      # with a glob, which the runner only expands itself from Node 21 on. The
+      # other steps here are version-agnostic, so this job previously took
+      # whatever the image happened to ship.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
       - name: Check contract registry and localization catalogs
         run: node tools/check-contract-localization.js
 
-      # Play truncates nothing: an over-length name or short description is
-      # rejected at upload, after every other form has been filled in.
-      - name: Check Play listing field lengths
-        run: node tools/check-play-listing.mjs
+      # No store truncates: an over-length name or description is rejected at
+      # upload, after every other form has been filled in. Covers the Play, App
+      # Store and Microsoft Store listings.
+      - name: Check store listing field lengths
+        run: node tools/check-store-listings.mjs
+
+      # Same failure mode as the field lengths, one layer down: every store
+      # validates image dimensions at upload and none of them resizes. The App
+      # Store also rejects a marketing icon that carries an alpha channel, which
+      # is invisible in a file listing and obvious only in a rejection email.
+      - name: Check store image dimensions and formats
+        run: node tools/check-store-images.mjs
+
+      # Both checks above read brand/store-assets.json, which is the list of
+      # every slot the three stores offer. brand/STORE-ASSETS.md is generated
+      # from it, so this fails when the two have parted company — otherwise the
+      # document people actually read slowly stops describing what is checked.
+      - name: Check the store asset document is current
+        run: node tools/gen-store-assets-doc.mjs --check
+
+      # The three checks above are the only thing standing between a bad
+      # registry edit and a store rejection, so they get tests of their own.
+      # Each case builds a throwaway tree and mutates one field of a
+      # known-good fixture, which is how a checker that silently stops
+      # checking something gets caught. Node expands the glob itself, so this
+      # behaves the same on a shell that would not.
+      - name: Test the store asset tooling
+        run: node --test "tools/*.test.mjs"
 
       # The copy leads with how many checks the engine runs. That is a claim
       # about a security product, so it is asserted against the registry rather
