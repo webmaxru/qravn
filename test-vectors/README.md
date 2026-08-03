@@ -1,6 +1,8 @@
 # Golden test vectors
 
-This corpus is the most important asset in the repo: it is the single source of truth for what every platform agrees is dangerous. The **same** vectors are executed twice — once through the pure Rust core (`core/crates/safety-core/tests/conformance.rs`) and once through the compiled WebAssembly in a real browser (`apps/web/src/engine/wasmGoldenConformance.test.ts`) — so the web surface (and the future iOS and Android surfaces) can never silently disagree. The web runner deliberately parses `FIXED_NOW_MS` out of the Rust source so the two clocks cannot drift, and both runners assert a **minimum vector count** (currently `>= 118`) so a corpus that silently shrinks fails the build. A vector added here is a promise every future platform must keep, so precision matters more than volume.
+This corpus is the most important asset in the repo: it is the single source of truth for what every platform agrees is dangerous. The **same** vectors are executed twice — once through the pure Rust core (`core/crates/safety-core/tests/conformance.rs`) and once through the compiled WebAssembly in a real browser (`apps/web/src/engine/wasmGoldenConformance.test.ts`) — so no surface built on the core can silently disagree with another. The web runner deliberately parses `FIXED_NOW_MS` out of the Rust source so the two clocks cannot drift, and both runners assert a **minimum vector count** (currently `>= 118`) so a corpus that silently shrinks fails the build. A vector added here is a promise every future platform must keep, so precision matters more than volume.
+
+The same payloads are photographed for the App Store, Play and Microsoft Store listings, so a verdict shown in a screenshot is one this corpus asserts the engine produces.
 
 The files in `test-vectors/golden/` are the stable corpus for the QRavn safety engine. Each JSON file is an array of vectors:
 
