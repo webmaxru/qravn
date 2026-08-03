@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Featured promotional square art, 1:1.
+    
+    No title, per the Store requirement. Centred rather than offset: this
+    one is used as a tile, so it has no reserved edge.
+  -->
+  <rect width="1080" height="1080" fill="#0C1519" />
+  <path d="M150,286 V150 H286 M794,150 H930 V286 M150,794 V930 H286" fill="none" stroke="#86B2C0" stroke-width="5" />
+  <path transform="translate(360 360) scale(51.42857142857143)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+</svg>

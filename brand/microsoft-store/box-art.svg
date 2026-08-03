@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Box art, 1:1. Rendered at 1080x1080 and 2160x2160.
+    
+    Also a logo, so it carries the name too. That is the whole difference
+    between this and xbox-featured-promotional-square.svg, which is the same
+    1080x1080 but is required to carry no title at all.
+    
+    The Store falls back to this as the main logo when poster art is
+    missing, so it uses the same vertical lockup poster-art.svg does.
+  -->
+  <rect width="1080" height="1080" fill="#0C1519" />
+  <path d="M240,234 V130 H344 M736,130 H840 V234 M240,626 V730 H344" fill="none" stroke="#86B2C0" stroke-width="5" />
+  <path transform="translate(400 290) scale(40)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+  <text x="540" y="880" fill="#F1EDE6" text-anchor="middle"
+        font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
+        font-size="112" letter-spacing="-2">QRavn</text>
+  <rect x="452" y="927" width="176" height="3" fill="#86B2C0" />
+</svg>

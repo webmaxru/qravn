@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 584 800" width="584" height="800"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Branded key art, 584x800.
+    
+    The title is required, and must sit inside the top three quarters -
+    above y=600 - because the Store may lay its own text over the bottom
+    quarter. Everything drawn here ends at y=533.
+  -->
+  <rect width="584" height="800" fill="#0C1519" />
+  <path transform="translate(192 170) scale(28.571428571428573)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+  <text x="292" y="490" fill="#F1EDE6" text-anchor="middle"
+        font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
+        font-size="96" letter-spacing="-2">QRavn</text>
+  <rect x="217" y="530" width="150" height="3" fill="#86B2C0" />
+</svg>

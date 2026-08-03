@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1080" width="720" height="1080"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Poster art. Rendered at 720x1080 and 1440x2160.
+    
+    Partner Center labels this slot 9:16, but the two sizes it asks for are
+    720x1080 and 1440x2160, which are 2:3. The pixel dimensions are what is
+    validated at upload, so this is drawn 2:3 and the ratio label ignored.
+    
+    A logo, not a banner: the Store uses this as the main logo for Windows
+    10/11 customers and requires it for Xbox. So it carries the name, unlike
+    super-hero.svg, over which the Store lays a title of its own.
+  -->
+  <rect width="720" height="1080" fill="#0C1519" />
+  <path d="M80,246 V150 H176 M544,150 H640 V246 M80,614 V710 H176" fill="none" stroke="#86B2C0" stroke-width="5" />
+  <path transform="translate(230 300) scale(37.142857142857146)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+  <text x="360" y="860" fill="#F1EDE6" text-anchor="middle"
+        font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
+        font-size="104" letter-spacing="-2">QRavn</text>
+  <rect x="278" y="904" width="164" height="3" fill="#86B2C0" />
+</svg>
