@@ -11,4 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 safety-core = { path = "../../crates/safety-core" }
 serde_json.workspace = true
-jni = { version = "0.21", default-features = false }
+jni = { version = "0.22", default-features = false }
