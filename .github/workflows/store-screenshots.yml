@@ -30,7 +30,7 @@ jobs:
   capture:
     name: Capture on a 6.9" simulator
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 80
     permissions:
       # Only needed for the optional commit-back; the capture itself reads.
       contents: write
@@ -91,7 +91,11 @@ jobs:
         # The job-level timeout does the opposite: it cancels them, which is how
         # the first run of this workflow spent an hour hanging on a simulator
         # boot and then uploaded nothing to explain itself.
-        timeout-minutes: 35
+        #
+        # The script bounds and retries each locale itself, so this is the outer
+        # backstop rather than the working limit: two locales, two attempts, at
+        # twelve minutes each.
+        timeout-minutes: 55
         run: bash apps/ios/scripts/capture-store-screenshots.sh
 
       # The pictures are what this job exists to produce, so they go up whatever

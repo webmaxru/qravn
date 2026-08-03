@@ -37,6 +37,13 @@ device_types=(
 expected_width=1320
 expected_height=2868
 
+# A good run builds and tests a locale in about five minutes. Cut it off at
+# twelve, which is generous enough that a slow-but-working runner is never
+# mistaken for a wedged one, and short enough that two attempts at both locales
+# still fit inside the workflow's step budget.
+test_timeout=720
+attempts_per_locale=2
+
 require() {
   command -v "$1" >/dev/null 2>&1 || {
     echo "error: $1 is not installed." >&2
@@ -131,19 +138,21 @@ if [ -n "$device_runtime" ] && [ "${device_runtime%%.*}" -gt "${sdk_version%%.*}
 fi
 echo "    iOS $device_runtime against the iOS $sdk_version SDK"
 
-xcrun simctl boot "$udid" 2>/dev/null || true
-
 # macOS ships no `timeout`, and anything that talks to CoreSimulator can wedge.
-# Run it in the background and shoot it if it overruns.
+# Run it in the background and shoot it if it overruns. `set -m` puts the child
+# in its own process group so the kill reaches what it spawned too: xcodebuild
+# leaves simulator helpers behind, and a survivor would sabotage the retry.
 run_with_timeout() {
   local limit="$1"
   shift
+  set -m
   "$@" &
   local pid=$!
+  set +m
   local waited=0
   while kill -0 "$pid" 2>/dev/null; do
     if [ "$waited" -ge "$limit" ]; then
-      kill -9 "$pid" 2>/dev/null || true
+      kill -9 -"$pid" 2>/dev/null || kill -9 "$pid" 2>/dev/null || true
       wait "$pid" 2>/dev/null || true
       return 124
     fi
@@ -168,42 +177,58 @@ print(next((d.get("state", "Unknown") for g in groups.values() for d in g if d.g
 # spent 59 minutes inside it while `simctl list` reported the device Booted the
 # whole time. Poll the state instead, which is what that evidence showed to be
 # both accurate and cheap.
-echo "==> waiting for the simulator to boot"
-boot_deadline=$((SECONDS + 300))
-while [ "$(device_state)" != "Booted" ]; do
-  if [ "$SECONDS" -ge "$boot_deadline" ]; then
-    echo "error: the simulator did not reach Booted within 300s." >&2
-    echo "       This is the simulator, not the app: nothing has been built yet." >&2
-    xcrun simctl list devices 2>/dev/null | grep -F "$udid" >&2 || true
-    exit 1
-  fi
-  sleep 5
-done
+boot_simulator() {
+  echo "==> waiting for the simulator to boot"
+  run_with_timeout 120 xcrun simctl boot "$udid" >/dev/null 2>&1 || true
 
-# Booted says the device is running, not that launchd inside it is answering.
-# Best effort only: xcodebuild waits for readiness too, so a slow probe is worth
-# a note and not a failed run.
-ready_deadline=$((SECONDS + 180))
-until run_with_timeout 20 xcrun simctl spawn "$udid" launchctl print system >/dev/null 2>&1; do
-  if [ "$SECONDS" -ge "$ready_deadline" ]; then
-    echo "    booted, but launchd did not answer within 180s; continuing anyway"
-    break
-  fi
-  sleep 5
-done
-echo "    booted"
+  local boot_deadline=$((SECONDS + 300))
+  while [ "$(device_state)" != "Booted" ]; do
+    if [ "$SECONDS" -ge "$boot_deadline" ]; then
+      echo "error: the simulator did not reach Booted within 300s." >&2
+      xcrun simctl list devices 2>/dev/null | grep -F "$udid" >&2 || true
+      return 1
+    fi
+    sleep 5
+  done
 
-# The clock and the battery are the two things in a store screenshot that date
-# it. 9:41 is the time Apple has used in its own marketing since 2007.
-xcrun simctl status_bar "$udid" override \
-  --time "09:41" \
-  --batteryState charged \
-  --batteryLevel 100 \
-  --cellularMode active \
-  --cellularBars 4 \
-  --wifiMode active \
-  --wifiBars 3 \
-  --dataNetwork wifi >/dev/null 2>&1 || true
+  # Booted says the device is running, not that launchd inside it is answering.
+  # Best effort only: xcodebuild waits for readiness too, so a slow probe is
+  # worth a note and not a failed run.
+  local ready_deadline=$((SECONDS + 180))
+  until run_with_timeout 20 xcrun simctl spawn "$udid" launchctl print system >/dev/null 2>&1; do
+    if [ "$SECONDS" -ge "$ready_deadline" ]; then
+      echo "    booted, but launchd did not answer within 180s; continuing anyway"
+      break
+    fi
+    sleep 5
+  done
+  echo "    booted"
+
+  # The clock and the battery are the two things in a store screenshot that date
+  # it. 9:41 is the time Apple has used in its own marketing since 2007. Set
+  # here rather than once at the top so a recycled device is dressed again.
+  xcrun simctl status_bar "$udid" override \
+    --time "09:41" \
+    --batteryState charged \
+    --batteryLevel 100 \
+    --cellularMode active \
+    --cellularBars 4 \
+    --wifiMode active \
+    --wifiBars 3 \
+    --dataNetwork wifi >/dev/null 2>&1 || true
+}
+
+# Throw the device away and bring up a clean one. Used between attempts, because
+# the failure this recovers from leaves the simulator in the state that caused
+# it.
+recycle_simulator() {
+  echo "    recycling the simulator"
+  run_with_timeout 120 xcrun simctl shutdown "$udid" >/dev/null 2>&1 || true
+  run_with_timeout 120 xcrun simctl erase "$udid" >/dev/null 2>&1 || true
+  boot_simulator
+}
+
+boot_simulator || exit 1
 
 status=0
 for entry in "${locales[@]}"; do
@@ -218,19 +243,62 @@ for entry in "${locales[@]}"; do
   # xcodebuild forwards a host variable named TEST_RUNNER_X into the test
   # process as X. It is the only supported way to parameterise a test run from
   # the command line without editing the scheme.
-  TEST_RUNNER_QRAVN_SCREENSHOT_DIR="$out_dir" \
-  TEST_RUNNER_QRAVN_SCREENSHOT_LANGUAGE="$language" \
-  TEST_RUNNER_QRAVN_SCREENSHOT_LOCALE="$posix_locale" \
-    xcodebuild test \
-      -project "$ios_dir/QRavn.xcodeproj" \
-      -scheme QravnScreenshots \
-      -configuration Debug \
-      -destination "id=$udid,arch=arm64" \
-      -resultBundlePath "$result" \
-      -derivedDataPath "$derived/DerivedData" \
-      -test-timeouts-enabled YES \
-      -maximum-test-execution-time-allowance 900 \
-      CODE_SIGNING_ALLOWED=NO
+  #
+  # Bounded and retried, because the interesting failure here is not a failing
+  # test but a silent one: roughly one run in two, xcodebuild finishes building
+  # and then never prints "Testing started", because installing or launching on
+  # the simulator wedged. -maximum-test-execution-time-allowance does not cover
+  # that, since no test has begun. A capture that hangs costs the whole job, and
+  # the same commit succeeds on the next run, so retry on a clean device.
+  attempt=1
+  captured=0
+  while [ "$attempt" -le "$attempts_per_locale" ]; do
+    if [ "$attempt" -gt 1 ]; then
+      echo "    attempt $attempt of $attempts_per_locale"
+    fi
+
+    set +e
+    run_with_timeout "$test_timeout" \
+      env TEST_RUNNER_QRAVN_SCREENSHOT_DIR="$out_dir" \
+          TEST_RUNNER_QRAVN_SCREENSHOT_LANGUAGE="$language" \
+          TEST_RUNNER_QRAVN_SCREENSHOT_LOCALE="$posix_locale" \
+        xcodebuild test \
+          -project "$ios_dir/QRavn.xcodeproj" \
+          -scheme QravnScreenshots \
+          -configuration Debug \
+          -destination "id=$udid,arch=arm64" \
+          -resultBundlePath "$result" \
+          -derivedDataPath "$derived/DerivedData" \
+          -test-timeouts-enabled YES \
+          -maximum-test-execution-time-allowance 900 \
+          CODE_SIGNING_ALLOWED=NO
+    rc=$?
+    set -e
+
+    if [ "$rc" -eq 0 ]; then
+      captured=1
+      break
+    fi
+
+    if [ "$rc" -eq 124 ]; then
+      echo "    no test output for ${test_timeout}s; the simulator wedged before the test ran" >&2
+    else
+      echo "    xcodebuild exited $rc" >&2
+    fi
+
+    attempt=$((attempt + 1))
+    if [ "$attempt" -le "$attempts_per_locale" ]; then
+      rm -rf "$out_dir" "$result"
+      mkdir -p "$out_dir"
+      recycle_simulator || true
+    fi
+  done
+
+  if [ "$captured" -ne 1 ]; then
+    echo "error: $store_locale did not capture after $attempts_per_locale attempts." >&2
+    status=1
+    continue
+  fi
 
   # The test writes straight to the host filesystem, which the simulator can
   # reach. When it cannot, every frame is still in the result bundle.
