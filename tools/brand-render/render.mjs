@@ -18,6 +18,7 @@ import sharp from 'sharp'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const brand = join(root, 'brand')
+const msStore = join(brand, 'microsoft-store')
 const webPublic = join(root, 'apps', 'web', 'public')
 
 /** @type {Array<{from: string, to: string, width: number, height?: number, opaque?: string}>} */
@@ -37,18 +38,97 @@ const targets = [
   },
   // Link preview card.
   { from: 'og.svg', to: join(webPublic, 'og.png'), width: 1200, height: 630 },
-  // Play Console. The store icon must be square and full bleed; Play rounds it.
+  // Play Console. The store icon must be square and full bleed; Play rounds it,
+  // and it is the one Play slot that accepts a 32-bit PNG with alpha. Every
+  // other Play upload has to be 24-bit with no alpha channel, so the feature
+  // graphic is flattened onto its own background colour.
   { from: 'app-icon-maskable.svg', to: join(brand, 'play', 'icon-512.png'), width: 512 },
   {
     from: 'play/feature-graphic.svg',
     to: join(brand, 'play', 'feature-graphic.png'),
     width: 1024,
     height: 500,
+    opaque: '#0C1519',
+  },
+  // Microsoft Store. Sources are written by tools/store-shots/write-store-art.mjs;
+  // see brand/microsoft-store/README.md for which slot each one fills.
+  {
+    from: 'microsoft-store/store-logo.svg',
+    to: join(msStore, 'logos', 'app-tile-icon-300x300.png'),
+    width: 300,
+  },
+  {
+    from: 'microsoft-store/store-logo.svg',
+    to: join(msStore, 'logos', 'store-logo-150x150.png'),
+    width: 150,
+  },
+  {
+    from: 'microsoft-store/store-logo.svg',
+    to: join(msStore, 'logos', 'store-logo-71x71.png'),
+    width: 71,
+  },
+  // Poster and box art are logos rather than banners, and the Store treats
+  // poster art as the main logo on Windows 10/11 with box art as its fallback.
+  {
+    from: 'microsoft-store/poster-art.svg',
+    to: join(msStore, 'logos', 'poster-art-720x1080.png'),
+    width: 720,
+    height: 1080,
+  },
+  {
+    from: 'microsoft-store/poster-art.svg',
+    to: join(msStore, 'logos', 'poster-art-1440x2160.png'),
+    width: 1440,
+    height: 2160,
+  },
+  {
+    from: 'microsoft-store/box-art.svg',
+    to: join(msStore, 'logos', 'box-art-1080x1080.png'),
+    width: 1080,
+    height: 1080,
+  },
+  {
+    from: 'microsoft-store/box-art.svg',
+    to: join(msStore, 'logos', 'box-art-2160x2160.png'),
+    width: 2160,
+    height: 2160,
+  },
+  {
+    from: 'microsoft-store/super-hero.svg',
+    to: join(msStore, 'hero', 'super-hero-1920x1080.png'),
+    width: 1920,
+    height: 1080,
+  },
+  {
+    from: 'microsoft-store/super-hero.svg',
+    to: join(msStore, 'hero', 'super-hero-3840x2160.png'),
+    width: 3840,
+    height: 2160,
+  },
+  {
+    from: 'microsoft-store/xbox-branded-key-art.svg',
+    to: join(msStore, 'hero', 'xbox-branded-key-art-584x800.png'),
+    width: 584,
+    height: 800,
+  },
+  {
+    from: 'microsoft-store/xbox-titled-hero-art.svg',
+    to: join(msStore, 'hero', 'xbox-titled-hero-art-1920x1080.png'),
+    width: 1920,
+    height: 1080,
+  },
+  {
+    from: 'microsoft-store/xbox-featured-promotional-square.svg',
+    to: join(msStore, 'hero', 'xbox-featured-promotional-square-1080x1080.png'),
+    width: 1080,
+    height: 1080,
   },
 ]
 
 await mkdir(webPublic, { recursive: true })
 await mkdir(join(brand, 'play'), { recursive: true })
+await mkdir(join(msStore, 'logos'), { recursive: true })
+await mkdir(join(msStore, 'hero'), { recursive: true })
 
 for (const { from, to, width, height, opaque } of targets) {
   const svg = await readFile(join(brand, from))
