@@ -102,7 +102,7 @@ jobs:
       # whole job again to get them back.
       - name: Upload the screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: app-store-screenshots
           path: brand/app-store/screenshots/
@@ -115,7 +115,7 @@ jobs:
       # needs it most.
       - name: Upload the result bundles on failure
         if: failure() || cancelled()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: app-store-screenshots-results
           path: apps/ios/.screenshots/*.xcresult

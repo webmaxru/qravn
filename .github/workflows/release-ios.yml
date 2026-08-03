@@ -207,7 +207,7 @@ jobs:
       # here, and the archive is gone with the runner.
       - name: Upload build artefacts
         if: always() && steps.creds.outputs.present == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-release
           path: |
