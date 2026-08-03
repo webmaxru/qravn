@@ -24,14 +24,13 @@ final class StoreScreenshots: XCTestCase {
     /// One frame of the listing.
     private struct Shot {
         let name: String
-        /// What is typed into the field under the viewfinder, or nil to
-        /// photograph the first screen as it opens.
-        let payload: String?
+        /// What is typed into the field under the viewfinder.
+        let payload: String
         /// Swipes before the shutter, to bring a lower section of the result
         /// into frame.
         let swipes: Int
 
-        init(_ name: String, _ payload: String?, swipes: Int = 0) {
+        init(_ name: String, _ payload: String, swipes: Int = 0) {
             self.name = name
             self.payload = payload
             self.swipes = swipes
@@ -62,10 +61,13 @@ final class StoreScreenshots: XCTestCase {
         // found no known threat, which is a different and true statement.
         Shot("5-clear", "https://www.skatteetaten.no/skattemelding/"),
 
-        // The first screen, for the line about the analysis staying on the
-        // device. See the README: a simulator has no camera, so this one is
-        // worth re-taking on hardware before upload.
-        Shot("6-scan", nil),
+        // There is deliberately no shot of the first screen. It is the obvious
+        // sixth picture and it cannot be taken here: a simulator has no camera,
+        // so the app says "The camera could not be started" — an accurate
+        // message and a terrible store screenshot, which reads as a broken app
+        // to anyone scrolling a listing. The line it existed to show, that the
+        // check never leaves the phone, is already on every verdict above it.
+        // Re-add this only alongside a capture path that runs on hardware.
     ]
 
     override func setUp() {
@@ -92,18 +94,11 @@ final class StoreScreenshots: XCTestCase {
             ]
             app.launch()
 
-            if let payload = shot.payload {
-                enter(payload, in: app)
-                XCTAssertTrue(
-                    app.scrollViews["result_sheet"].waitForExistence(timeout: 20),
-                    "\(shot.name): the result never appeared"
-                )
-            } else {
-                XCTAssertTrue(
-                    manualEntry(in: app).waitForExistence(timeout: 20),
-                    "\(shot.name): the scan screen never appeared"
-                )
-            }
+            enter(shot.payload, in: app)
+            XCTAssertTrue(
+                app.scrollViews["result_sheet"].waitForExistence(timeout: 20),
+                "\(shot.name): the result never appeared"
+            )
 
             for _ in 0..<shot.swipes {
                 app.scrollViews["result_sheet"].swipeUp()

@@ -280,7 +280,11 @@ In this order, since the first three carry the argument:
 3. The address panel, showing the real domain called out.
 4. The "why" panel with the finding list.
 5. The quiet verdict: no known threat found, which is not "safe".
-6. The first screen, with the notice that the analysis stays on the device.
+
+The first screen is deliberately not among them: a simulator has no camera, so
+it renders "The camera could not be started", which reads as a broken app in a
+listing. Its message, that the check never leaves the phone, is on all five
+verdicts above.
 
 Locales: `no` and `en-US`, mirroring the listing languages. Files land in
 `brand/app-store/screenshots/{no,en-US}/`.

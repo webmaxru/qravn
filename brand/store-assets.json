@@ -52,7 +52,7 @@
         {
           "slot": "iPhone 6.9\" screenshots",
           "status": "required",
-          "provided": false,
+          "provided": true,
           "dir": "brand/app-store/screenshots/no",
           "size": [1320, 2868],
           "alpha": "forbidden",
@@ -64,7 +64,7 @@
         {
           "slot": "iPhone 6.9\" screenshots",
           "status": "required",
-          "provided": false,
+          "provided": true,
           "dir": "brand/app-store/screenshots/en-US",
           "size": [1320, 2868],
           "alpha": "forbidden",

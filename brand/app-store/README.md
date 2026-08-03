@@ -67,9 +67,18 @@ carry the argument on their own.
 | 3 | `3-address.png` | The address panel calling out the real host behind `trusted.no@evil.example` |
 | 4 | `4-why.png` | The finding list for a raw IP over plain http |
 | 5 | `5-clear.png` | The quiet verdict: no known threat found, which is not the same as "safe" |
-| 6 | `6-scan.png` | The first screen, with the notice that the analysis stays on the device |
 
 Languages are `no` and `en-US`, matching the listing languages.
+
+### Why there is no shot of the first screen
+
+It is the obvious sixth picture and it is deliberately not taken. A simulator
+has no camera, so the app says **"The camera could not be started"** — accurate,
+and a terrible thing to put in a store listing, where it reads as a broken app
+to someone scrolling past. The line it would have carried, that the check never
+leaves the phone, is already on every verdict in frames 1–5.
+
+Add it back only together with a capture path that runs on real hardware.
 
 ## Capturing them
 
@@ -99,10 +108,12 @@ Apple rejects an image carrying one), and then verifies the output with
 
 Two things worth knowing about the result:
 
-* **Frame 6 shows a viewfinder placeholder.** A simulator has no camera, so the
-  app honestly reports that instead of a live preview. Before upload, re-take
-  that one on a real device with `xcrun devicectl` or the screenshot button, or
-  drop it. Frames 1–5 are the result sheet and are exactly what a phone shows.
+* **A locale is retried once.** Roughly half the time on a hosted runner,
+  xcodebuild finishes building and then never starts the test, because
+  installing or launching on the simulator wedged. The script bounds each
+  attempt at twelve minutes and gives a locale a second one on a device that has
+  been shut down, erased and rebooted. A `no test output for 720s` line in the
+  log is that happening and recovering, not a broken build.
 * **The payloads are golden test vectors.** Each address in the pictures comes
   from `test-vectors/golden/`, and they are the same ones
   `tools/store-shots/states.mjs` photographs for the Microsoft Store. A verdict

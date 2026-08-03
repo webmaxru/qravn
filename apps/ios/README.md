@@ -125,7 +125,8 @@ click away.
 `QravnScreenshots` is deliberately outside the `QravnApp` scheme, so the suite
 that runs on every pull request stays headless and fast. See
 [`brand/app-store/README.md`](../../brand/app-store/README.md) for what each
-frame shows and why frame 6 is worth re-taking on hardware, and
+frame shows, why the first screen is not among them, and what the retry in the
+capture log means, and
 [`brand/STORE-ASSETS.md`](../../brand/STORE-ASSETS.md) for every slot the App
 Store offers, including the ones this product does not fill.
 

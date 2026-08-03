@@ -27,18 +27,13 @@ at upload — none of the three stores resizes anything for you.
 
 ## Outstanding
 
-Required by a store, and not yet produced.
-
-| Store | Slot | Why it is not here yet |
-|---|---|---|
-| Apple App Store | iPhone 6.9" screenshots (no) | The only screenshot size Apple requires; it downscales this set for every smaller iPhone. Captured by apps/ios/scripts/capture-store-screenshots.sh, which needs macOS. |
-| Apple App Store | iPhone 6.9" screenshots (en-US) | As above, in English. |
+Nothing required is missing.
 
 ## At a glance
 
 | Store | Console | Locales | Images | Text fields | Outstanding |
 |---|---|---|---|---|---|
-| Apple App Store | App Store Connect | no, en-US | 5 | 15 | 2 |
+| Apple App Store | App Store Connect | no, en-US | 5 | 15 | — |
 | Google Play | Play Console | nb-NO (default), en-US | 6 | 11 | — |
 | Microsoft Store | Partner Center | en-US, nb-NO | 11 | 20 | — |
 
@@ -60,8 +55,8 @@ iPhone only. apps/ios/project.yml sets TARGETED_DEVICE_FAMILY to 1, which remove
 | Slot | Status | Have it | Spec | Where it lives |
 |---|---|---|---|---|
 | App icon | **Required** | yes | 1024×1024 · no alpha · ≤ 5 MB | `apps/ios/Sources/QravnApp/Resources/Assets.xcassets/AppIcon.appiconset` |
-| iPhone 6.9" screenshots (no) | **Required** | no | 1320×2868 · 3–10 files · no alpha · ≤ 10 MB | `brand/app-store/screenshots/no` |
-| iPhone 6.9" screenshots (en-US) | **Required** | no | 1320×2868 · 3–10 files · no alpha · ≤ 10 MB | `brand/app-store/screenshots/en-US` |
+| iPhone 6.9" screenshots (no) | **Required** | yes | 1320×2868 · 3–10 files · no alpha · ≤ 10 MB | `brand/app-store/screenshots/no` |
+| iPhone 6.9" screenshots (en-US) | **Required** | yes | 1320×2868 · 3–10 files · no alpha · ≤ 10 MB | `brand/app-store/screenshots/en-US` |
 | iPhone 6.5", 6.1" and 5.5" screenshots | Optional | no | — | — |
 | iPad 13" and 12.9" screenshots | Not applicable | n/a | — | — |
 | App previews | Optional | no | — | — |
