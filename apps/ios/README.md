@@ -118,7 +118,9 @@ App Store Connect rejects an image with an alpha channel, so the script runs
 it refuses any genuinely translucent image rather than compositing one. It
 needs macOS. Since the development machine here is Windows, the usual route is
 the **App Store screenshots** workflow, which runs the same script on a hosted
-Mac.
+Mac — though a `workflow_dispatch` workflow is only triggerable once it is on
+the default branch, so from a feature branch it is a merge away rather than a
+click away.
 
 `QravnScreenshots` is deliberately outside the `QravnApp` scheme, so the suite
 that runs on every pull request stays headless and fast. See
