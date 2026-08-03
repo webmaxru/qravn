@@ -105,11 +105,8 @@ fi
 
 xcrun simctl boot "$udid" 2>/dev/null || true
 
-# `simctl bootstatus -b` blocks until the device reports itself ready and has no
-# timeout of its own. On a hosted runner it has been seen waiting for the entire
-# job: the log stops dead after the device is chosen, nothing is uploaded because
-# a job-level timeout cancels the remaining steps, and the only trace is an
-# orphaned simctl in the cleanup. macOS ships no `timeout`, so bound it here.
+# macOS ships no `timeout`, and anything that talks to CoreSimulator can wedge.
+# Run it in the background and shoot it if it overruns.
 run_with_timeout() {
   local limit="$1"
   shift
@@ -128,13 +125,44 @@ run_with_timeout() {
   wait "$pid"
 }
 
+device_state() {
+  xcrun simctl list devices --json 2>/dev/null \
+    | /usr/bin/python3 -c 'import json, sys
+udid = sys.argv[1]
+groups = json.load(sys.stdin)["devices"]
+print(next((d.get("state", "Unknown") for g in groups.values() for d in g if d.get("udid") == udid), "Unknown"))' \
+      "$udid"
+}
+
+# `simctl bootstatus -b` is the documented way to wait for this and it does not
+# work on a hosted runner: when the device is already booted it waits on a
+# transition that has finished and never returns. The first run of this workflow
+# spent 59 minutes inside it while `simctl list` reported the device Booted the
+# whole time. Poll the state instead, which is what that evidence showed to be
+# both accurate and cheap.
 echo "==> waiting for the simulator to boot"
-if ! run_with_timeout 420 xcrun simctl bootstatus "$udid" -b >/dev/null 2>&1; then
-  echo "error: the simulator did not finish booting within 420s." >&2
-  echo "       This is the simulator, not the app: nothing has been built yet." >&2
-  xcrun simctl list devices 2>/dev/null | grep -F "$udid" >&2 || true
-  exit 1
-fi
+boot_deadline=$((SECONDS + 300))
+while [ "$(device_state)" != "Booted" ]; do
+  if [ "$SECONDS" -ge "$boot_deadline" ]; then
+    echo "error: the simulator did not reach Booted within 300s." >&2
+    echo "       This is the simulator, not the app: nothing has been built yet." >&2
+    xcrun simctl list devices 2>/dev/null | grep -F "$udid" >&2 || true
+    exit 1
+  fi
+  sleep 5
+done
+
+# Booted says the device is running, not that launchd inside it is answering.
+# Best effort only: xcodebuild waits for readiness too, so a slow probe is worth
+# a note and not a failed run.
+ready_deadline=$((SECONDS + 180))
+until run_with_timeout 20 xcrun simctl spawn "$udid" launchctl print system >/dev/null 2>&1; do
+  if [ "$SECONDS" -ge "$ready_deadline" ]; then
+    echo "    booted, but launchd did not answer within 180s; continuing anyway"
+    break
+  fi
+  sleep 5
+done
 echo "    booted"
 
 # The clock and the battery are the two things in a store screenshot that date
