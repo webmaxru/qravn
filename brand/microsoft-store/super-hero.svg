@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Super hero art, 16:9. Rendered at 1920x1080 and 3840x2160.
+    
+    No title, because the Store lays the product title over this image and
+    forbids a second one. No tagline either, which keeps the asset
+    language-neutral: the Norwegian and English listings share it.
+    
+    The composition sits right of centre. The Store overlays the title,
+    publisher and buttons on the left of this band, so that side is left as
+    ground rather than filled and then covered.
+  -->
+  <rect width="1920" height="1080" fill="#0C1519" />
+  <path d="M900,260 V110 H1050 M1610,110 H1760 V260 M900,820 V970 H1050" fill="none" stroke="#86B2C0" stroke-width="5" />
+  <path transform="translate(1140 350) scale(54.285714285714285)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Store display logo. Rendered to 300, 150 and 71.
+    
+    Square and full bleed, unlike brand/app-icon.svg. The Store draws this
+    on both light and dark listing surfaces and applies no mask of its own,
+    so a rounded tile with transparent corners would sit on whatever colour
+    the page happened to be. A filled square reads the same on both.
+    
+    The mark keeps the app icon's proportions - 322 wide on a 512 field,
+    inset 95 - which still resolves at 71px, where the mark lands on 45.
+  -->
+  <rect width="512" height="512" fill="#0C1519" />
+  <path transform="translate(95 95) scale(46)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+</svg>

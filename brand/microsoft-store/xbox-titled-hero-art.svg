@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080"
+     role="img" aria-label="QRavn">
+  <title>QRavn</title>
+  <!--
+    Titled hero art, 16:9.
+    
+    The title is required and must sit inside the top three quarters -
+    above y=810. The lockup runs from y=350 to y=632.
+    
+    Horizontal lockup, mark then clear space then wordmark, matching
+    brand/lockup.svg. Monospace, one weight, one colour: QRavn is a name,
+    and the mark is already doing the talking. The frost rule spans the
+    whole lockup rather than sitting under one half of it.
+  -->
+  <rect width="1920" height="1080" fill="#0C1519" />
+  <path transform="translate(580 360) scale(31.428571428571427)" fill="#F1EDE6" fill-rule="evenodd"
+        d="M0,0 H7 V5.5 H6 V1 H1 V6 H5.5 V7 H0 Z M2,2 H5 V5 H2 Z" />
+  <text x="890" y="470" fill="#F1EDE6" dominant-baseline="central"
+        font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', 'Liberation Mono', monospace"
+        font-size="168" letter-spacing="-4">QRavn</text>
+  <rect x="580" y="628" width="752" height="4" fill="#86B2C0" />
+</svg>

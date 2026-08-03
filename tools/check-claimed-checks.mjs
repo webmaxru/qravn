@@ -50,6 +50,7 @@ if (groupTotal !== expected) {
 // three languages, and that has to be guarded like everything else.
 const surfaces = [
   'apps/android/play-listing.md',
+  'brand/microsoft-store/store-listing.md',
   'apps/ios/app-store-listing.md',
   'apps/android/app/src/main/res/values/strings.xml',
   'apps/android/app/src/main/res/values-nb/strings.xml',
