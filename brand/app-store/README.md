@@ -84,6 +84,12 @@ Linux path. The development machine for this project is Windows, so the usual
 route is the **App Store screenshots** workflow in the Actions tab, which runs
 the same script on a hosted Mac and uploads the result as an artifact.
 
+That workflow is `workflow_dispatch`, and GitHub only offers a manual trigger
+for a workflow that is already on the default branch. On a feature branch it is
+not in the Actions tab and `gh workflow run` answers `HTTP 404`, which reads
+like a broken file rather than the rule it is. Merge first, then capture — or
+run the script on a Mac, where the branch does not matter.
+
 The script builds the Rust core, generates the Xcode project, picks a 6.9"
 device, freezes the status bar at 09:41 with a full battery, runs
 `apps/ios/Tests/QravnScreenshots/StoreScreenshots.swift` once per language,

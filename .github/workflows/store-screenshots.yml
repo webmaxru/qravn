@@ -8,6 +8,11 @@
 ##
 ## Run it from the Actions tab, download the `app-store-screenshots` artifact,
 ## unzip it over brand/app-store/screenshots/ and commit what you keep.
+##
+## GitHub only offers a manual trigger for a workflow already on the default
+## branch, so while this file lives on a feature branch it is absent from the
+## Actions tab and `gh workflow run` answers 404. That is the rule, not a
+## broken file. Merge it, or run the script directly on a Mac.
 name: App Store screenshots
 
 on:
