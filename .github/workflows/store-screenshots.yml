@@ -94,12 +94,20 @@ jobs:
         timeout-minutes: 35
         run: bash apps/ios/scripts/capture-store-screenshots.sh
 
+      # The pictures are what this job exists to produce, so they go up whatever
+      # the verdict below them was. A capture can succeed and still fail the
+      # step: the slot check at the end of the script compares the new files
+      # against the registry, and on a first capture the registry has not been
+      # told about them yet. Losing the images to that would mean running the
+      # whole job again to get them back.
       - name: Upload the screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-store-screenshots
           path: brand/app-store/screenshots/
           retention-days: 30
+          if-no-files-found: ignore
 
       # The result bundles carry a frame-by-frame record of what the app did,
       # which is the only way to see why a capture came out wrong. `failure()`
