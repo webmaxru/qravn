@@ -167,6 +167,17 @@ QRavn er laget i Norge, for folk i Norge.
 Du åpner den ikke alene.
 ```
 
+### Release notes (500 max)
+
+```
+Første versjon.
+
+QRavn leser QR-koden og kjører 49 sjekker på den før noe åpnes: 26 på selve
+adressen, 16 på hva koden faktisk inneholder, og 7 på hvor lenken sender deg
+videre. Alt skjer på telefonen, og appen har ingen nettilgang.
+```
+232 characters.
+
 ### Notes for the listing form
 
 - Category: **Tools**. Tags: security, utilities.
@@ -300,6 +311,18 @@ QRavn is made in Norway, for people in Norway.
 You don't open it alone.
 ```
 
+### Release notes (500 max)
+
+```
+First release.
+
+QRavn reads the QR code and runs 49 checks on it before anything opens: 26 on
+the address itself, 16 on what the code actually contains, and 7 on where the
+link forwards you. Everything runs on your phone, and the app has no network
+access.
+```
+256 characters.
+
 ---
 
 ## Sources
@@ -382,9 +405,13 @@ Expected result: **PEGI 3 / ESRB Everyone / IARC 3+**.
 
 | Asset | Path | Spec |
 |---|---|---|
-| App icon | `brand/play/icon-512.png` | 512×512 PNG, no alpha |
-| Feature graphic | `brand/play/feature-graphic.png` | 1024×500 PNG |
-| Phone screenshots | `brand/play/screenshots/` | 1080×1920 PNG, 2–8 required |
+| App icon | `brand/play/icon-512.png` | 512×512 PNG, alpha allowed |
+| Feature graphic | `brand/play/feature-graphic.png` | 1024×500 PNG, no alpha |
+| Phone screenshots | `brand/play/screenshots/` | 1080×1920 PNG, no alpha, 2–8 required |
+
+The app icon is the only Play upload that may carry a transparency channel.
+Everything else must be 24-bit. See [`brand/STORE-ASSETS.md`](../../brand/STORE-ASSETS.md)
+for every slot across all three stores.
 
 ## Release
 
@@ -394,27 +421,8 @@ Expected result: **PEGI 3 / ESRB Everyone / IARC 3+**.
 - Release name: `1.0.1 (2)`
 - Countries: Norway first. Adding the rest of the world is fine — the app is
   usable anywhere, and the listing is offered in English too.
-
-### Release notes (nb-NO)
-
-```
-Første versjon.
-
-QRavn leser QR-koden og kjører 49 sjekker på den før noe åpnes: 26 på selve
-adressen, 16 på hva koden faktisk inneholder, og 7 på hvor lenken sender deg
-videre. Alt skjer på telefonen, og appen har ingen nettilgang.
-```
-
-### Release notes (en-US)
-
-```
-First release.
-
-QRavn reads the QR code and runs 49 checks on it before anything opens: 26 on
-the address itself, 16 on what the code actually contains, and 7 on where the
-link forwards you. Everything runs on your phone, and the app has no network
-access.
-```
+- Release notes are per-language copy, so they live in the language sections
+  above alongside the other fields Play asks for in both listings.
 
 ## Signing
 

@@ -52,6 +52,9 @@ apps/ios/*.xcworkspace/
 apps/ios/Generated/
 apps/ios/Frameworks/
 apps/ios/DerivedData/
+# Simulator run for the store screenshots: derived data and result bundles. The
+# PNGs themselves land in brand/app-store/screenshots/ and are committed.
+apps/ios/.screenshots/
 xcuserdata/
 *.xcresult
 *.ipa
@@ -68,6 +71,10 @@ Thumbs.db
 logs/
 *.log
 npm-debug.log*
+
+# Store screenshot scratch: raw unframed captures, written by
+# tools/store-shots/capture.mjs --raw while iterating on a shot.
+tools/store-shots/.raw/
 
 # APM dependencies
 apm_modules/

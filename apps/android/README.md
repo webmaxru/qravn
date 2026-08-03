@@ -295,6 +295,15 @@ Screenshots are captured from the signed release build on an emulator resized
 with `adb shell wm size 1080x1920`. The device's native 1080×2400 is a 2.22
 ratio and Play rejects anything longer than 2:1.
 
+Play accepts an alpha channel on the app icon and on nothing else: the feature
+graphic and every screenshot must be 24-bit with no transparency.
+`node tools/strip-png-alpha.mjs <file...>` converts a capture in place, and
+`node tools/check-store-images.mjs` fails if one slips through.
+
+Every slot across all three stores, images and text together, is listed in
+[`brand/STORE-ASSETS.md`](../../brand/STORE-ASSETS.md). Start there when
+regenerating a set.
+
 Regenerate with `cd tools/brand-render && npm install && node render.mjs` after
 changing anything in `brand/`. The in-app launcher icon is separate — it lives
 in `app/src/main/res/` as vector drawables, so it can react to dark mode and
