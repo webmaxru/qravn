@@ -104,7 +104,38 @@ if [ -z "$udid" ]; then
 fi
 
 xcrun simctl boot "$udid" 2>/dev/null || true
-xcrun simctl bootstatus "$udid" -b >/dev/null
+
+# `simctl bootstatus -b` blocks until the device reports itself ready and has no
+# timeout of its own. On a hosted runner it has been seen waiting for the entire
+# job: the log stops dead after the device is chosen, nothing is uploaded because
+# a job-level timeout cancels the remaining steps, and the only trace is an
+# orphaned simctl in the cleanup. macOS ships no `timeout`, so bound it here.
+run_with_timeout() {
+  local limit="$1"
+  shift
+  "$@" &
+  local pid=$!
+  local waited=0
+  while kill -0 "$pid" 2>/dev/null; do
+    if [ "$waited" -ge "$limit" ]; then
+      kill -9 "$pid" 2>/dev/null || true
+      wait "$pid" 2>/dev/null || true
+      return 124
+    fi
+    sleep 2
+    waited=$((waited + 2))
+  done
+  wait "$pid"
+}
+
+echo "==> waiting for the simulator to boot"
+if ! run_with_timeout 420 xcrun simctl bootstatus "$udid" -b >/dev/null 2>&1; then
+  echo "error: the simulator did not finish booting within 420s." >&2
+  echo "       This is the simulator, not the app: nothing has been built yet." >&2
+  xcrun simctl list devices 2>/dev/null | grep -F "$udid" >&2 || true
+  exit 1
+fi
+echo "    booted"
 
 # The clock and the battery are the two things in a store screenshot that date
 # it. 9:41 is the time Apple has used in its own marketing since 2007.

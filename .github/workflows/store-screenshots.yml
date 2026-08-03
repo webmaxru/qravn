@@ -69,6 +69,11 @@ jobs:
         run: brew install xcodegen
 
       - name: Capture
+        # A step-level timeout fails this step and lets the ones below it run.
+        # The job-level timeout does the opposite: it cancels them, which is how
+        # the first run of this workflow spent an hour hanging on a simulator
+        # boot and then uploaded nothing to explain itself.
+        timeout-minutes: 35
         run: bash apps/ios/scripts/capture-store-screenshots.sh
 
       - name: Upload the screenshots
@@ -79,14 +84,17 @@ jobs:
           retention-days: 30
 
       # The result bundles carry a frame-by-frame record of what the app did,
-      # which is the only way to see why a capture came out wrong.
+      # which is the only way to see why a capture came out wrong. `failure()`
+      # alone would skip this on a cancellation, which is exactly the case that
+      # needs it most.
       - name: Upload the result bundles on failure
-        if: failure()
+        if: failure() || cancelled()
         uses: actions/upload-artifact@v4
         with:
           name: app-store-screenshots-results
           path: apps/ios/.screenshots/*.xcresult
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Commit the screenshots
         if: inputs.commit
