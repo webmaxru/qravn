@@ -42,6 +42,12 @@ jobs:
         run: |
           xcodebuild -version
           xcrun --sdk iphonesimulator --show-sdk-version
+          echo "--- Xcodes installed ---"
+          ls -d /Applications/Xcode*.app 2>/dev/null || true
+          echo "--- iOS runtimes ---"
+          xcrun simctl list runtimes 2>/dev/null | grep -i ios || true
+          echo "--- 6.9\" devices ---"
+          xcrun simctl list devices available 2>/dev/null | grep -E "Pro Max|^--" || true
 
       # The pictures show verdicts, and every verdict in this product comes from
       # the Rust core. Building the real core is therefore not optional here
