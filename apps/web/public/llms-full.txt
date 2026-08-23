@@ -46,7 +46,7 @@ Each check has a stable code, a severity, and text written for someone who
 is not a security professional. Angle brackets mark values filled in from
 the code being examined.
 
-### The web address — 26 checks
+### Does the address look misleading? — 26 checks
 
 - `url.credentials_in_authority` (high, deception) — **Hidden real address.** The part before @ is not where this goes. It opens <host>, not <username>.
 - `url.ip_literal_host` (medium, structure) — **A number instead of a name.** This goes to <host>, a raw address with no name behind it. Real companies use names.
@@ -65,9 +65,9 @@ the code being examined.
 - `url.encoded_characters_in_host` (medium, identity) — **The name is written in code.** Parts of the name are written as % codes instead of letters, which hides what it really says.
 - `url.excessive_length` (info, structure) — **Very long address.** It runs to <length> characters, so the part that matters is easy to miss.
 - `url.insecure_scheme` (medium, transport) — **Not a protected connection.** This uses http, not https. Anything you type can be read or changed on the way.
-- `url.javascript_scheme` (critical, dangerous_scheme) — **This runs code, not a page.** Opening it would run instructions on your phone. A QR code has no reason to do that.
+- `url.javascript_scheme` (critical, dangerous_scheme) — **This runs code, not a page.** Opening it would run instructions on your device. A QR code has no reason to do that.
 - `url.data_scheme` (critical, dangerous_scheme) — **A page carried inside the code.** The content is packed into the code itself, so there is no website behind it to check.
-- `url.file_scheme` (high, dangerous_scheme) — **Points at a file on the device.** This is not a website. It points into your phone or computer.
+- `url.file_scheme` (high, dangerous_scheme) — **Points at a file on the device.** This is not a website. It points to a file on your device.
 - `url.unknown_scheme` (medium, dangerous_scheme) — **Not an ordinary web link.** It starts with <scheme>, which opens an app or starts an action instead of a page.
 - `url.shortener` (medium, redirection) — **A short link that hides the rest.** <service> forwards you somewhere else, and the code alone does not say where.
 - `url.possible_shortener` (low, redirection) — **Looks like a short link.** <host> has the shape of a forwarding service, though it is not one we know by name.
@@ -75,7 +75,7 @@ the code being examined.
 - `url.known_malicious` (critical, reputation) — **Matches a known bad address.** This address is on our list of known threats, matched by rule <ruleId>.
 - `url.no_registrable_domain` (medium, structure) — **No owner name to read.** We could not work out who owns <host>, so there is nothing to recognise.
 
-### What the code really is — 16 checks
+### What does the code contain? — 16 checks
 
 - `payload.not_a_url` (info, payload) — **Not a web address.** This code holds text rather than a link, so there is nothing to open.
 - `payload.empty` (info, payload) — **Nothing in the code.** The code is empty. Try scanning it again.
@@ -92,9 +92,9 @@ the code being examined.
 - `payload.calendar_event` (info, payload) — **A calendar entry.** The code adds "<summary>" to your calendar. Check the time and details first.
 - `payload.crypto_address` (high, payload) — **A cryptocurrency address.** This asks for a payment in <currency>. Payments like this cannot be reversed.
 - `payload.otp_secret` (critical, payload) — **A login-code key.** This sets up the codes that protect an account at <issuer>. Only scan it if you started the setup.
-- `payload.app_deep_link` (medium, payload) — **Opens an app, not a page.** It starts with <scheme>, which hands the code to an app on your phone.
+- `payload.app_deep_link` (medium, payload) — **Opens an app, not a page.** It starts with <scheme>, which hands the code to an app on your device.
 
-### Where it sends you next — 7 checks
+### Could it send you somewhere else? — 7 checks
 
 - `redirect.cross_domain` (medium, redirection) — **Ends on a different domain.** The link starts on <fromDomain> but ends on <toDomain>. A different owner controls the page you would actually reach.
 - `redirect.multiple_hops` (low, redirection) — **Passes through several addresses.** The link redirects <hopCount> times before arriving. Extra steps make the destination harder to predict.
@@ -109,7 +109,7 @@ the code being examined.
 QRavn reports the edges of its own knowledge rather than leaving silence
 to be read as reassurance.
 
-- `offline_no_reputation` — This check ran on your phone alone, against our own rules. No outside service was consulted.
+- `offline_no_reputation` — The result uses QRavn's own rules. No outside service was consulted.
 - `redirect_not_expanded` — Where <service> sends you is still unknown. You can ask us to follow it for you.
 - `redirect_resolution_failed` — Following the link stopped because <reason>, so only the scanned address was checked.
 - `redirect_partial` — Following stopped after <hopCount> steps, so the last address is still unknown.

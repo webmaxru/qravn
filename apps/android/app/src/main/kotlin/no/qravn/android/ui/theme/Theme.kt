@@ -114,11 +114,10 @@ private val DarkScheme = darkColorScheme(
  * chosen for contrast in both light and dark. Colour is always accompanied by
  * an icon and a written verdict; it is never the only signal.
  *
- * The ramp is a volume control, not a rainbow: nothing found is silent,
- * insufficient evidence is a murmur, suspicious is a raised voice, and known
- * malicious is a shout. "Nothing found" therefore gets no hue at all. That is
- * the point. A green tick would read as a promise of safety, and this app is
- * never in a position to make one.
+ * The ramp is a volume control, not a rainbow. A restrained green distinguishes
+ * "no known threat found" without changing that qualified verdict into a
+ * promise of safety; the written verdict and open-ring icon keep that boundary
+ * explicit.
  */
 @Immutable
 data class VerdictColors(
@@ -139,8 +138,8 @@ private val LightVerdictColors = VerdictColors(
     onWarningContainer = Color(0xFF4A2A02),
     unknownContainer = Color(0xFFE2E2F4),
     onUnknownContainer = Color(0xFF1E2050),
-    clearContainer = Color(0xFFF0F1EF),
-    onClearContainer = Color(0xFF111315),
+    clearContainer = Color(0xFFE3F4E8),
+    onClearContainer = Color(0xFF174A2A),
 )
 
 private val DarkVerdictColors = VerdictColors(
@@ -150,8 +149,8 @@ private val DarkVerdictColors = VerdictColors(
     onWarningContainer = Color(0xFFFFE0AE),
     unknownContainer = Color(0xFF23264F),
     onUnknownContainer = Color(0xFFD5D6F2),
-    clearContainer = Color(0xFF1E2123),
-    onClearContainer = Color(0xFFE6E7E5),
+    clearContainer = Color(0xFF163521),
+    onClearContainer = Color(0xFFC9F3D6),
 )
 
 private val LocalVerdictColors = staticCompositionLocalOf { LightVerdictColors }

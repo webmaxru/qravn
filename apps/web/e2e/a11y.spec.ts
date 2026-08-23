@@ -107,9 +107,9 @@ test.describe('axe-core static scans across every meaningful UI state', () => {
 
   test('two-step "prepare opening" confirmation state', async ({ page }) => {
     await page.goto('/');
-    await submit(page, 'https://example.com/login');
-    await page.getByRole('button', { name: /still want to open example\.com/i }).click();
-    await expect(page.getByRole('link', { name: /Open example\.com in a new tab/i })).toBeVisible();
+    await submit(page, 'https://trusted.no@evil.example/login');
+    await page.getByRole('button', { name: /^Open link$/i }).click();
+    await expect(page.getByRole('link', { name: /Open evil\.example in a new tab/i })).toBeVisible();
     await scan(page, 'prepare-opening-confirmed');
   });
 
@@ -259,19 +259,20 @@ test.describe('keyboard and focus behaviour axe cannot see', () => {
 
   test('every result action is operable by keyboard (pointer/keyboard parity)', async ({ page }) => {
     await page.goto('/');
-    await submit(page, 'https://example.com/login');
+    await submit(page, 'https://trusted.no@evil.example/login');
 
-    const prepare = page.getByRole('button', { name: /still want to open example\.com/i });
+    const prepare = page.getByRole('button', { name: /^Open link$/i });
     await prepare.focus();
     await expect(prepare).toBeFocused();
     await page.keyboard.press('Enter');
 
-    const openLink = page.getByRole('link', { name: /Open example\.com in a new tab/i });
+    const openLink = page.getByRole('link', { name: /Open evil\.example in a new tab/i });
     await expect(openLink).toBeVisible();
     await openLink.focus();
     await expect(openLink).toBeFocused();
 
-    await expect(page.getByRole('button', { name: /^Copy text$/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Copy link$/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Share link$/ })).toBeVisible();
   });
 
   test('animations are suppressed under prefers-reduced-motion', async ({ page }) => {

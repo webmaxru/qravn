@@ -4,7 +4,7 @@
     <string name="tile_label">Sjekk QR-kode</string>
 
     <string name="scan_title">Rett kameraet mot ein QR-kode</string>
-    <string name="scan_hint">49 sjekkar blir køyrde før noko blir opna. Ingenting forlèt telefonen din.</string>
+    <string name="scan_hint">Sjå kva koden inneheld. Ingenting blir opna automatisk.</string>
     <string name="scan_viewfinder_description">Kamerasøkjar. Ein QR-kode blir lesen automatisk når han er i biletet.</string>
     <string name="scan_again">Skann på nytt</string>
     <string name="scan_torch_on">Slå på lommelykt</string>
@@ -15,7 +15,7 @@
     <string name="scan_analysing">Sjekkar…</string>
 
     <string name="permission_title">Kameratilgang trengst for å skanne</string>
-    <string name="permission_body">Kameraet blir berre brukt medan denne skjermen er open. Bileta blir på telefonen og blir aldri lasta opp.</string>
+    <string name="permission_body">Kameraet blir berre brukt medan denne skjermen er open. Bileta blir på denne eininga og blir aldri lasta opp.</string>
     <string name="permission_grant">Tillat kamera</string>
     <string name="permission_denied_title">Kameraet er utilgjengeleg</string>
     <string name="permission_denied_body">Du kan framleis sjekke eit lagra bilete eller kopiert tekst.</string>

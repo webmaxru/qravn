@@ -18,7 +18,8 @@ const uiCodes = [
   'ui.paste_toggle','ui.paste_label','ui.paste_placeholder','ui.check',
   // Result chrome.
   'ui.result','ui.what_we_found','ui.limitations','ui.actions','ui.open_anyway','ui.open_blocked',
-  'ui.open_new_tab','ui.copy','ui.scan_again','ui.raw_payload','ui.real_destination',
+  'ui.open_link','ui.open_new_tab','ui.copy','ui.copy_link','ui.copy_failed','ui.share_link',
+  'ui.share_fallback','ui.share_failed','ui.link_copied','ui.scan_again','ui.raw_payload','ui.real_destination',
   'ui.payload_heading','ui.breakdown_heading','ui.credential_note',
   'ui.field_scheme','ui.field_host','ui.field_domain','ui.field_subdomains','ui.field_path',
   'ui.field_query','ui.field_none',

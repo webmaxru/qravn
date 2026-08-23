@@ -12,7 +12,7 @@ export function UrlBreakdownView({ url, locale }: UrlBreakdownViewProps) {
   const credential = td('ui.credential_note', locale);
 
   return (
-    <section className="panel destination" aria-labelledby="destination-heading">
+    <section id="address-details" className="panel destination" aria-labelledby="destination-heading">
       <h2 id="destination-heading">{t('ui.field_host', locale)}</h2>
       {url.hasCredentials ? (
         <div className="credential-warning" role="note">

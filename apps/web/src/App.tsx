@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { AppBar } from './components/AppBar';
 import { InputForm } from './components/InputForm';
@@ -187,8 +187,13 @@ function App({ engineOverride, resolverOverride }: AppProps) {
     }
   }
 
-  useEffect(() => {
-    if (assessment) resultRef.current?.focus();
+  useLayoutEffect(() => {
+    if (!assessment) return;
+    // A manual check starts at the bottom of the page. Reset the viewport before
+    // focusing the result so its verdict and primary action replace that form,
+    // rather than rendering above the reader's current scroll position.
+    resultRef.current?.focus({ preventScroll: true });
+    resultRef.current?.scrollIntoView?.({ block: 'start' });
   }, [assessment]);
 
   // Keep the document language in sync with the chosen locale. Norwegian copy
@@ -216,7 +221,8 @@ function App({ engineOverride, resolverOverride }: AppProps) {
   const reassurance = td('ui.reassurance', locale);
   const followLinks = td('ui.follow_links', locale);
   const privacy = td('ui.privacy_note', locale);
-  const groups = ['ui.how_address', 'ui.how_content', 'ui.how_redirect'] as const;
+  const how = td('ui.how_heading', locale);
+  const groups = ['ui.how_content', 'ui.how_address', 'ui.how_redirect'] as const;
 
   return (
     <div className="app">
@@ -256,22 +262,19 @@ function App({ engineOverride, resolverOverride }: AppProps) {
               <strong>{reassurance.title}</strong>
               {reassurance.detail ? <span> {reassurance.detail}</span> : null}
             </p>
-            <InputForm onSubmit={runCheck} locale={locale} disabled={busy} />
           </div>
         )}
       </main>
 
-      <footer className="secondary" aria-label={t('ui.about', locale)}>
+      <footer className="secondary">
         {assessment ? null : (
           <section className="how" aria-labelledby="how-heading">
-            {/* The number is the point of the product, so it is set as a number
-                rather than buried in a sentence — and it reads the same in both
-                languages. CHECK_COUNT is derived from the contract at build
-                time, so this cannot drift from what the engine actually runs. */}
-            <p className="how__tally" aria-hidden="true">
-              {CHECK_COUNT}
-            </p>
-            <h2 id="how-heading">{t('ui.how_heading', locale)}</h2>
+            <div className="how__intro">
+              <h2 id="how-heading">
+                <span className="how__count">{CHECK_COUNT}</span> {how.title}
+              </h2>
+              {how.detail ? <p>{how.detail}</p> : null}
+            </div>
             <dl className="how__list">
               {groups.map((code) => {
                 const group = td(code, locale);
@@ -312,6 +315,8 @@ function App({ engineOverride, resolverOverride }: AppProps) {
         <p className="privacy-note">
           {privacy.detail} <a href="/privacy">{privacy.title}</a>
         </p>
+
+        {assessment ? null : <InputForm onSubmit={runCheck} locale={locale} disabled={busy} />}
       </footer>
     </div>
   );

@@ -206,15 +206,20 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
             {t('ui.scan_stop', locale)}
           </button>
         ) : (
-          <label className="file-picker">
-            {t('ui.choose_photo', locale)}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(event) => void handleFileChange(event)}
-              disabled={disabled}
-            />
-          </label>
+          <>
+            <label className="file-picker">
+              {t('ui.choose_photo', locale)}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => void handleFileChange(event)}
+                disabled={disabled}
+              />
+            </label>
+            <a className="paste-link" href="#manual-entry">
+              {t('ui.paste_toggle', locale)}
+            </a>
+          </>
         )}
       </div>
 

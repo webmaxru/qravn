@@ -2,11 +2,10 @@
  * QRavn palette: ink on paper, the only two colours a QR code may have.
  *
  * Colour is a verdict here, not decoration. It enters only when there is
- * something to say, and it gets louder as the news gets worse: nothing found
- * is silent, insufficient evidence is a murmur, suspicious is a raised voice,
- * known malicious is a shout. That is why --ok is a grey. A green card would
- * read as a promise of safety, and this app is never in a position to make
- * one; it can only report that it found nothing.
+ * something to say, and it gets louder as the news gets worse. A restrained
+ * green distinguishes "no known threat found" without changing that qualified
+ * verdict into a promise of safety; the written verdict and open-ring icon keep
+ * that boundary explicit.
  *
  * Every foreground/background pair below is checked against WCAG AA.
  */
@@ -31,8 +30,9 @@
   --warning-text: #4a2a02;
   --info: #4a4fa0;
   --info-bg: #e2e2f4;
-  --ok: #5b6165;
-  --ok-bg: #f0f1ef;
+  --ok: #2f7d45;
+  --ok-bg: #e3f4e8;
+  --ok-text: #174a2a;
   --host-bg: #f0f1ef;
   --calm-bg: #f0f1ef;
   --code-bg: #edeeec;
@@ -75,8 +75,9 @@
     --warning-text: #ffe0ae;
     --info: #9ea3f0;
     --info-bg: #23264f;
-    --ok: #a8aeb1;
-    --ok-bg: #1e2123;
+    --ok: #6fca8b;
+    --ok-bg: #163521;
+    --ok-text: #c9f3d6;
     --host-bg: #1e2123;
     --calm-bg: #1e2123;
     --code-bg: #0e1012;

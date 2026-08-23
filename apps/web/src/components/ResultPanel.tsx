@@ -33,24 +33,39 @@ export const ResultPanel = forwardRef<HTMLDivElement, ResultPanelProps>(function
   const redirectCue = hasRedirectCue(assessment);
   const redirectWarning = textForCode('ui.possible_redirect_warning', {}, locale);
   const offlineLimitation = textForCode('ui.offline_redirect_limitation', {}, locale);
+  const canExpandRedirect =
+    online.available && assessment.recommendedActions.includes('expand_redirect_online');
+  let redirectLink: string | null = null;
+  if (assessment.redirect) {
+    redirectLink = textForCode('online.section_heading', {}, locale).title;
+  } else if (canExpandRedirect) {
+    redirectLink = textForCode('online.expand_heading', {}, locale).title;
+  }
 
-  // The exact text of the code is evidence, not the answer. When there is an
-  // address to show, "where does this go" comes first and the raw text moves to
-  // the bottom. When there is no address, the text is all there is, so it leads.
   const payloadPanel = (
-    <section className="panel payload" aria-labelledby="payload-heading">
+    <section className="panel payload payload-summary" aria-labelledby="payload-heading">
       <h2 id="payload-heading">{textForCode('ui.payload_heading', {}, locale).title}</h2>
       <p className="payload-display">{assessment.displayPayload}</p>
-      <details>
-        <summary>{textForCode('ui.raw_payload', {}, locale).title}</summary>
-        <pre>{assessment.rawPayload}</pre>
-      </details>
+      {assessment.url ? (
+        <div className="payload-links">
+          <a href="#address-details">{textForCode('ui.breakdown_heading', {}, locale).title}</a>
+          {redirectLink ? <a href="#redirect-check">{redirectLink}</a> : null}
+        </div>
+      ) : null}
+      {assessment.rawPayload !== assessment.displayPayload ? (
+        <details>
+          <summary>{textForCode('ui.raw_payload', {}, locale).title}</summary>
+          <pre>{assessment.rawPayload}</pre>
+        </details>
+      ) : null}
     </section>
   );
 
   return (
     <div className="result-stack" aria-live="polite" aria-atomic="false" tabIndex={-1} ref={ref} data-testid="result-region">
       <VerdictBanner verdict={assessment.verdict} summary={assessment.summary} locale={locale} />
+      {payloadPanel}
+      <Actions assessment={assessment} locale={locale} />
       {redirectCue ? (
         <section
           className="panel possible-redirect-warning"
@@ -73,8 +88,6 @@ export const ResultPanel = forwardRef<HTMLDivElement, ResultPanelProps>(function
       {assessment.limitations.length ? (
         <LimitationsList limitations={assessment.limitations} locale={locale} />
       ) : null}
-      <Actions assessment={assessment} locale={locale} />
-      {assessment.url ? payloadPanel : null}
     </div>
   );
 });

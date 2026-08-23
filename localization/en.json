@@ -9,7 +9,7 @@
   },
   "limitation.offline_no_reputation": {
     "title": "We did not ask anyone else",
-    "detail": "This check ran on your phone alone, against our own rules. No outside service was consulted."
+    "detail": "The result uses QRavn's own rules. No outside service was consulted."
   },
   "limitation.payload_not_understood": {
     "title": "We did not recognise this format",
@@ -37,18 +37,18 @@
   },
   "online.disclosure": {
     "title": "Before you continue",
-    "detail": "This link is sent to our own server. Our server visits it and follows where it goes. Your phone never touches it."
+    "detail": "This link is sent to our own server, which follows it for you. This device does not open or contact the link."
   },
   "online.error": {
     "title": "The link could not be checked",
-    "detail": "Something went wrong on our side. Your phone did not contact the link. You can try again."
+    "detail": "Something went wrong on our side. This device did not contact the link. You can try again."
   },
   "online.expand_button": {
     "title": "See where this link goes",
     "detail": ""
   },
   "online.expand_heading": {
-    "title": "Check where this link really goes",
+    "title": "Check where this link ends up",
     "detail": ""
   },
   "online.final_badge": {
@@ -77,7 +77,7 @@
   },
   "online.resolving": {
     "title": "Checking where it goes…",
-    "detail": "Your phone is not contacting the link."
+    "detail": "This device is not contacting the link."
   },
   "online.retry_button": {
     "title": "Try again",
@@ -89,7 +89,7 @@
   },
   "payload.app_deep_link": {
     "title": "Opens an app, not a page",
-    "detail": "It starts with {scheme}, which hands the code to an app on your phone."
+    "detail": "It starts with {scheme}, which hands the code to an app on your device."
   },
   "payload.binary_content": {
     "title": "Not readable text",
@@ -188,7 +188,7 @@
     "detail": ""
   },
   "ui.breakdown_heading": {
-    "title": "The address, piece by piece",
+    "title": "See the address piece by piece",
     "detail": ""
   },
   "ui.camera_denied": {
@@ -213,6 +213,14 @@
   },
   "ui.copy": {
     "title": "Copy text",
+    "detail": ""
+  },
+  "ui.copy_failed": {
+    "title": "This could not be copied. Select it above and copy it manually.",
+    "detail": ""
+  },
+  "ui.copy_link": {
+    "title": "Copy link",
     "detail": ""
   },
   "ui.credential_note": {
@@ -253,26 +261,30 @@
   },
   "ui.follow_links": {
     "title": "Look up short links",
-    "detail": "Short links hide where they go. With this on, our own server can follow one and tell you where it lands. Your phone never touches the link either way."
+    "detail": "Short links hide where they go. With this on, our own server can follow one and tell you where it lands. This device never opens or contacts the link."
   },
   "ui.how_address": {
-    "title": "The web address",
-    "detail": "26 checks. Is the real name at the end instead of the start? Is one letter borrowed from another alphabet? Are there characters you cannot see?"
+    "title": "Does the address look misleading?",
+    "detail": "26 checks look for hidden characters, borrowed alphabets, and familiar names placed where they do not prove ownership."
   },
   "ui.how_content": {
-    "title": "What the code really is",
-    "detail": "16 checks. A QR code is not always a link. It can be a text message that costs money, a wifi network, or a key to your login."
+    "title": "What does the code contain?",
+    "detail": "16 checks identify links, messages, Wi-Fi details, and sign-in keys."
   },
   "ui.how_heading": {
-    "title": "What QRavn looks for",
-    "detail": ""
+    "title": "checks, grouped into three clear questions",
+    "detail": "Each group answers something useful before you decide whether to open a link."
   },
   "ui.how_redirect": {
-    "title": "Where it sends you next",
-    "detail": "7 checks. Short links hide their destination. Some hop between sites, or stop protecting you along the way."
+    "title": "Could it send you somewhere else?",
+    "detail": "7 checks look for short links, redirect chains, and protection lost along the way."
   },
   "ui.language": {
     "title": "Language",
+    "detail": ""
+  },
+  "ui.link_copied": {
+    "title": "Link copied",
     "detail": ""
   },
   "ui.limitations": {
@@ -285,7 +297,7 @@
   },
   "ui.offline_redirect_limitation": {
     "title": "Where this short link ends up is still unknown",
-    "detail": "Turn on \"Look up short links\" in Settings to find out, without your phone touching it."
+    "detail": "Turn on \"Look up short links\" in Settings to find out, without this device contacting it."
   },
   "ui.open_anyway": {
     "title": "I still want to open {host}",
@@ -294,6 +306,10 @@
   "ui.open_blocked": {
     "title": "Opening is blocked",
     "detail": "This code cannot be opened from here."
+  },
+  "ui.open_link": {
+    "title": "Open link",
+    "detail": ""
   },
   "ui.open_new_tab": {
     "title": "Open {host} in a new tab",
@@ -308,11 +324,11 @@
     "detail": ""
   },
   "ui.paste_toggle": {
-    "title": "Paste a link instead",
+    "title": "Paste link or QR text",
     "detail": ""
   },
   "ui.payload_heading": {
-    "title": "What the code says",
+    "title": "What this code contains",
     "detail": ""
   },
   "ui.possible_redirect_warning": {
@@ -321,7 +337,7 @@
   },
   "ui.privacy_note": {
     "title": "Privacy",
-    "detail": "No account, no tracking, no history. The check runs on your phone."
+    "detail": "No account, no tracking, no history. Nothing opens unless you choose it."
   },
   "ui.raw_payload": {
     "title": "Show the exact text",
@@ -336,8 +352,8 @@
     "detail": ""
   },
   "ui.reassurance": {
-    "title": "Nothing opens until you say so",
-    "detail": "The check runs on your phone. QRavn never visits the link."
+    "title": "You decide what opens",
+    "detail": "QRavn shows you what the code contains. Nothing opens automatically."
   },
   "ui.result": {
     "title": "Result",
@@ -371,8 +387,20 @@
     "title": "Settings",
     "detail": ""
   },
+  "ui.share_failed": {
+    "title": "The share menu could not open. Try copying the link instead.",
+    "detail": ""
+  },
+  "ui.share_fallback": {
+    "title": "Sharing is not available here, so the link was copied instead.",
+    "detail": ""
+  },
+  "ui.share_link": {
+    "title": "Share link",
+    "detail": ""
+  },
   "ui.tagline": {
-    "title": "Check a QR code before you open it",
+    "title": "Check a QR code first",
     "detail": ""
   },
   "ui.what_we_found": {
@@ -421,7 +449,7 @@
   },
   "url.file_scheme": {
     "title": "Points at a file on the device",
-    "detail": "This is not a website. It points into your phone or computer."
+    "detail": "This is not a website. It points to a file on your device."
   },
   "url.hyphenated_brand_domain": {
     "title": "A known name with something added",
@@ -437,7 +465,7 @@
   },
   "url.javascript_scheme": {
     "title": "This runs code, not a page",
-    "detail": "Opening it would run instructions on your phone. A QR code has no reason to do that."
+    "detail": "Opening it would run instructions on your device. A QR code has no reason to do that."
   },
   "url.known_malicious": {
     "title": "Matches a known bad address",
