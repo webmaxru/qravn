@@ -25,9 +25,9 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 export const LLMS_FULL_PATH = join(root, 'apps', 'web', 'public', 'llms-full.txt')
 
 const GROUP_TITLES = {
-  url: 'The web address',
-  payload: 'What the code really is',
-  redirect: 'Where it sends you next',
+  url: 'Does the address look misleading?',
+  payload: 'What does the code contain?',
+  redirect: 'Could it send you somewhere else?',
 }
 
 const VERDICT_ORDER = [

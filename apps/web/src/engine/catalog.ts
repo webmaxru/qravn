@@ -93,13 +93,13 @@ const verdictTexts: Catalog = {
 // app aimed at Norway, not a cosmetic gap.
 const uiTexts: Catalog = {
   'online.expand_heading': {
-    title: 'Check where this link really goes',
+    title: 'Check where this link ends up',
     detail: '',
   },
   'online.disclosure': {
     title: 'Before you continue',
     detail:
-      'This link is sent to our own server. Our server visits it and follows where it goes. Your phone never touches it.',
+      'This link is sent to our own server, which follows it for you. This device does not open or contact the link.',
   },
   'online.expand_button': {
     title: 'See where this link goes',
@@ -107,7 +107,7 @@ const uiTexts: Catalog = {
   },
   'online.resolving': {
     title: 'Checking where it goes…',
-    detail: 'Your phone is not contacting the link.',
+    detail: 'This device is not contacting the link.',
   },
   'online.section_heading': {
     title: 'Where this link leads',
@@ -142,7 +142,7 @@ const uiTexts: Catalog = {
   'online.error': {
     title: 'The link could not be checked',
     detail:
-      'Something went wrong on our side. Your phone did not contact the link. You can try again.',
+      'Something went wrong on our side. This device did not contact the link. You can try again.',
   },
   'online.retry_button': {
     title: 'Try again',

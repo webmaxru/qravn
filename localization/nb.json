@@ -9,7 +9,7 @@
   },
   "limitation.offline_no_reputation": {
     "title": "Vi spurte ingen andre",
-    "detail": "Sjekken kjørte bare på telefonen din, mot våre egne regler. Ingen andre tjenester ble spurt."
+    "detail": "Resultatet bruker QRavns egne regler. Ingen andre tjenester ble spurt."
   },
   "limitation.payload_not_understood": {
     "title": "Vi kjente ikke igjen dette formatet",
@@ -37,18 +37,18 @@
   },
   "online.disclosure": {
     "title": "Før du fortsetter",
-    "detail": "Denne lenken sendes til vår egen server. Serveren vår besøker den og følger hvor den går. Telefonen din tar aldri kontakt med den."
+    "detail": "Denne lenken sendes til vår egen server, som følger den for deg. Denne enheten åpner eller kontakter ikke lenken."
   },
   "online.error": {
     "title": "Lenken kunne ikke sjekkes",
-    "detail": "Noe gikk galt hos oss. Telefonen din tok ikke kontakt med lenken. Du kan prøve igjen."
+    "detail": "Noe gikk galt hos oss. Denne enheten kontaktet ikke lenken. Du kan prøve igjen."
   },
   "online.expand_button": {
     "title": "Se hvor lenken går",
     "detail": ""
   },
   "online.expand_heading": {
-    "title": "Sjekk hvor denne lenken faktisk går",
+    "title": "Sjekk hvor lenken ender",
     "detail": ""
   },
   "online.final_badge": {
@@ -77,7 +77,7 @@
   },
   "online.resolving": {
     "title": "Sjekker hvor den går…",
-    "detail": "Telefonen din tar ikke kontakt med lenken."
+    "detail": "Denne enheten kontakter ikke lenken."
   },
   "online.retry_button": {
     "title": "Prøv igjen",
@@ -89,7 +89,7 @@
   },
   "payload.app_deep_link": {
     "title": "Åpner en app, ikke en side",
-    "detail": "Den begynner med {scheme}, som gir koden videre til en app på telefonen."
+    "detail": "Den begynner med {scheme}, som gir koden videre til en app på enheten din."
   },
   "payload.binary_content": {
     "title": "Ikke lesbar tekst",
@@ -188,7 +188,7 @@
     "detail": ""
   },
   "ui.breakdown_heading": {
-    "title": "Adressen, del for del",
+    "title": "Se adressen del for del",
     "detail": ""
   },
   "ui.camera_denied": {
@@ -213,6 +213,14 @@
   },
   "ui.copy": {
     "title": "Kopier teksten",
+    "detail": ""
+  },
+  "ui.copy_failed": {
+    "title": "Dette kunne ikke kopieres. Marker det ovenfor og kopier det manuelt.",
+    "detail": ""
+  },
+  "ui.copy_link": {
+    "title": "Kopier lenken",
     "detail": ""
   },
   "ui.credential_note": {
@@ -253,26 +261,30 @@
   },
   "ui.follow_links": {
     "title": "Slå opp korte lenker",
-    "detail": "Korte lenker skjuler hvor de går. Med denne på kan vår egen server følge lenken og fortelle hvor den lander. Telefonen din tar aldri kontakt med lenken uansett."
+    "detail": "Korte lenker skjuler hvor de går. Med denne på kan vår egen server følge lenken og fortelle hvor den lander. Denne enheten åpner eller kontakter aldri lenken."
   },
   "ui.how_address": {
-    "title": "Selve nettadressen",
-    "detail": "26 sjekker. Står det ekte navnet til slutt i stedet for først? Er én bokstav hentet fra et annet alfabet? Ligger det tegn der som du ikke kan se?"
+    "title": "Ser adressen villedende ut?",
+    "detail": "26 sjekker ser etter skjulte tegn, bokstaver fra andre alfabeter og kjente navn plassert der de ikke beviser hvem som eier siden."
   },
   "ui.how_content": {
-    "title": "Hva koden egentlig er",
-    "detail": "16 sjekker. En QR-kode er ikke alltid en lenke. Den kan være en SMS som koster penger, et wifi-nettverk, eller en nøkkel til innloggingen din."
+    "title": "Hva inneholder koden?",
+    "detail": "16 sjekker skiller mellom lenker, meldinger, wifi-opplysninger og innloggingsnøkler."
   },
   "ui.how_heading": {
-    "title": "Dette ser QRavn etter",
-    "detail": ""
+    "title": "sjekker, samlet i tre klare spørsmål",
+    "detail": "Hver gruppe gir deg et nyttig svar før du bestemmer om lenken skal åpnes."
   },
   "ui.how_redirect": {
-    "title": "Hvor den sender deg videre",
-    "detail": "7 sjekker. Korte lenker skjuler målet. Noen hopper mellom nettsteder, eller slutter å beskytte deg underveis."
+    "title": "Kan den sende deg et annet sted?",
+    "detail": "7 sjekker ser etter korte lenker, kjeder av videresendinger og beskyttelse som forsvinner underveis."
   },
   "ui.language": {
     "title": "Språk",
+    "detail": ""
+  },
+  "ui.link_copied": {
+    "title": "Lenken er kopiert",
     "detail": ""
   },
   "ui.limitations": {
@@ -285,7 +297,7 @@
   },
   "ui.offline_redirect_limitation": {
     "title": "Hvor denne korte lenken ender, er fortsatt ukjent",
-    "detail": "Slå på «Slå opp korte lenker» i Innstillinger for å finne det ut, uten at telefonen din tar kontakt."
+    "detail": "Slå på «Slå opp korte lenker» i Innstillinger for å finne det ut, uten at denne enheten tar kontakt."
   },
   "ui.open_anyway": {
     "title": "Jeg vil åpne {host} likevel",
@@ -294,6 +306,10 @@
   "ui.open_blocked": {
     "title": "Åpning er blokkert",
     "detail": "Denne koden kan ikke åpnes herfra."
+  },
+  "ui.open_link": {
+    "title": "Åpne lenken",
+    "detail": ""
   },
   "ui.open_new_tab": {
     "title": "Åpne {host} i ny fane",
@@ -308,11 +324,11 @@
     "detail": ""
   },
   "ui.paste_toggle": {
-    "title": "Lim inn en lenke i stedet",
+    "title": "Lim inn lenke/QR-tekst",
     "detail": ""
   },
   "ui.payload_heading": {
-    "title": "Dette står i koden",
+    "title": "Dette inneholder koden",
     "detail": ""
   },
   "ui.possible_redirect_warning": {
@@ -321,7 +337,7 @@
   },
   "ui.privacy_note": {
     "title": "Personvern",
-    "detail": "Ingen konto, ingen sporing, ingen historikk. Sjekken skjer på telefonen din."
+    "detail": "Ingen konto, ingen sporing, ingen historikk. Ingenting åpnes uten at du velger det."
   },
   "ui.raw_payload": {
     "title": "Vis den nøyaktige teksten",
@@ -336,8 +352,8 @@
     "detail": ""
   },
   "ui.reassurance": {
-    "title": "Ingenting åpnes før du sier ja",
-    "detail": "Sjekken skjer på telefonen din. QRavn besøker aldri lenken."
+    "title": "Du bestemmer hva som åpnes",
+    "detail": "QRavn viser hva koden inneholder. Ingenting åpnes automatisk."
   },
   "ui.result": {
     "title": "Resultat",
@@ -371,8 +387,20 @@
     "title": "Innstillinger",
     "detail": ""
   },
+  "ui.share_failed": {
+    "title": "Delingsmenyen kunne ikke åpnes. Prøv å kopiere lenken i stedet.",
+    "detail": ""
+  },
+  "ui.share_fallback": {
+    "title": "Deling er ikke tilgjengelig her, så lenken ble kopiert i stedet.",
+    "detail": ""
+  },
+  "ui.share_link": {
+    "title": "Del lenken",
+    "detail": ""
+  },
   "ui.tagline": {
-    "title": "Sjekk QR-koden før du åpner den",
+    "title": "Sjekk QR-koden først",
     "detail": ""
   },
   "ui.what_we_found": {
@@ -421,7 +449,7 @@
   },
   "url.file_scheme": {
     "title": "Peker på en fil på enheten",
-    "detail": "Dette er ikke et nettsted. Det peker inn i telefonen eller maskinen din."
+    "detail": "Dette er ikke et nettsted. Det peker på en fil på enheten din."
   },
   "url.hyphenated_brand_domain": {
     "title": "Kjent navn med noe lagt til",
@@ -437,7 +465,7 @@
   },
   "url.javascript_scheme": {
     "title": "Dette kjører kode, ikke en side",
-    "detail": "Å åpne den ville kjørt instruksjoner på telefonen din. En QR-kode har ingen grunn til det."
+    "detail": "Å åpne den ville kjørt instruksjoner på enheten din. En QR-kode har ingen grunn til det."
   },
   "url.known_malicious": {
     "title": "Treffer en kjent skadelig adresse",

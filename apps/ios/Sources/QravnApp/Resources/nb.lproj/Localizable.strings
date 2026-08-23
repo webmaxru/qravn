@@ -3,13 +3,13 @@
    regenerate rather than editing this file. */
 
 "scan_title" = "Rett kameraet mot en QR-kode";
-"scan_hint" = "49 sjekker kjøres før noe åpnes. Ingenting forlater telefonen din.";
+"scan_hint" = "Se hva koden inneholder. Ingenting åpnes automatisk.";
 "scan_viewfinder_description" = "Kamerasøker. En QR-kode leses automatisk når den er i bildet.";
 "scan_from_clipboard" = "Sjekk kopiert tekst";
 "scan_analysing" = "Sjekker…";
 "scan_again" = "Skann på nytt";
 "permission_title" = "Kameratilgang trengs for å skanne";
-"permission_body" = "Kameraet brukes bare mens denne skjermen er åpen. Bildene blir på telefonen og lastes aldri opp.";
+"permission_body" = "Kameraet brukes bare mens denne skjermen er åpen. Bildene blir på denne enheten og lastes aldri opp.";
 "permission_grant" = "Tillat kamera";
 "permission_open_settings" = "Åpne appinnstillinger";
 "result_destination" = "Mål";

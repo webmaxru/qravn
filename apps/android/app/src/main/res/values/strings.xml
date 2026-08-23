@@ -8,7 +8,7 @@
 
     <!-- Scan screen -->
     <string name="scan_title">Point at a QR code</string>
-    <string name="scan_hint">49 checks run before anything opens. Nothing leaves your phone.</string>
+    <string name="scan_hint">See what the code contains. Nothing opens automatically.</string>
     <string name="scan_viewfinder_description">Camera viewfinder. A QR code is read automatically when it is in view.</string>
     <string name="scan_again">Scan again</string>
     <string name="scan_torch_on">Turn on flashlight</string>
@@ -20,7 +20,7 @@
 
     <!-- Camera permission -->
     <string name="permission_title">Camera access is needed to scan</string>
-    <string name="permission_body">The camera is used only while this screen is open. Images stay on your phone and are never uploaded.</string>
+    <string name="permission_body">The camera is used only while this screen is open. Images stay on this device and are never uploaded.</string>
     <string name="permission_grant">Allow camera</string>
     <string name="permission_denied_title">Camera is unavailable</string>
     <string name="permission_denied_body">You can still check a saved image or copied text.</string>

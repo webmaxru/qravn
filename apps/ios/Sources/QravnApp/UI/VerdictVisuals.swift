@@ -25,8 +25,8 @@ enum VerdictColors {
     static let onWarningContainer = Color(light: 0x4A2A02, dark: 0xFFE0AE)
     static let unknownContainer = Color(light: 0xE2E2F4, dark: 0x23264F)
     static let onUnknownContainer = Color(light: 0x1E2050, dark: 0xD5D6F2)
-    static let clearContainer = Color(light: 0xF0F1EF, dark: 0x1E2123)
-    static let onClearContainer = Color(light: 0x111315, dark: 0xE6E7E5)
+    static let clearContainer = Color(light: 0xE3F4E8, dark: 0x163521)
+    static let onClearContainer = Color(light: 0x174A2A, dark: 0xC9F3D6)
 }
 
 func visual(for verdict: Verdict) -> VerdictVisual {

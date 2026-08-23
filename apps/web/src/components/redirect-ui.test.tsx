@@ -25,9 +25,9 @@ describe('RedirectPanel opt-in', () => {
       <RedirectPanel assessment={assessOnline(SHORTENER)} resolution={null} locale="en" online={online({ onExpand })} />,
     );
 
-    expect(screen.getByRole('heading', { name: /Check where this link really goes/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Check where this link ends up/i })).toBeInTheDocument();
     expect(screen.getByText(/This link is sent to our own server/i)).toBeInTheDocument();
-    expect(screen.getByText(/Your phone never touches it/i)).toBeInTheDocument();
+    expect(screen.getByText(/This device does not open or contact the link/i)).toBeInTheDocument();
 
     // Nothing happens until the user actively chooses to expand.
     expect(onExpand).not.toHaveBeenCalled();
@@ -88,7 +88,7 @@ describe('RedirectPanel opt-in', () => {
       />,
     );
     expect(screen.getByText(/The link could not be checked/i)).toBeInTheDocument();
-    expect(screen.getByText(/Your phone did not contact the link/i)).toBeInTheDocument();
+    expect(screen.getByText(/This device did not contact the link/i)).toBeInTheDocument();
     expect(screen.queryByText(/Followed to the final destination/i)).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Try again/i }));

@@ -31,7 +31,7 @@ test('credential-in-authority finding appears without an unguarded open link', a
   await expect(page.getByText('url.credentials_in_authority')).toBeVisible();
   await expect(page.getByText(/text before @ is not the destination/i)).toBeVisible();
   await expect(page.getByRole('link', { name: /Open evil\.example/i })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /still want to open evil\.example/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Open link$/i })).toBeVisible();
 });
 
 test('open_blocked renders no anchor to the payload', async ({ page }) => {
@@ -43,13 +43,14 @@ test('open_blocked renders no anchor to the payload', async ({ page }) => {
   await expect(page.getByRole('link', { name: /open/i })).toHaveCount(0);
 });
 
-test('opening requires assessment plus a second explicit confirmation', async ({ page }) => {
+test('an allowed link requires the explicit Open link button before an anchor exists', async ({ page }) => {
   await page.goto('/');
   await submitPayload(page, 'https://example.com/login');
 
-  await expect(page.getByRole('link', { name: /Open example\.com/i })).toHaveCount(0);
-  await page.getByRole('button', { name: /still want to open example\.com/i }).click();
-  await expect(page.getByRole('link', { name: /Open example\.com/i })).toBeVisible();
+  await expect(page.locator('a[href="https://example.com/login"]')).toHaveCount(0);
+  await page.getByRole('button', { name: /^Open link$/i }).click();
+  await expect(page.getByRole('link', { name: /Open example\.com in a new tab/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test('switching language changes rendered text', async ({ page }) => {
@@ -188,11 +189,91 @@ test('a payload carried in a link is never opened automatically', async ({ page 
   await page.goto(`/?url=${encodeURIComponent('https://example.com/login')}`);
   await expect(page.getByTestId('result-region')).toBeVisible({ timeout: 25_000 });
 
-  // Still on our own origin, and opening still costs a deliberate second action.
+  // Still on our own origin, with opening available only as an explicit action.
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole('link', { name: /Open example\.com/i })).toHaveCount(0);
-  await page.getByRole('button', { name: /still want to open example\.com/i }).click();
-  await expect(page.getByRole('link', { name: /Open example\.com/i })).toBeVisible();
+  await expect(page.locator('a[href="https://example.com/login"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Open link$/i })).toBeVisible();
+});
+
+test('the primary open action stays above the fold on major mobile viewport sizes', async ({ page }) => {
+  const viewports = [
+    { width: 320, height: 568 },
+    { width: 360, height: 640 },
+    { width: 390, height: 844 },
+    { width: 412, height: 915 },
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await submitPayload(page, 'https://example.com/login');
+
+    const open = page.getByRole('button', { name: /^Open link$/i });
+    await expect(open).toBeVisible();
+    const headerBox = await page.locator('.app-bar').boundingBox();
+    const verdictBox = await page.locator('.verdict').boundingBox();
+    const box = await open.boundingBox();
+    expect(headerBox).not.toBeNull();
+    expect(verdictBox).not.toBeNull();
+    expect(box, `${viewport.width}x${viewport.height} open action had no layout box`).not.toBeNull();
+    expect(
+      verdictBox!.y,
+      `${viewport.width}x${viewport.height} verdict started behind the sticky app bar`,
+    ).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+    expect(
+      box!.y,
+      `${viewport.width}x${viewport.height} open action started behind the sticky app bar`,
+    ).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+    expect(
+      box!.y + box!.height,
+      `${viewport.width}x${viewport.height} open action fell below the first viewport`,
+    ).toBeLessThanOrEqual(viewport.height);
+  }
+});
+
+test('the clear verdict uses the qualified green treatment', async ({ page }) => {
+  await page.goto('/');
+  await submitPayload(page, 'https://example.com/login');
+
+  const verdict = page.locator('.verdict--no_known_threat_found');
+  await expect(verdict).toBeVisible();
+  await expect(verdict).toHaveCSS('background-color', 'rgb(227, 244, 232)');
+  await expect(verdict).toHaveCSS('border-color', 'rgb(47, 125, 69)');
+});
+
+test('the mobile scan title and alternate inputs stay on one line in both offered locales', async ({ page }) => {
+  for (const locale of ['EN', 'NO']) {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('/');
+    await page.getByRole('button', { name: locale, exact: true }).click();
+
+    const metrics = await page.evaluate(() => {
+      const title = document.querySelector('.tagline');
+      const photo = document.querySelector('.file-picker')?.getBoundingClientRect();
+      const paste = document.querySelector('.paste-link')?.getBoundingClientRect();
+      return {
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+        titleHeight: title?.getBoundingClientRect().height ?? 0,
+        titleLineHeight: title ? Number.parseFloat(getComputedStyle(title).lineHeight) : 0,
+        photoTop: photo?.top ?? 0,
+        pasteTop: paste?.top ?? 0,
+      };
+    });
+
+    expect(metrics.documentWidth, `${locale} layout overflowed horizontally`).toBe(metrics.viewportWidth);
+    expect(metrics.titleHeight, `${locale} title wrapped`).toBeLessThanOrEqual(metrics.titleLineHeight * 1.1);
+    expect(Math.abs(metrics.photoTop - metrics.pasteTop), `${locale} alternate inputs split across rows`).toBeLessThan(4);
+
+    if (locale === 'EN') {
+      await page.getByRole('link', { name: 'Paste link or QR text' }).click();
+      await expect(page).toHaveURL(/#manual-entry$/);
+      const manualEntry = await page.locator('#manual-entry').boundingBox();
+      expect(manualEntry).not.toBeNull();
+      expect(manualEntry!.y).toBeLessThan(568);
+      expect(manualEntry!.y + manualEntry!.height).toBeGreaterThan(52);
+    }
+  }
 });
 
 test('a hostile scheme carried in a link renders no anchor', async ({ page }) => {

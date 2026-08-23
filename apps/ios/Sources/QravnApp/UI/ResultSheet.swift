@@ -31,9 +31,9 @@ struct ResultSheet: View {
                 VStack(alignment: .leading, spacing: 24) {
                     verdictHeader
                     destination
+                    actions
                     if !assessment.findings.isEmpty { findings } else { noEvidence }
                     if !assessment.limitations.isEmpty { limitations }
-                    actions
                 }
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)

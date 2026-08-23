@@ -61,7 +61,7 @@ export function RedirectPanel({ assessment, resolution, locale, online }: Redire
 
     return (
       <>
-        <section className="panel redirect-result" aria-labelledby="redirect-heading">
+        <section id="redirect-check" className="panel redirect-result" aria-labelledby="redirect-heading">
           <h2 id="redirect-heading">{sectionTitle}</h2>
 
           <div className={`redirect-outcome redirect-outcome--${framing.kind}`}>
@@ -130,7 +130,7 @@ export function RedirectPanel({ assessment, resolution, locale, online }: Redire
   const isResolving = online.state === 'resolving';
 
   return (
-    <section className="panel redirect-optin" aria-labelledby="redirect-optin-heading">
+    <section id="redirect-check" className="panel redirect-optin" aria-labelledby="redirect-optin-heading">
       <h2 id="redirect-optin-heading">{heading}</h2>
       <div className="redirect-disclosure" role="note">
         <strong>{disclosure.title}</strong>

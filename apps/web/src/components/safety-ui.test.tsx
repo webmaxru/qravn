@@ -73,6 +73,72 @@ afterEach(() => {
 });
 
 describe('safety UI', () => {
+  it('keeps the compact scan choices together and moves manual entry below the explanation', () => {
+    render(<App engineOverride={new MockSafetyEngine()} />);
+
+    expect(screen.getByRole('heading', { name: 'Check a QR code first', level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('You decide what opens')).toBeInTheDocument();
+
+    const photo = screen.getByText('Choose a photo');
+    const paste = screen.getByRole('link', { name: 'Paste link or QR text' });
+    expect(photo.closest('.scan-actions')).toBe(paste.closest('.scan-actions'));
+    expect(paste).toHaveAttribute('href', '#manual-entry');
+
+    const explanation = screen.getByRole('heading', {
+      name: '49 checks, grouped into three clear questions',
+      level: 2,
+    }).closest('section');
+    const manualEntry = screen.getByLabelText(/Link or QR text/i).closest('form');
+    expect(explanation).not.toBeNull();
+    expect(manualEntry).not.toBeNull();
+    expect(explanation!.compareDocumentPosition(manualEntry!) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+  });
+
+  it('puts the verdict, decoded content, and actions first in the result', () => {
+    const cleanAssessment: Assessment = {
+      ...assess('https://example.com/login'),
+      verdict: 'no_known_threat_found',
+      recommendedActions: ['open_allowed', 'expand_redirect_online', 'copy'],
+    };
+    render(
+      <ResultPanel
+        assessment={cleanAssessment}
+        locale="en"
+        online={{ available: true, state: 'idle', onExpand: vi.fn() }}
+      />,
+    );
+
+    const result = screen.getByTestId('result-region');
+    const [verdict, payload, actions] = Array.from(result.children);
+    expect(verdict).toHaveClass('verdict');
+    expect(within(payload as HTMLElement).getByRole('heading', { name: 'What this code contains' })).toBeInTheDocument();
+    expect(within(actions as HTMLElement).getByRole('heading', { name: 'What you can do' })).toBeInTheDocument();
+
+    expect(within(payload as HTMLElement).getByRole('link', { name: 'See the address piece by piece' }))
+      .toHaveAttribute('href', '#address-details');
+    expect(within(payload as HTMLElement).getByRole('link', { name: 'Check where this link ends up' }))
+      .toHaveAttribute('href', '#redirect-check');
+    expect(within(actions as HTMLElement).getByRole('button', { name: 'Open link' })).toBeInTheDocument();
+    expect(within(actions as HTMLElement).getByRole('button', { name: 'Copy link' })).toBeInTheDocument();
+    expect(within(actions as HTMLElement).getByRole('button', { name: 'Share link' })).toBeInTheDocument();
+  });
+
+  it('shares a checked URL through the device share menu', async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    const originalShare = navigator.share;
+    Object.defineProperty(navigator, 'share', { configurable: true, value: share });
+    const user = userEvent.setup();
+
+    try {
+      render(<ResultPanel assessment={assess('https://example.com/login')} locale="en" />);
+      await user.click(screen.getByRole('button', { name: 'Share link' }));
+
+      expect(share).toHaveBeenCalledWith({ url: 'https://example.com/login' });
+    } finally {
+      Object.defineProperty(navigator, 'share', { configurable: true, value: originalShare });
+    }
+  });
+
   it.each([
     ['known_malicious', 'Known malicious'],
     ['suspicious', 'Suspicious'],

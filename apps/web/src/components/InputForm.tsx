@@ -29,7 +29,7 @@ export function InputForm({ onSubmit, locale, disabled = false }: InputFormProps
   }
 
   return (
-    <form className="check-form" onSubmit={submit}>
+    <form id="manual-entry" className="check-form" onSubmit={submit}>
       <label htmlFor="payload">{t('ui.paste_label', locale)}</label>
       <textarea
         id="payload"
