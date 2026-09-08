@@ -138,7 +138,10 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    if (pointersRef.current.size === 2) pinchDistanceRef.current = null;
+    if (pointersRef.current.size === 2) {
+      const [{ x: firstX, y: firstY }, { x: secondX, y: secondY }] = [...pointersRef.current.values()];
+      pinchDistanceRef.current = Math.hypot(secondX - firstX, secondY - firstY);
+    }
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
