@@ -25,7 +25,10 @@ describe('QrScanner camera controls', () => {
 
     render(<QrScanner onDecode={vi.fn()} locale="en" />);
     fireEvent.click(screen.getByRole('button', { name: /scan with camera/i }));
-    const viewfinder = await screen.findByRole('region');
+    const video = await screen.findByLabelText(/point your camera at the code/i);
+    const viewfinder = video.parentElement;
+    expect(viewfinder).not.toBeNull();
+    if (!viewfinder) return;
     await waitFor(() => expect(viewfinder).toHaveClass('viewfinder--live'));
 
     fireEvent.pointerDown(viewfinder, { pointerId: 1, clientX: 100, clientY: 100 });
