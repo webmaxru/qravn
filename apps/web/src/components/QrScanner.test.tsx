@@ -24,7 +24,7 @@ describe('QrScanner camera controls', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(1);
 
     render(<QrScanner onDecode={vi.fn()} locale="en" />);
-    fireEvent.click(screen.getByRole('button', { name: /start/i }));
+    fireEvent.click(screen.getByRole('button', { name: /scan with camera/i }));
     const viewfinder = await screen.findByRole('region');
     await waitFor(() => expect(viewfinder).toHaveClass('viewfinder--live'));
 
