@@ -16,7 +16,7 @@ type ZoomRange = { min: number; max: number; step: number };
 
 function cameraZoomRange(track: MediaStreamTrack): ZoomRange | null {
   if (!('getCapabilities' in track)) return null;
-  const capabilities = track.getCapabilities() as MediaTrackCapabilities & { zoom?: ZoomRange };
+  const capabilities = track.getCapabilities() as { zoom?: ZoomRange };
   const zoom = capabilities.zoom;
   if (!zoom || !Number.isFinite(zoom.min) || !Number.isFinite(zoom.max) || zoom.max <= zoom.min) return null;
   return { min: zoom.min, max: zoom.max, step: zoom.step > 0 ? zoom.step : 1 };
@@ -134,42 +134,43 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
       setStatus(td(cameraProblemCode(error), locale));
     }
 
-    function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
-      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      if (pointersRef.current.size === 2) pinchDistanceRef.current = null;
-    }
+  }
 
-    function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
-      const previous = pointersRef.current.get(event.pointerId);
-      if (!previous) return;
-      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      if (pointersRef.current.size !== 2 || !zoomRangeRef.current || zoomRef.current === null) return;
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pointersRef.current.size === 2) pinchDistanceRef.current = null;
+  }
 
-      const [{ x: firstX, y: firstY }, { x: secondX, y: secondY }] = [...pointersRef.current.values()];
-      const distance = Math.hypot(secondX - firstX, secondY - firstY);
-      if (pinchDistanceRef.current === null) {
-        pinchDistanceRef.current = distance;
-        return;
-      }
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    const previous = pointersRef.current.get(event.pointerId);
+    if (!previous) return;
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pointersRef.current.size !== 2 || !zoomRangeRef.current || zoomRef.current === null) return;
 
-      const range = zoomRangeRef.current;
-      const nextZoom = Math.min(
-        range.max,
-        Math.max(range.min, zoomRef.current + ((distance - pinchDistanceRef.current) / 100) * (range.max - range.min)),
-      );
-      const zoom = Math.round(nextZoom / range.step) * range.step;
+    const [{ x: firstX, y: firstY }, { x: secondX, y: secondY }] = [...pointersRef.current.values()];
+    const distance = Math.hypot(secondX - firstX, secondY - firstY);
+    if (pinchDistanceRef.current === null) {
       pinchDistanceRef.current = distance;
-      zoomRef.current = zoom;
-      void trackRef.current?.applyConstraints({ advanced: [{ zoom }] }).catch(() => {
-        // Unsupported or interrupted zoom should not stop scanning.
-      });
-      event.preventDefault();
+      return;
     }
 
-    function handlePointerEnd(event: PointerEvent<HTMLDivElement>) {
-      pointersRef.current.delete(event.pointerId);
-      if (pointersRef.current.size < 2) pinchDistanceRef.current = null;
-    }
+    const range = zoomRangeRef.current;
+    const nextZoom = Math.min(
+      range.max,
+      Math.max(range.min, zoomRef.current + ((distance - pinchDistanceRef.current) / 100) * (range.max - range.min)),
+    );
+    const zoom = Math.round(nextZoom / range.step) * range.step;
+    pinchDistanceRef.current = distance;
+    zoomRef.current = zoom;
+    void trackRef.current?.applyConstraints({ advanced: [{ zoom }] }).catch(() => {
+      // Unsupported or interrupted zoom should not stop scanning.
+    });
+    event.preventDefault();
+  }
+
+  function handlePointerEnd(event: PointerEvent<HTMLDivElement>) {
+    pointersRef.current.delete(event.pointerId);
+    if (pointersRef.current.size < 2) pinchDistanceRef.current = null;
   }
 
   async function decodeCurrentFrame(): Promise<string | null> {
