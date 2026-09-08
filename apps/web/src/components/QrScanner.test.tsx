@@ -19,6 +19,7 @@ describe('QrScanner camera controls', () => {
       configurable: true,
       value: { getUserMedia: vi.fn().mockResolvedValue(stream) },
     });
+    Object.defineProperty(window, 'isSecureContext', { configurable: true, value: true });
     vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
     vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(1);
 
