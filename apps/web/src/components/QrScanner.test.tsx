@@ -14,7 +14,7 @@ describe('QrScanner camera controls', () => {
       applyConstraints,
       stop: vi.fn(),
     };
-    const stream = { getTracks: () => [track] };
+    const stream = { getTracks: () => [track], getVideoTracks: () => [track] };
     Object.defineProperty(navigator, 'mediaDevices', {
       configurable: true,
       value: { getUserMedia: vi.fn().mockResolvedValue(stream) },
@@ -29,7 +29,7 @@ describe('QrScanner camera controls', () => {
 
     fireEvent.pointerDown(viewfinder, { pointerId: 1, clientX: 100, clientY: 100 });
     fireEvent.pointerDown(viewfinder, { pointerId: 2, clientX: 200, clientY: 100 });
-    fireEvent.pointerMove(viewfinder, { pointerId: 2, clientX: 300, clientY: 100 });
+    fireEvent.pointerMove(viewfinder, { pointerId: 2, clientX: 233, clientY: 100 });
 
     await waitFor(() => expect(applyConstraints).toHaveBeenCalledWith({ advanced: [{ zoom: 2 }] }));
   });

@@ -153,6 +153,7 @@
   height: 100%;
   object-fit: cover;
   background: var(--code-bg);
+  touch-action: none;
 }
 
 /* Idle, the frame is the button: one target, not a box plus a control

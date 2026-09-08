@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type PointerEvent } from 'react';
 import { decodeQrFromImage } from '../lib/qrDecoder';
 import { t, td } from '../lib/uiText';
 import type { Locale } from '../engine/catalog';
@@ -12,6 +12,15 @@ interface QrScannerProps {
 
 type CameraState = 'idle' | 'starting' | 'scanning';
 type Status = { title: string; detail: string } | null;
+type ZoomRange = { min: number; max: number; step: number };
+
+function cameraZoomRange(track: MediaStreamTrack): ZoomRange | null {
+  if (!('getCapabilities' in track)) return null;
+  const capabilities = track.getCapabilities() as MediaTrackCapabilities & { zoom?: ZoomRange };
+  const zoom = capabilities.zoom;
+  if (!zoom || !Number.isFinite(zoom.min) || !Number.isFinite(zoom.max) || zoom.max <= zoom.min) return null;
+  return { min: zoom.min, max: zoom.max, step: zoom.step > 0 ? zoom.step : 1 };
+}
 
 /**
  * Seven DOMException names told the reader seven technical stories. There are
@@ -37,6 +46,11 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const trackRef = useRef<MediaStreamTrack | null>(null);
+  const zoomRangeRef = useRef<ZoomRange | null>(null);
+  const zoomRef = useRef<number | null>(null);
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchDistanceRef = useRef<number | null>(null);
   const frameRef = useRef<number | null>(null);
   const decodingRef = useRef(false);
   const scanningRef = useRef(false);
@@ -48,6 +62,11 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
     frameRef.current = null;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    trackRef.current = null;
+    zoomRangeRef.current = null;
+    zoomRef.current = null;
+    pointersRef.current.clear();
+    pinchDistanceRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
     decodingRef.current = false;
     scanningRef.current = false;
@@ -100,6 +119,9 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       streamRef.current = stream;
+      trackRef.current = stream.getVideoTracks()[0] ?? null;
+      zoomRangeRef.current = trackRef.current ? cameraZoomRange(trackRef.current) : null;
+      zoomRef.current = zoomRangeRef.current?.min ?? null;
       scanningRef.current = true;
       if (!videoRef.current) return;
       videoRef.current.srcObject = stream;
@@ -110,6 +132,43 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
     } catch (error) {
       stopCamera();
       setStatus(td(cameraProblemCode(error), locale));
+    }
+
+    function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pointersRef.current.size === 2) pinchDistanceRef.current = null;
+    }
+
+    function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+      const previous = pointersRef.current.get(event.pointerId);
+      if (!previous) return;
+      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pointersRef.current.size !== 2 || !zoomRangeRef.current || zoomRef.current === null) return;
+
+      const [{ x: firstX, y: firstY }, { x: secondX, y: secondY }] = [...pointersRef.current.values()];
+      const distance = Math.hypot(secondX - firstX, secondY - firstY);
+      if (pinchDistanceRef.current === null) {
+        pinchDistanceRef.current = distance;
+        return;
+      }
+
+      const range = zoomRangeRef.current;
+      const nextZoom = Math.min(
+        range.max,
+        Math.max(range.min, zoomRef.current + ((distance - pinchDistanceRef.current) / 100) * (range.max - range.min)),
+      );
+      const zoom = Math.round(nextZoom / range.step) * range.step;
+      pinchDistanceRef.current = distance;
+      zoomRef.current = zoom;
+      void trackRef.current?.applyConstraints({ advanced: [{ zoom }] }).catch(() => {
+        // Unsupported or interrupted zoom should not stop scanning.
+      });
+      event.preventDefault();
+    }
+
+    function handlePointerEnd(event: PointerEvent<HTMLDivElement>) {
+      pointersRef.current.delete(event.pointerId);
+      if (pointersRef.current.size < 2) pinchDistanceRef.current = null;
     }
   }
 
@@ -178,7 +237,13 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
       {/* The frame, and the code you put inside it. The corners are a
           viewfinder and the mark is the subject, so the instruction is the
           picture — it does not depend on anyone reading a sentence. */}
-      <div className={`viewfinder${live ? ' viewfinder--live' : ''}`}>
+      <div
+        className={`viewfinder${live ? ' viewfinder--live' : ''}`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+      >
         <video ref={videoRef} className="viewfinder__video" playsInline muted aria-label={t('ui.scan_aim', locale)} />
         {live ? null : (
           <button type="button" className="viewfinder__target" onClick={() => void startCamera()} disabled={disabled}>
