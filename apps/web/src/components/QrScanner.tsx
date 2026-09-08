@@ -162,7 +162,8 @@ export function QrScanner({ onDecode, locale, disabled = false }: QrScannerProps
     const zoom = Math.round(nextZoom / range.step) * range.step;
     pinchDistanceRef.current = distance;
     zoomRef.current = zoom;
-    void trackRef.current?.applyConstraints({ advanced: [{ zoom }] }).catch(() => {
+    const zoomConstraints = { advanced: [{ zoom }] } as unknown as MediaTrackConstraints;
+    void trackRef.current?.applyConstraints(zoomConstraints).catch(() => {
       // Unsupported or interrupted zoom should not stop scanning.
     });
     event.preventDefault();
